@@ -10,8 +10,7 @@ const port = normalizePort(process.env.PORT || 3000);
 
 console.log('setting port to ', port);
 ExpressApp.set('port', port);
-
-const server = http.createServer(ExpressApp);
+const server = http.createServer(ExpressApp); 
 
 // start listening
 server.listen(port);

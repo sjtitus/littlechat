@@ -11,7 +11,6 @@ export class Api {
 
   login:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.log('Api: login requesthandler');
-      throw new Error('throwing error from loginHandler');    
       res.json({ message: 'Hello from loginHandler' });
   }
 

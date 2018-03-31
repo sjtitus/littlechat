@@ -21,15 +21,14 @@ export class LoginService {
   // Public interface
   constructor(private http: Http) {}
 
-  LoginUser(user: User): Observable<LoginResponse> {
+  LoginUser(user: User) {
         console.log('LoginService: login request for user %s', user.email);
         return this.http.post(this.loginUrl, user)
-            .pipe(catchError(this.filterError))
             .map(this.parseData)
             .catch(this.handleError);
   }
 
-  SignupUser(user: User): Observable<SignupResponse> {
+  SignupUser(user: User) {
         console.log('LoginService: signup request for user %s', user.email);
         return this.http.post(this.signupUrl, user)
             .map(this.parseData)
@@ -44,41 +43,11 @@ export class LoginService {
   }
 
   private handleError(error: Response | any) {
-        let errorMessage: string;
-        errorMessage = error.message ? error.message : error.toString();
-        console.error('LoginService: handleError: %s', errorMessage);
-        return Observable.throw(errorMessage);
+        const errorObject = {
+          message: error.message ? error.message : error.toString(),
+          response: error
+        };
+        console.error('LoginService: error: ', errorObject);
+        return Observable.throw(errorObject);
   }
-
-  private filterError(error: HttpErrorResponse) {
-    let errMessage: string;
-    if ('_body' in error)
-    {
-      console.log('filterError: WE HAVE BODY');
-    }
-    console.log('filterError: HttpErrorResponse: ', error);
-    console.log('filterError: Body: ', (<any>error)._body);
-    if (error.error instanceof ErrorEvent) {
-      console.log('filterError: ErrorEvent: ', error.error);
-      errMessage = error.error.message;
-    } else {
-      console.log('FilterError: NOT ErrorEvent, ' +
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
-    }
-    //throw new Error('throwing error FOO FOO');
-    // return an ErrorObservable with a user-facing error message
-    return new ErrorObservable('Something bad happened');
-  }
-
-}
-
-export class LoginResponse {
-   // TODO: implement
-   foo: number;
-}
-
-export class SignupResponse {
-   // TODO: implement
-   foo: number;
 }

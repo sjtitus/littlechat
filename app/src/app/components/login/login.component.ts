@@ -1,7 +1,7 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { User } from '../../models/user';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoginService, LoginResponse } from '../../services/login.service';
+import { LoginService } from '../../services/login.service';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
 
@@ -15,9 +15,9 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
 
-  loginHandler: Observer<LoginResponse> = {
-    next: (value: LoginResponse) => {
-      console.log('LoginHandler: NORMAL login response: %s', JSON.stringify(value));
+  loginHandler = {
+    next: (value) => {
+      console.log('LoginHandler: NORMAL login response: ', value);
     },
     error: (err: any) => {
       console.log('LoginHandler: ERROR login response ', err);

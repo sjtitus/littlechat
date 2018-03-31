@@ -5,21 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Backend Full Debug",
             "type": "node",
             "request": "launch",
-            //"console": "integratedTerminal",
-            //"outputCapture": "std",
-            "program": "${workspaceFolder}/backend\\src\\Server.ts",
-            "env": {
-                "DEBUG": "Server,API"
-            },
-            "outFiles": [
-                "${workspaceFolder}/backend/dist/*.js"
-            ]
+            "name": "Backend Server",
+            "runtimeExecutable": "nodemon",
+            "program": "${workspaceFolder}/backend/dist/Server.js",
+            "restart": true,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "preLaunchTask": "BackendWatch"
         },
+        /*
         {
-            "name": "Launch App Full Debug",
+            "name": "Backend Server Debug",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend\\src\\Server.ts",
+            "env": { "DEBUG": "Server,API" },
+            "outFiles": [ "${workspaceFolder}/backend/dist/*.js" ],
+            "preLaunchTask": "BackendBuild"
+        },
+        */
+        {
+            "name": "App Chrome Debug",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:4200/#",
