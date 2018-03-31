@@ -5,8 +5,7 @@ import * as bodyParser from 'body-parser';
 import { Api } from './Api';
 
 
-class Routes {
-  
+export class Routes {
   api: Api = new Api();
   
   constructor(private _express: expressPackage.Application) {}
@@ -17,11 +16,18 @@ class Routes {
     // Create routes 
     router.get('/api', this.api.root);
     router.post('/api/login', this.api.login);
-
     this._express.use('/', router);
+   
+    // Log errors
+    this._express.use(function (err, req, res, next) {
+      console.error("API error: ", err);
+      next(); 
+    });
+
+    // Send a 404 for all unhandled routes 
+    this._express.use(function(req, res, next){
+      res.status(404);
+      res.send({ error: 'Not found' });
+    });
   }
-
 }
-
-export { Routes };
-

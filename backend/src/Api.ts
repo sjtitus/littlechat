@@ -11,7 +11,7 @@ export class Api {
 
   login:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.log('Api: login requesthandler');
-      res.json({ message: 'Hello from loginHandler' });
+      res.status(200).json({ id: 123 });
   }
 
 }

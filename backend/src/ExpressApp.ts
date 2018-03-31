@@ -1,10 +1,8 @@
 /*_____________________________________________________________________________
   ExpressApp
   Express application for the LittleChat backend API 
-      /login            Login/sign up
  _____________________________________________________________________________
  */
-
 import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
@@ -12,7 +10,6 @@ import * as bodyParser from 'body-parser';
 import { Routes } from './Routes';
 
 class ExpressApp {
-
   public express: express.Application;    // express app
   private routes: Routes;                 // app-specific routes
 
@@ -28,7 +25,6 @@ class ExpressApp {
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({ extended: false }));
   }
-
 }
 
 // Export the Express application
