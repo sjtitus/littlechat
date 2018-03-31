@@ -14,6 +14,8 @@ import { Observer } from 'rxjs/Observer';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
+  loginErrorText = '';
+  signupErrorText = '';
 
   loginHandler = {
     next: (value) => {
@@ -21,11 +23,13 @@ export class LoginComponent implements OnInit {
     },
     error: (err: any) => {
       console.log('LoginHandler: ERROR login response ', err);
+      this.loginErrorText = 'Login Error: ' + err.message;
     },
     complete: () => {
       console.log('LoginHandler: COMPLETE login response');
     }
   };
+
 
   constructor( private fb: FormBuilder, private loginService: LoginService ) {
     this.loginForm = this.fb.group({
@@ -38,7 +42,14 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {}
 
+  InputFocus() {
+    this.loginErrorText = '';
+    this.signupErrorText = '';
+  }
+
   SubmitForm() {
+    this.loginErrorText = '';
+    this.signupErrorText = '';
     const user = this.Extract();
     console.log('LoginComponent: submitting login form with %s', JSON.stringify(user));
     this.loginService.LoginUser(user).subscribe(this.loginHandler);

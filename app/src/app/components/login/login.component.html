@@ -6,21 +6,28 @@
     </div> 
     <div align="left">
       <label for="email"><b>Email</b></label>
-      <input type="text" placeholder="Email" id="email" name="email" formControlName="email">
+      <input type="text" placeholder="Email" id="email" name="email" formControlName="email" (focus)="InputFocus()">
     </div>
+
 
     <div align="left">
       <label for="password"><b>Password</b></label>
-      <input type="password" placeholder="Password" id="password" name="password" formControlName="password">
+      <input type="password" placeholder="Password" id="password" name="password" formControlName="password" (focus)="InputFocus()">
     </div>
 
     <div class="centered">
       <button type="submit" [disabled]="loginForm.invalid">Login</button>
     </div>
+    <div [hidden]="loginErrorText.length == 0" class="centered errorText">
+      {{loginErrorText}} 
+    </div>  
     <div class="centered">
       <hr>
       <h3>Don't have an account? Sign up!</h3>
-      <button type="submit">Sign up</button>
+      <button type="submit" [disabled]="loginForm.controls['email'].invalid">Sign up</button>
+      <div [hidden]="signupErrorText.length == 0" class="centered errorText">
+        {{signupErrorText}} 
+      </div>  
     </div>
   </div>
 </form>

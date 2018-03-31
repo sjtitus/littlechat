@@ -8,6 +8,7 @@ import { catchError} from 'rxjs/operators';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/timeout';
 
 import { User } from '../models/user';
 
@@ -24,6 +25,7 @@ export class LoginService {
   LoginUser(user: User) {
         console.log('LoginService: login request for user %s', user.email);
         return this.http.post(this.loginUrl, user)
+            .timeout(20000)
             .map(this.parseData)
             .catch(this.handleError);
   }
@@ -31,6 +33,7 @@ export class LoginService {
   SignupUser(user: User) {
         console.log('LoginService: signup request for user %s', user.email);
         return this.http.post(this.signupUrl, user)
+            .timeout(20000)
             .map(this.parseData)
             .catch(this.handleError);
   }
