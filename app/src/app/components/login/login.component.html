@@ -1,0 +1,28 @@
+<div align="center">
+<form class="loginform" [formGroup]="loginForm" (ngSubmit)="SubmitForm()">
+  <div class="container">
+    <div class="loginheader"> 
+      <h1> Little Chat </h1> 
+    </div> 
+    <div align="left">
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="Email" id="email" name="email" formControlName="email">
+    </div>
+
+    <div align="left">
+      <label for="password"><b>Password</b></label>
+      <input type="password" placeholder="Password" id="password" name="password" formControlName="password">
+    </div>
+
+    <div class="centered">
+      <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    </div>
+    <div class="centered">
+      <hr>
+      <h3>Don't have an account? Sign up!</h3>
+      <button type="submit">Sign up</button>
+    </div>
+  </div>
+</form>
+<p>Form Value: {{ loginForm.value | json }}</p>
+</div>

@@ -1,0 +1,21 @@
+<div class="header">
+  <h1>{{headerMessage}}</h1>
+</div>
+
+<div class="clearfix mainarea border">
+
+  <app-userlist (userSelected)="setTargetUser($event)"></app-userlist>
+  
+  <div class="rightpane column border">
+     
+      <app-messagelist *ngIf="targetUser" [targetUser]="targetUser"></app-messagelist>
+
+      <app-messageentry *ngIf="targetUser" [targetUser]="targetUser"></app-messageentry>
+
+  </div>
+</div>
+
+<div class="footer">
+  <p>LittleChat</p>
+</div>
+

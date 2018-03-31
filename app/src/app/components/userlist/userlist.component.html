@@ -1,0 +1,5 @@
+<div class="leftpane yautoscroll column menu border">
+  <ul>
+    <li *ngFor="let user of userlist" (click) = "selectUser(user)"> {{user.name}} </li>
+  </ul>
+</div>
