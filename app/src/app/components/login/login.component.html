@@ -4,27 +4,49 @@
     <div class="loginheader"> 
       <h1> Little Chat </h1> 
     </div> 
+    <!-- Email and Password Fields -->
     <div align="left">
       <label for="email"><b>Email</b></label>
-      <input type="text" placeholder="Email" id="email" name="email" formControlName="email" (focus)="InputFocus()">
+      <input type="text" placeholder="Email" id="email" name="email" formControlName="email" (focus)="ClearErrorText()">
     </div>
-
-
     <div align="left">
       <label for="password"><b>Password</b></label>
-      <input type="password" placeholder="Password" id="password" name="password" formControlName="password" (focus)="InputFocus()">
+      <input type="password" placeholder="Password" id="password" name="password" formControlName="password" (focus)="ClearErrorText()">
     </div>
-
+    <!-- Login button and error text -->
     <div class="centered">
-      <button type="submit" [disabled]="loginForm.invalid">Login</button>
+      <button type="submit" [disabled]="DisableCheck('login')" name="login">Login</button>
     </div>
     <div [hidden]="loginErrorText.length == 0" class="centered errorText">
       {{loginErrorText}} 
     </div>  
+    <!-- Signup button and error text -->
     <div class="centered">
       <hr>
       <h3>Don't have an account? Sign up!</h3>
-      <button type="submit" [disabled]="loginForm.controls['email'].invalid">Sign up</button>
+
+      <div align="left">
+        <label for="firstname"><b>First Name</b></label>
+        <input type="text" placeholder="First Name" id="firstname" name="firstname" formControlName="firstname" (focus)="ClearErrorText()">
+      </div>
+      <div align="left">
+        <label for="lastname"><b>Last Name</b></label>
+        <input type="text" placeholder="Last Name" id="lastname" name="lastname" formControlName="lastname" (focus)="ClearErrorText()">
+      </div>
+      <div align="left">
+        <label for="suemail"><b>Email</b></label>
+        <input type="text" placeholder="Email" id="suemail" name="suemail" formControlName="suemail" (focus)="ClearErrorText()">
+      </div>
+      <div align="left">
+        <label for="supassword"><b>Password</b></label>
+        <input type="password" placeholder="Password" id="supassword" name="supassword" formControlName="supassword" (focus)="ClearErrorText()">
+      </div>
+      <div align="left">
+        <label for="supassword2"><b>Repeat Password</b></label>
+        <input type="password" placeholder="Repeat Password" id="supassword2" name="supassword2" formControlName="supassword2" (focus)="ClearErrorText()">
+      </div>
+
+      <button type="button" [disabled]="DisableCheck('signup')" name="signup" (click)="SetAction('signup')">Sign up</button>
       <div [hidden]="signupErrorText.length == 0" class="centered errorText">
         {{signupErrorText}} 
       </div>  

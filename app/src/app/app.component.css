@@ -94,12 +94,12 @@ input[type=text], input[type=password] {
 button {
     background-color: #4CAF50;
     color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
+    padding: 10px 16px;
+    margin: 6px 0;
     /*border: none;
     cursor: pointer;*/
-    width: 40%;
-    font-size: 20px;
+    width: 30%;
+    font-size: 18px;
 }
 /* Add a hover effect for buttons */
 button:hover {

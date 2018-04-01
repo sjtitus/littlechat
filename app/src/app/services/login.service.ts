@@ -22,15 +22,15 @@ export class LoginService {
   // Public interface
   constructor(private http: Http) {}
 
-  LoginUser(user: User) {
-        console.log('LoginService: login request for user %s', user.email);
+  LoginUser(user) {
+        console.log('LoginService: login request for user ', user.email);
         return this.http.post(this.loginUrl, user)
             .timeout(20000)
             .map(this.parseData)
             .catch(this.handleError);
   }
 
-  SignupUser(user: User) {
+  SignupUser(user: any) {
         console.log('LoginService: signup request for user %s', user.email);
         return this.http.post(this.signupUrl, user)
             .timeout(20000)
