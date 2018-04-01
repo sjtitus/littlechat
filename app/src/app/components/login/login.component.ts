@@ -16,22 +16,30 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loginErrorText: string;
   signupErrorText: string;
-  submitAction = 'login';
 
   loginHandler = {
     next: (value) => {
-      console.log('LoginHandler: NORMAL login response: ', value);
+      console.log('LoginHandler: normal login response: ', value);
     },
     error: (err: any) => {
-      console.log('LoginHandler: ERROR login response ', err);
-      if (this.submitAction === 'login') {
-        this.loginErrorText = 'Login Error: ' + err.message;
-      } else {
-        this.signupErrorText = 'Login Error: ' + err.message;
-      }
+      console.log('LoginHandler: error login response ', err);
+      this.loginErrorText = 'Login Error: ' + err.message;
     },
     complete: () => {
-      console.log('LoginHandler: COMPLETE login response');
+      console.log('LoginHandler: complete login response');
+    }
+  };
+
+  signupHandler = {
+    next: (value) => {
+      console.log('SignupHandler: normal signup response: ', value);
+    },
+    error: (err: any) => {
+      console.log('SignupHandler: error signup response ', err);
+      this.signupErrorText = 'Signup Error: ' + err.message;
+    },
+    complete: () => {
+      console.log('SignupHandler: complete signup response');
     }
   };
 
@@ -50,38 +58,45 @@ export class LoginComponent implements OnInit {
       this.ClearErrorText();
   }
 
-  SetAction(action: string) {
-    this.submitAction = action;
-    this.SubmitForm();
-  }
-
   ngOnInit() {}
 
   // Submit the form to the backend
-  SubmitForm() {
-      const userinfo = this.Extract();
-      const user: User = {email: userinfo.email, password: userinfo.password};
-      if (this.submitAction === 'login') {
-        this.ClearErrorText();
-        console.log('LoginComponent: login user ', user);
-        this.loginService.LoginUser(user).subscribe(this.loginHandler);
+  SubmitForm(action: string) {
+    this.ClearErrorText();
+    const forminfo = this.Extract();
+    if (this.IsValid(forminfo, action)) {
+      if (action === 'login') {
+        console.log('LoginComponent: login user ', forminfo.email);
+        this.loginService.LoginUser(forminfo).subscribe(this.loginHandler);
       } else {
-        this.ClearErrorText();
-        console.log('LoginComponent: signup user ', user);
-        this.loginService.SignupUser(userinfo).subscribe(this.loginHandler);
+        console.log('LoginComponent: signup user %s %s', forminfo.firstname, forminfo.lastname);
+        this.loginService.SignupUser(forminfo).subscribe(this.signupHandler);
       }
+    }
+  }
+
+  // Validate form information wrt specified action
+  private IsValid(forminfo: any, action: string): boolean {
+      if (action === 'login') {
+      } else {
+        if (forminfo.supassword !== forminfo.supassword2) {
+          this.signupErrorText = 'Error: passwords must match.';
+          return false;
+        }
+      }
+      return true;
   }
 
   // Extract user information from form fields
   private Extract() {
-      const userinfo: any = {};
-      userinfo.email = this.loginForm.get('email').value;
-      userinfo.password = this.loginForm.get('password').value;
-      userinfo.firstname = this.loginForm.get('firstname').value;
-      userinfo.lastname = this.loginForm.get('lastname').value;
-      userinfo.supassword = this.loginForm.get('supassword').value;
-      userinfo.supassword2 = this.loginForm.get('supassword2').value;
-      return userinfo;
+      const forminfo: any = {};
+      forminfo.email = this.loginForm.get('email').value;
+      forminfo.password = this.loginForm.get('password').value;
+      forminfo.firstname = this.loginForm.get('firstname').value;
+      forminfo.lastname = this.loginForm.get('lastname').value;
+      forminfo.supassword = this.loginForm.get('supassword').value;
+      forminfo.supassword2 = this.loginForm.get('supassword2').value;
+      return forminfo;
   }
 
   // Control disabling of submission buttons
@@ -102,7 +117,6 @@ export class LoginComponent implements OnInit {
   ClearErrorText() {
     this.loginErrorText = '';
     this.signupErrorText = '';
-    this.submitAction = 'login';
   }
 
 }

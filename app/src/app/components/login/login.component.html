@@ -1,10 +1,11 @@
 <div align="center">
-<form class="loginform" [formGroup]="loginForm" (ngSubmit)="SubmitForm()">
+<form class="loginform" [formGroup]="loginForm">
   <div class="container">
     <div class="loginheader"> 
       <h1> Little Chat </h1> 
     </div> 
-    <!-- Email and Password Fields -->
+    
+    <!-- Login fields -->
     <div align="left">
       <label for="email"><b>Email</b></label>
       <input type="text" placeholder="Email" id="email" name="email" formControlName="email" (focus)="ClearErrorText()">
@@ -15,16 +16,16 @@
     </div>
     <!-- Login button and error text -->
     <div class="centered">
-      <button type="submit" [disabled]="DisableCheck('login')" name="login">Login</button>
+      <button type="button" [disabled]="DisableCheck('login')" name="login" (click)="SubmitForm('login')">Login</button>
     </div>
     <div [hidden]="loginErrorText.length == 0" class="centered errorText">
       {{loginErrorText}} 
     </div>  
-    <!-- Signup button and error text -->
+    
     <div class="centered">
       <hr>
       <h3>Don't have an account? Sign up!</h3>
-
+      <!-- Signup fields -->
       <div align="left">
         <label for="firstname"><b>First Name</b></label>
         <input type="text" placeholder="First Name" id="firstname" name="firstname" formControlName="firstname" (focus)="ClearErrorText()">
@@ -45,8 +46,8 @@
         <label for="supassword2"><b>Repeat Password</b></label>
         <input type="password" placeholder="Repeat Password" id="supassword2" name="supassword2" formControlName="supassword2" (focus)="ClearErrorText()">
       </div>
-
-      <button type="button" [disabled]="DisableCheck('signup')" name="signup" (click)="SetAction('signup')">Sign up</button>
+      <!-- Signup button and error text -->
+      <button type="button" [disabled]="DisableCheck('signup')" name="signup" (click)="SubmitForm('signup')">Sign up</button>
       <div [hidden]="signupErrorText.length == 0" class="centered errorText">
         {{signupErrorText}} 
       </div>  
