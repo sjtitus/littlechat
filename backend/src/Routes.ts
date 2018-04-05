@@ -16,6 +16,7 @@ export class Routes {
     // Create routes 
     router.get('/api', this.api.root);
     router.post('/api/login', this.api.login);
+    router.post('/api/signup', this.api.signup);
     this._express.use('/', router);
    
     // Log errors

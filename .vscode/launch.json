@@ -4,28 +4,16 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Backend Server",
-            "runtimeExecutable": "nodemon",
-            "program": "${workspaceFolder}/backend/dist/Server.js",
-            "restart": true,
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "preLaunchTask": "BackendWatch"
-        },
-        /*
+        
         {
             "name": "Backend Server Debug",
             "type": "node",
             "request": "launch",
             "program": "${workspaceFolder}/backend\\src\\Server.ts",
             "env": { "DEBUG": "Server,API" },
-            "outFiles": [ "${workspaceFolder}/backend/dist/*.js" ],
+            "outFiles": [ "${workspaceFolder}/backend/dist/**/*.js" ],
             "preLaunchTask": "BackendBuild"
         },
-        */
         {
             "name": "App Chrome Debug",
             "type": "chrome",

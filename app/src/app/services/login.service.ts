@@ -11,12 +11,14 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/timeout';
 
 import { User } from '../models/user';
+import { SignupRequest } from '../models/signuprequest';
 
 @Injectable()
 export class LoginService {
 
-  private loginUrl = 'http://localhost:4200/api/login';
-  private signupUrl = 'http://localhost:4200/api/signup';
+  private readonly loginUrl = 'http://localhost:4200/api/login';
+  private readonly signupUrl = 'http://localhost:4200/api/signup';
+  private readonly timeout = 20000;
 
   //___________________________________________________________________________
   // Public interface
@@ -30,10 +32,10 @@ export class LoginService {
             .catch(this.handleError);
   }
 
-  SignupUser(user: any) {
-        console.log('LoginService: signup request for user %s', user.email);
-        return this.http.post(this.signupUrl, user)
-            .timeout(20000)
+  SignupUser(signup: SignupRequest) {
+        console.log('LoginService: signup request ', signup);
+        return this.http.post(this.signupUrl, signup)
+            .timeout(this.timeout)
             .map(this.parseData)
             .catch(this.handleError);
   }

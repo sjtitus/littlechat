@@ -2,10 +2,11 @@ import * as http from 'http';
 
 // Express application for the API 
 import ExpressApp from './ExpressApp';
+import { Token } from './Token';
+import * as jwt from 'jsonwebtoken';
 
 console.log("Backend (DEBUG=",process.env.DEBUG,")");
 
-// port: can be number or file path 
 const port = normalizePort(process.env.PORT || 3000);
 
 console.log('setting port to ', port);
