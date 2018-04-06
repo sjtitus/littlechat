@@ -5,15 +5,16 @@ export class Api {
   constructor() {}
   
   root:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
-      console.log('Api: root requesthandler');   
+      console.log('Api: root requesthandler ');
       res.json({ message: 'Hello from root' });
-  }
+  }  
 
   // Login
-  login:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
-      console.log('Api: login requesthandler');
-      res.status(200).json({ id: 123 });
-  }
+  login: RequestHandler = function(req:Request, res:Response, next:NextFunction) {
+      console.log('Api: login requesthandler'); 
+      res.status(200).json({ id: 123 }); 
+  } 
+
  
   // Signup
   signup:RequestHandler = function(req:Request, res:Response, next:NextFunction) {

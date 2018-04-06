@@ -8,14 +8,18 @@
             "identifier": "AppBuild",
             "type": "typescript",
             "tsconfig": "app\\tsconfig.json",
-            "problemMatcher": [ "$tsc" ]
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "Backend build",
             "identifier": "BackendBuild",
             "type": "typescript",
             "tsconfig": "backend\\tsconfig.json",
-            "problemMatcher": [ "$tsc" ]
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "App Start",
@@ -31,7 +35,15 @@
             "type": "typescript",
             "tsconfig": "backend\\tsconfig.json",
             "option": "watch",
-            "problemMatcher": [ "$tsc-watch" ]
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        },
+        {
+            "type": "npm",
+            "script": "start",
+            "path": "backend/",
+            "problemMatcher": []
         }
     ]
 }

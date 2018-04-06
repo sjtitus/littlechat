@@ -3,8 +3,22 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Server/Client",
+            "configurations": ["Backend Server Debug", "App Chrome Debug"]
+        }
+    ],
     "configurations": [
-        
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "nodemon",
+            "runtimeExecutable": "nodemon",
+            "program": "${workspaceFolder}/backend/src/Server.ts",
+            "outFiles": [ "${workspaceFolder}/backend/dist/**/*.js" ],
+            "restart": true,
+        },
         {
             "name": "Backend Server Debug",
             "type": "node",
@@ -12,7 +26,8 @@
             "program": "${workspaceFolder}/backend\\src\\Server.ts",
             "env": { "DEBUG": "Server,API" },
             "outFiles": [ "${workspaceFolder}/backend/dist/**/*.js" ],
-            "preLaunchTask": "BackendBuild"
+            "runtimeExecutable": "nodemon",
+            "restart": true
         },
         {
             "name": "App Chrome Debug",
