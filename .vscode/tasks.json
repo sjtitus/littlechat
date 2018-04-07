@@ -4,8 +4,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "App Build",
-            "identifier": "AppBuild",
+            "label": "Client Build",
+            "identifier": "Client Build",
             "type": "typescript",
             "tsconfig": "app\\tsconfig.json",
             "problemMatcher": [
@@ -13,8 +13,8 @@
             ]
         },
         {
-            "label": "Backend build",
-            "identifier": "BackendBuild",
+            "label": "Server Build",
+            "identifier": "Server Build",
             "type": "typescript",
             "tsconfig": "backend\\tsconfig.json",
             "problemMatcher": [
@@ -22,16 +22,16 @@
             ]
         },
         {
-            "label": "App Start",
-            "identifier": "AppStart",
+            "label": "Client Start",
+            "identifier": "Client Start",
             "type": "npm",
             "script": "start",
             "path": "app/",
             "problemMatcher": []
         },
         {
-            "label": "Backend Watch",
-            "identifier": "BackendWatch",
+            "label": "Server Watch",
+            "identifier": "Server Watch",
             "type": "typescript",
             "tsconfig": "backend\\tsconfig.json",
             "option": "watch",
@@ -39,11 +39,5 @@
                 "$tsc-watch"
             ]
         },
-        {
-            "type": "npm",
-            "script": "start",
-            "path": "backend/",
-            "problemMatcher": []
-        }
     ]
 }

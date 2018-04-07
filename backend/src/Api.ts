@@ -7,7 +7,7 @@ export class Api {
   root:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.log('Api: root requesthandler ');
       res.json({ message: 'Hello from root' });
-  }  
+  }   
 
   // Login
   login: RequestHandler = function(req:Request, res:Response, next:NextFunction) {

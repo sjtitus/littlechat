@@ -3,34 +3,19 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "compounds": [
-        {
-            "name": "Server/Client",
-            "configurations": ["Backend Server Debug", "App Chrome Debug"]
-        }
-    ],
     "configurations": [
+
         {
             "type": "node",
             "request": "launch",
-            "name": "nodemon",
+            "name": "Server",
             "runtimeExecutable": "nodemon",
             "program": "${workspaceFolder}/backend/src/Server.ts",
             "outFiles": [ "${workspaceFolder}/backend/dist/**/*.js" ],
             "restart": true,
         },
         {
-            "name": "Backend Server Debug",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/backend\\src\\Server.ts",
-            "env": { "DEBUG": "Server,API" },
-            "outFiles": [ "${workspaceFolder}/backend/dist/**/*.js" ],
-            "runtimeExecutable": "nodemon",
-            "restart": true
-        },
-        {
-            "name": "App Chrome Debug",
+            "name": "ChromeClient",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:4200/#",
@@ -42,7 +27,7 @@
                 "--disable-session-crashed-bubble",
                 "--disable-infobars"
             ],
-            "userDataDir": "${workspaceRoot}/.vscode/chrome"
+            "userDataDir": "${workspaceRoot}/.vscode/chrome",
         }
     ]
 }
