@@ -27,7 +27,7 @@
             "type": "npm",
             "script": "start",
             "path": "app/",
-            "problemMatcher": []
+            "problemMatcher": [] 
         },
         {
             "label": "Server Watch",
