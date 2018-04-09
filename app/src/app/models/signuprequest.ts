@@ -4,4 +4,5 @@ export interface  SignupRequest {
     lastname: string;
     email: string;
     password: string;
+    password2: string;
 }

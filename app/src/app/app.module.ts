@@ -10,7 +10,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent } from './components/home/home.component';
-import {HttpModule} from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 const appRoutes: Routes = [
   { path: 'login',    component: LoginComponent                   },
@@ -31,7 +31,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot( appRoutes, { enableTracing: true }),
     BrowserModule,
     ReactiveFormsModule,
-    HttpModule
+    HttpClientModule
   ],
   providers: [MessageService, LoginService],
   bootstrap: [AppComponent]

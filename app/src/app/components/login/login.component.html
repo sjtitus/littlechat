@@ -9,18 +9,18 @@
     <div align="left">
       <label for="email"><b>Email</b></label>
       <input type="text" placeholder="Email" id="email" name="email" formControlName="email" (focus)="ClearErrorText()">
+      <div class="alert alert-danger" [hidden]="emailErrorText.length === 0"> {{emailErrorText}} </div>
     </div>
     <div align="left">
       <label for="password"><b>Password</b></label>
       <input type="password" placeholder="Password" id="password" name="password" formControlName="password" (focus)="ClearErrorText()">
+      <div class="alert alert-danger" [hidden]="passwordErrorText.length === 0"> {{passwordErrorText}} </div>
     </div>
+
     <!-- Login button and error text -->
     <div class="centered">
-      <button type="button" [disabled]="DisableCheck('login')" name="login" (click)="SubmitForm('login')">Login</button>
+      <button type="button" [disabled]="LoginDisabled()" name="login" (click)="LoginAction()">Login</button>
     </div>
-    <div [hidden]="loginErrorText.length == 0" class="centered errorText">
-      {{loginErrorText}} 
-    </div>  
     
     <div class="centered">
       <hr>
@@ -29,28 +29,31 @@
       <div align="left">
         <label for="firstname"><b>First Name</b></label>
         <input type="text" placeholder="First Name" id="firstname" name="firstname" formControlName="firstname" (focus)="ClearErrorText()">
+      <div class="alert alert-danger" [hidden]="firstnameErrorText.length === 0"> {{firstnameErrorText}} </div>
       </div>
       <div align="left">
         <label for="lastname"><b>Last Name</b></label>
         <input type="text" placeholder="Last Name" id="lastname" name="lastname" formControlName="lastname" (focus)="ClearErrorText()">
+        <div class="alert alert-danger" [hidden]="lastnameErrorText.length === 0"> {{lastnameErrorText}} </div>
       </div>
       <div align="left">
         <label for="suemail"><b>Email</b></label>
         <input type="text" placeholder="Email" id="suemail" name="suemail" formControlName="suemail" (focus)="ClearErrorText()">
+        <div class="alert alert-danger" [hidden]="suemailErrorText.length === 0"> {{suemailErrorText}} </div>
       </div>
       <div align="left">
         <label for="supassword"><b>Password</b></label>
         <input type="password" placeholder="Password" id="supassword" name="supassword" formControlName="supassword" (focus)="ClearErrorText()">
+        <div class="alert alert-danger" [hidden]="supasswordErrorText.length === 0"> {{supasswordErrorText}} </div>
       </div>
+
       <div align="left">
         <label for="supassword2"><b>Repeat Password</b></label>
         <input type="password" placeholder="Repeat Password" id="supassword2" name="supassword2" formControlName="supassword2" (focus)="ClearErrorText()">
+        <div class="alert alert-danger" [hidden]="supassword2ErrorText.length === 0" > {{supassword2ErrorText}} </div>
       </div>
       <!-- Signup button and error text -->
-      <button type="button" [disabled]="DisableCheck('signup')" name="signup" (click)="SubmitForm('signup')">Sign up</button>
-      <div [hidden]="signupErrorText.length == 0" class="centered errorText">
-        {{signupErrorText}} 
-      </div>  
+      <button type="button" [disabled]="SignupDisabled()" name="signup" (click)="SignupAction()">Sign up</button>
     </div>
   </div>
 </form>

@@ -18,11 +18,13 @@
     "@types/jsonwebtoken": "^7.2.6",
     "@types/morgan": "^1.7.35",
     "@types/node": "^8.10.0",
+    "@types/revalidator": "^0.3.5",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "jsonwebtoken": "^8.2.0",
     "morgan": "^1.9.0",
     "nodemon": "^1.17.3",
+    "revalidator": "^0.3.1",
     "ts-node": "^5.0.1",
     "typescript": "^2.7.2"
   },

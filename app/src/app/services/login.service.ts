@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { Headers, RequestOptions } from '@angular/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { catchError} from 'rxjs/operators';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
@@ -22,12 +19,12 @@ export class LoginService {
 
   //___________________________________________________________________________
   // Public interface
-  constructor(private http: Http) {}
+  constructor(private http: HttpClient) {}
 
   LoginUser(user) {
         console.log('LoginService: login request for user ', user.email);
         return this.http.post(this.loginUrl, user)
-            .timeout(20000)
+            .timeout(this.timeout)
             .map(this.parseData)
             .catch(this.handleError);
   }
@@ -43,8 +40,10 @@ export class LoginService {
   //___________________________________________________________________________
   // Private interface
   private parseData(res: Response)  {
-        console.log('LoginService: received response %s', res.json());
-        return res.json() || {};
+        console.log('LoginService: received response ', res);
+        const user: User = { email: 'foo', password: 'bar' };
+        return user;
+        //return res.json() || {};
   }
 
   private handleError(error: Response | any) {

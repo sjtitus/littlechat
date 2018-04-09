@@ -2,8 +2,8 @@ import { Component, OnInit, Injectable } from '@angular/core';
 import { User } from '../../models/user';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { SignupRequest } from '../../models/signuprequest';
+import { LoginRequest } from '../../models/loginrequest';
 
 @Component({
   selector: 'app-login',
@@ -14,8 +14,13 @@ import { Observer } from 'rxjs/Observer';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
-  loginErrorText: string;
-  signupErrorText: string;
+  emailErrorText: string;
+  passwordErrorText: string;
+  firstnameErrorText: string;
+  lastnameErrorText: string;
+  suemailErrorText: string;
+  supasswordErrorText: string;
+  supassword2ErrorText: string;
 
   loginHandler = {
     next: (value) => {
@@ -23,7 +28,6 @@ export class LoginComponent implements OnInit {
     },
     error: (err: any) => {
       console.log('LoginHandler: error login response ', err);
-      this.loginErrorText = 'Login Error: ' + err.message;
     },
     complete: () => {
       console.log('LoginHandler: complete login response');
@@ -36,7 +40,6 @@ export class LoginComponent implements OnInit {
     },
     error: (err: any) => {
       console.log('SignupHandler: error signup response ', err);
-      this.signupErrorText = 'Signup Error: ' + err.message;
     },
     complete: () => {
       console.log('SignupHandler: complete signup response');
@@ -45,78 +48,90 @@ export class LoginComponent implements OnInit {
 
   // Constructor
   constructor( private fb: FormBuilder, private loginService: LoginService ) {
-      // Create the form
       this.loginForm = this.fb.group({
-              email: [ '', Validators.required ],
-           password: [ '', Validators.required ],
-          firstname: [ '', Validators.required ],
-           lastname: [ '', Validators.required ],
-            suemail: [ '', Validators.required ],
-         supassword: [ '', Validators.required ],
-        supassword2: [ '', Validators.required ],
+              email: [ '', [ Validators.required, Validators.email ] ],
+           password: [ '', [ Validators.required, Validators.minLength(6)] ],
+          firstname: [ '', [ Validators.required ] ],
+           lastname: [ '', [ Validators.required ] ],
+            suemail: [ '', [ Validators.required, Validators.email ] ],
+         supassword: [ '', [ Validators.required, Validators.minLength(6) ] ],
+        supassword2: [ '', [ Validators.required, Validators.minLength(6) ] ],
       });
       this.ClearErrorText();
   }
 
+  // Getters for convenience
+  get email()       { return this.loginForm.get('email');       }
+  get password()    { return this.loginForm.get('password');    }
+  get firstname()   { return this.loginForm.get('firstname');   }
+  get lastname()    { return this.loginForm.get('lastname');    }
+  get suemail()     { return this.loginForm.get('suemail');     }
+  get supassword()  { return this.loginForm.get('supassword');  }
+  get supassword2() { return this.loginForm.get('supassword2'); }
+
   ngOnInit() {}
 
-  // Submit the form to the backend
-  SubmitForm(action: string) {
-    this.ClearErrorText();
-    const forminfo = this.Extract();
-    if (this.IsValid(forminfo, action)) {
-      if (action === 'login') {
-        console.log('LoginComponent: login user ', forminfo.email);
-        this.loginService.LoginUser(forminfo).subscribe(this.loginHandler);
-      } else {
-        console.log('LoginComponent: signup user %s %s', forminfo.firstname, forminfo.lastname);
-        this.loginService.SignupUser(forminfo).subscribe(this.signupHandler);
-      }
+  // Execute new user signup
+  SignupAction() {
+    const signupRequest = this.ExtractSignupRequest();
+    console.log('LoginComponent: signup request ', signupRequest);
+    this.loginService.SignupUser(signupRequest).subscribe(this.signupHandler);
+  }
+
+  // Execute user login
+  LoginAction() {
+    if (this.IsValid('login')) {
+      const loginRequest = this.ExtractLoginRequest();
+      console.log('LoginComponent: login request ', loginRequest);
+      this.loginService.LoginUser(loginRequest).subscribe(this.loginHandler);
     }
   }
 
+  // Extract the SignupRequest from the form
+  private ExtractSignupRequest(): SignupRequest {
+    const signup: SignupRequest = {
+      firstname: this.loginForm.get('firstname').value,
+      lastname: this.loginForm.get('lastname').value,
+      email: this.loginForm.get('suemail').value,
+      password: this.loginForm.get('supassword').value,
+      password2: this.loginForm.get('supassword2').value
+    };
+    return signup;
+  }
+
+  // Extract the LoginRequest from the form
+  private ExtractLoginRequest(): LoginRequest {
+    const login: LoginRequest = {
+      email: this.loginForm.get('email').value,
+      password: this.loginForm.get('password').value,
+    };
+    return login;
+  }
+
   // Validate form information wrt specified action
-  private IsValid(forminfo: any, action: string): boolean {
+  private IsValid(action: string): boolean {
       if (action === 'login') {
       } else {
-        if (forminfo.supassword !== forminfo.supassword2) {
-          this.signupErrorText = 'Error: passwords must match.';
-          return false;
-        }
       }
       return true;
   }
 
-  // Extract user information from form fields
-  private Extract() {
-      const forminfo: any = {};
-      forminfo.email = this.loginForm.get('email').value;
-      forminfo.password = this.loginForm.get('password').value;
-      forminfo.firstname = this.loginForm.get('firstname').value;
-      forminfo.lastname = this.loginForm.get('lastname').value;
-      forminfo.supassword = this.loginForm.get('supassword').value;
-      forminfo.supassword2 = this.loginForm.get('supassword2').value;
-      return forminfo;
-  }
 
   // Control disabling of submission buttons
-  DisableCheck(action: string): boolean {
-    if (action === 'login') {
-      return (this.loginForm.controls['email'].invalid ||
-              this.loginForm.controls['password'].invalid);
-    } else if (action === 'signup') {
-      return (this.loginForm.controls['firstname'].invalid ||
-              this.loginForm.controls['lastname'].invalid ||
-              this.loginForm.controls['suemail'].invalid ||
-              this.loginForm.controls['supassword'].invalid ||
-              this.loginForm.controls['supassword2'].invalid);
-    }
+  LoginDisabled(): boolean {
+      return (this.email.value.length === 0 || this.password.value.length === 0);
+  }
+
+  SignupDisabled(): boolean {
+      return (this.firstname.value.length === 0   ||
+              this.lastname.value.length === 0    ||
+              this.suemail.value.length === 0     ||
+              this.supassword.value.length === 0  ||
+              this.supassword2.value.length === 0);
   }
 
   // Clear the error text fields
   ClearErrorText() {
-    this.loginErrorText = '';
-    this.signupErrorText = '';
   }
 
 }
