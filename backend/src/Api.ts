@@ -1,6 +1,6 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
 import { SignupRequest } from "../../app/src/app/models/signuprequest";
-import * as revalidator from "revalidator"; 
+//import * as revalidator from "revalidator"; 
 export class Api {
  
   constructor() {}
@@ -22,6 +22,7 @@ export class Api {
   signup:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.debug('Api: signup');
       const signuprequest: SignupRequest = req.body;
+      /*
       let vMessage = revalidator.validate(signuprequest, {
         properties: {
             suemail: {
@@ -32,6 +33,7 @@ export class Api {
             }
         }
       });
+      */
       console.log(signuprequest);
       res.status(200).json(signuprequest);
   }

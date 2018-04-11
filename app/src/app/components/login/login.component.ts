@@ -14,13 +14,13 @@ import { LoginRequest } from '../../models/loginrequest';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
-  emailErrorText: string;
-  passwordErrorText: string;
-  firstnameErrorText: string;
-  lastnameErrorText: string;
-  suemailErrorText: string;
-  supasswordErrorText: string;
-  supassword2ErrorText: string;
+  emailErrorText = '';
+  passwordErrorText = '';
+  firstnameErrorText = '';
+  lastnameErrorText = '';
+  suemailErrorText = '';
+  supasswordErrorText = '';
+  supassword2ErrorText = '';
 
   loginHandler = {
     next: (value) => {
@@ -74,8 +74,10 @@ export class LoginComponent implements OnInit {
   // Execute new user signup
   SignupAction() {
     const signupRequest = this.ExtractSignupRequest();
-    console.log('LoginComponent: signup request ', signupRequest);
-    this.loginService.SignupUser(signupRequest).subscribe(this.signupHandler);
+    if (this.ValidateSignup(signupRequest)) {
+      console.log('LoginComponent: signup request ', signupRequest);
+      this.loginService.SignupUser(signupRequest).subscribe(this.signupHandler);
+    }
   }
 
   // Execute user login
@@ -85,6 +87,32 @@ export class LoginComponent implements OnInit {
       console.log('LoginComponent: login request ', loginRequest);
       this.loginService.LoginUser(loginRequest).subscribe(this.loginHandler);
     }
+  }
+
+  private ValidateSignup(signup: SignupRequest): boolean {
+    let valid = true;
+    if (this.firstname.errors) {
+      this.firstnameErrorText = 'First name is required';
+      valid = false;
+    }
+    if (this.lastname.errors) {
+      this.lastnameErrorText = 'Last name is required';
+      valid = false;
+    }
+    if (this.suemail.errors) {
+      this.suemailErrorText = 'Email is required and must be in valid email format';
+      valid = false;
+    }
+    if (this.supassword.errors) {
+      this.supasswordErrorText = 'Password is required and must have length >= 6';
+      valid = false;
+    } else {
+      if (this.supassword2.errors || (this.supassword2 !== this.supassword)) {
+        this.supassword2ErrorText = 'Repeated password must match';
+        valid = false;
+      }
+    }
+    return valid;
   }
 
   // Extract the SignupRequest from the form
