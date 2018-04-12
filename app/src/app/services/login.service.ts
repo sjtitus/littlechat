@@ -9,6 +9,9 @@ import 'rxjs/add/operator/timeout';
 
 import { User } from '../models/user';
 import { SignupRequest } from '../models/signuprequest';
+import { LoginRequest } from '../models/loginrequest';
+import { LoginResponse } from '../models/loginresponse';
+import { SignupResponse } from '../models/signupresponse';
 
 @Injectable()
 export class LoginService {
@@ -21,31 +24,20 @@ export class LoginService {
   // Public interface
   constructor(private http: HttpClient) {}
 
-  LoginUser(user) {
-        console.log('LoginService: login request for user ', user.email);
-        return this.http.post(this.loginUrl, user)
-            .timeout(this.timeout)
-            .map(this.parseData)
-            .catch(this.handleError);
+  LoginUser(login: LoginRequest) {
+        console.log('LoginService: login request ', login);
+        return this.http.post<LoginResponse>(this.loginUrl, login)
+            .timeout(this.timeout);
   }
 
   SignupUser(signup: SignupRequest) {
         console.log('LoginService: signup request ', signup);
-        return this.http.post(this.signupUrl, signup)
-            .timeout(this.timeout)
-            .map(this.parseData)
-            .catch(this.handleError);
+        return this.http.post<SignupResponse>(this.signupUrl, signup)
+            .timeout(this.timeout);
   }
 
   //___________________________________________________________________________
   // Private interface
-  private parseData(res: Response)  {
-        console.log('LoginService: received response ', res);
-        const user: User = { email: 'foo', password: 'bar' };
-        return user;
-        //return res.json() || {};
-  }
-
   private handleError(error: Response | any) {
         const errorObject = {
           message: error.message ? error.message : error.toString(),

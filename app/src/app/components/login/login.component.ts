@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
 import { SignupRequest } from '../../models/signuprequest';
 import { LoginRequest } from '../../models/loginrequest';
+import { LoginResponse } from '../../models/loginresponse';
 
 @Component({
   selector: 'app-login',
@@ -22,30 +23,6 @@ export class LoginComponent implements OnInit {
   supasswordErrorText = '';
   supassword2ErrorText = '';
 
-  loginHandler = {
-    next: (value) => {
-      console.log('LoginHandler: normal login response: ', value);
-    },
-    error: (err: any) => {
-      console.log('LoginHandler: error login response ', err);
-    },
-    complete: () => {
-      console.log('LoginHandler: complete login response');
-    }
-  };
-
-  signupHandler = {
-    next: (value) => {
-      console.log('SignupHandler: normal signup response: ', value);
-    },
-    error: (err: any) => {
-      console.log('SignupHandler: error signup response ', err);
-    },
-    complete: () => {
-      console.log('SignupHandler: complete signup response');
-    }
-  };
-
   // Constructor
   constructor( private fb: FormBuilder, private loginService: LoginService ) {
       this.loginForm = this.fb.group({
@@ -57,10 +34,9 @@ export class LoginComponent implements OnInit {
          supassword: [ '', [ Validators.required, Validators.minLength(6) ] ],
         supassword2: [ '', [ Validators.required, Validators.minLength(6) ] ],
       });
-      this.ClearErrorText();
   }
 
-  // Getters for convenience
+  // Control Getters for convenience
   get email()       { return this.loginForm.get('email');       }
   get password()    { return this.loginForm.get('password');    }
   get firstname()   { return this.loginForm.get('firstname');   }
@@ -71,24 +47,74 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {}
 
-  // Execute new user signup
+  // Execute new user signup API call
   SignupAction() {
+    this.ClearErrorText();
     const signupRequest = this.ExtractSignupRequest();
     if (this.ValidateSignup(signupRequest)) {
       console.log('LoginComponent: signup request ', signupRequest);
-      this.loginService.SignupUser(signupRequest).subscribe(this.signupHandler);
+      this.loginService.SignupUser(signupRequest).subscribe(
+        (data) => { console.log('RECEIVED DATA', data); }
+      );
     }
   }
 
-  // Execute user login
+  // Execute existing user login API call
   LoginAction() {
-    if (this.IsValid('login')) {
-      const loginRequest = this.ExtractLoginRequest();
+    this.ClearErrorText();
+    const loginRequest = this.ExtractLoginRequest();
+    if (this.ValidateLogin(loginRequest)) {
       console.log('LoginComponent: login request ', loginRequest);
-      this.loginService.LoginUser(loginRequest).subscribe(this.loginHandler);
+      this.loginService.LoginUser(loginRequest).subscribe(
+        (loginResponse: LoginResponse) => {
+          console.log('Response token', loginResponse.token);
+        }
+      );
     }
   }
 
+
+  // Control disabling of login button
+  LoginDisabled(): boolean {
+      return (this.email.value.length === 0 || this.password.value.length === 0);
+  }
+
+  // Control disabling of signup button
+  SignupDisabled(): boolean {
+      return (this.firstname.value.length === 0   ||
+              this.lastname.value.length === 0    ||
+              this.suemail.value.length === 0     ||
+              this.supassword.value.length === 0  ||
+              this.supassword2.value.length === 0);
+  }
+
+
+  // Clear the error text fields
+  private ClearErrorText() {
+      this.emailErrorText = '';
+      this.passwordErrorText = '';
+      this.firstnameErrorText = '';
+      this.lastnameErrorText = '';
+      this.suemailErrorText = '';
+      this.supasswordErrorText = '';
+      this.supassword2ErrorText = '';
+  }
+
+  // Validate login fields
+  private ValidateLogin(login: LoginRequest): boolean {
+    let valid = true;
+    if (this.email.errors) {
+      this.emailErrorText = 'Email is required and must be in valid email format';
+      valid = false;
+    }
+    if (this.password.errors) {
+      this.passwordErrorText = 'Password is required and must have length >= 6';
+      valid = false;
+    }
+    return valid;
+  }
+
+  // Validate signup fields
   private ValidateSignup(signup: SignupRequest): boolean {
     let valid = true;
     if (this.firstname.errors) {
@@ -107,7 +133,7 @@ export class LoginComponent implements OnInit {
       this.supasswordErrorText = 'Password is required and must have length >= 6';
       valid = false;
     } else {
-      if (this.supassword2.errors || (this.supassword2 !== this.supassword)) {
+      if (this.supassword2.value !== this.supassword.value) {
         this.supassword2ErrorText = 'Repeated password must match';
         valid = false;
       }
@@ -118,11 +144,11 @@ export class LoginComponent implements OnInit {
   // Extract the SignupRequest from the form
   private ExtractSignupRequest(): SignupRequest {
     const signup: SignupRequest = {
-      firstname: this.loginForm.get('firstname').value,
-      lastname: this.loginForm.get('lastname').value,
-      email: this.loginForm.get('suemail').value,
-      password: this.loginForm.get('supassword').value,
-      password2: this.loginForm.get('supassword2').value
+      firstname: this.firstname.value,
+      lastname: this.lastname.value,
+      email: this.suemail.value,
+      password: this.supassword.value,
+      password2: this.supassword2.value
     };
     return signup;
   }
@@ -130,36 +156,10 @@ export class LoginComponent implements OnInit {
   // Extract the LoginRequest from the form
   private ExtractLoginRequest(): LoginRequest {
     const login: LoginRequest = {
-      email: this.loginForm.get('email').value,
-      password: this.loginForm.get('password').value,
+      email: this.email.value,
+      password: this.password.value,
     };
     return login;
-  }
-
-  // Validate form information wrt specified action
-  private IsValid(action: string): boolean {
-      if (action === 'login') {
-      } else {
-      }
-      return true;
-  }
-
-
-  // Control disabling of submission buttons
-  LoginDisabled(): boolean {
-      return (this.email.value.length === 0 || this.password.value.length === 0);
-  }
-
-  SignupDisabled(): boolean {
-      return (this.firstname.value.length === 0   ||
-              this.lastname.value.length === 0    ||
-              this.suemail.value.length === 0     ||
-              this.supassword.value.length === 0  ||
-              this.supassword2.value.length === 0);
-  }
-
-  // Clear the error text fields
-  ClearErrorText() {
   }
 
 }

@@ -1,5 +1,10 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
 import { SignupRequest } from "../../app/src/app/models/signuprequest";
+import { SignupResponse } from "../../app/src/app/models/signupresponse";
+import { LoginRequest } from "../../app/src/app/models/loginrequest";
+import { LoginResponse } from "../../app/src/app/models/loginresponse";
+import { Token } from "./Token"; 
+
 //import * as revalidator from "revalidator"; 
 export class Api {
  
@@ -12,8 +17,14 @@ export class Api {
 
   // Login
   login: RequestHandler = function(req:Request, res:Response, next:NextFunction) {
-      console.log('Api: login requesthandler'); 
-      res.status(200).json({ id: 123 }); 
+      console.log('Api: login requesthandler');
+      let loginResponse: LoginResponse = {
+        token: Token.Generate({ userId: 123 }),
+        userId: "123",
+        error: false,
+        errorMessage: ''
+      };
+      res.status(200).json(loginResponse); 
   } 
 
   //___________________________________________________________________________

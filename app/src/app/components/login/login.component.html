@@ -8,12 +8,12 @@
     <!-- Login fields -->
     <div align="left">
       <label for="email"><b>Email</b></label>
-      <input type="text" placeholder="Email" id="email" name="email" formControlName="email" (focus)="ClearErrorText()">
+      <input type="text" placeholder="Email" id="email" name="email" formControlName="email">
       <div class="alert alert-danger" [hidden]="emailErrorText.length === 0"> {{emailErrorText}} </div>
     </div>
     <div align="left">
       <label for="password"><b>Password</b></label>
-      <input type="password" placeholder="Password" id="password" name="password" formControlName="password" (focus)="ClearErrorText()">
+      <input type="password" placeholder="Password" id="password" name="password" formControlName="password">
       <div class="alert alert-danger" [hidden]="passwordErrorText.length === 0"> {{passwordErrorText}} </div>
     </div>
 
@@ -28,28 +28,28 @@
       <!-- Signup fields -->
       <div align="left">
         <label for="firstname"><b>First Name</b></label>
-        <input type="text" placeholder="First Name" id="firstname" name="firstname" formControlName="firstname" (focus)="ClearErrorText()">
+        <input type="text" placeholder="First Name" id="firstname" name="firstname" formControlName="firstname">
       <div class="alert alert-danger" [hidden]="firstnameErrorText.length === 0"> {{firstnameErrorText}} </div>
       </div>
       <div align="left">
         <label for="lastname"><b>Last Name</b></label>
-        <input type="text" placeholder="Last Name" id="lastname" name="lastname" formControlName="lastname" (focus)="ClearErrorText()">
+        <input type="text" placeholder="Last Name" id="lastname" name="lastname" formControlName="lastname">
         <div class="alert alert-danger" [hidden]="lastnameErrorText.length === 0"> {{lastnameErrorText}} </div>
       </div>
       <div align="left">
         <label for="suemail"><b>Email</b></label>
-        <input type="text" placeholder="Email" id="suemail" name="suemail" formControlName="suemail" (focus)="ClearErrorText()">
+        <input type="text" placeholder="Email" id="suemail" name="suemail" formControlName="suemail">
         <div class="alert alert-danger" [hidden]="suemailErrorText.length === 0"> {{suemailErrorText}} </div>
       </div>
       <div align="left">
         <label for="supassword"><b>Password</b></label>
-        <input type="password" placeholder="Password" id="supassword" name="supassword" formControlName="supassword" (focus)="ClearErrorText()">
+        <input type="password" placeholder="Password" id="supassword" name="supassword" formControlName="supassword">
         <div class="alert alert-danger" [hidden]="supasswordErrorText.length === 0"> {{supasswordErrorText}} </div>
       </div>
 
       <div align="left">
         <label for="supassword2"><b>Repeat Password</b></label>
-        <input type="password" placeholder="Repeat Password" id="supassword2" name="supassword2" formControlName="supassword2" (focus)="ClearErrorText()">
+        <input type="password" placeholder="Repeat Password" id="supassword2" name="supassword2" formControlName="supassword2">
         <div class="alert alert-danger" [hidden]="supassword2ErrorText.length === 0" > {{supassword2ErrorText}} </div>
       </div>
       <!-- Signup button and error text -->
