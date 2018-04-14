@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { catchError} from 'rxjs/operators';
 import 'rxjs/add/observable/throw';
@@ -7,7 +7,6 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/timeout';
 
-import { User } from '../models/user';
 import { SignupRequest } from '../models/signuprequest';
 import { LoginRequest } from '../models/loginrequest';
 import { LoginResponse } from '../models/loginresponse';
@@ -32,9 +31,12 @@ export class LoginService {
 
   SignupUser(signup: SignupRequest) {
         console.log('LoginService: signup request ', signup);
-        return this.http.post<SignupResponse>(this.signupUrl, signup)
+        const token: string = window.localStorage.getItem('littlechatToken');
+        let headers: HttpHeaders = new HttpHeaders();
+        headers = headers.append('authorization', 'Bearer ' + token);
+        return this.http.post<SignupResponse>(this.signupUrl, signup, {headers: headers})
             .timeout(this.timeout);
-  }
+  } 
 
   //___________________________________________________________________________
   // Private interface

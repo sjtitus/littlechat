@@ -1,5 +1,4 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { User } from '../../models/user';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
 import { SignupRequest } from '../../models/signuprequest';
@@ -67,7 +66,8 @@ export class LoginComponent implements OnInit {
       console.log('LoginComponent: login request ', loginRequest);
       this.loginService.LoginUser(loginRequest).subscribe(
         (loginResponse: LoginResponse) => {
-          console.log('Response token', loginResponse.token);
+          console.log('Storing access token in localstorage', loginResponse.token);
+          window.localStorage.setItem('littlechatToken', loginResponse.token);
         }
       );
     }
