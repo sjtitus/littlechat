@@ -1,9 +1,13 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpResponse } from '@angular/common/http';
+
 import { LoginService } from '../../services/login.service';
 import { SignupRequest } from '../../models/signuprequest';
 import { LoginRequest } from '../../models/loginrequest';
 import { LoginResponse } from '../../models/loginresponse';
+import { SignupResponse } from '../../models/signupresponse';
+import { ErrorResponse } from '../../models/errorresponse';
 
 @Component({
   selector: 'app-login',
@@ -13,16 +17,19 @@ import { LoginResponse } from '../../models/loginresponse';
 
 export class LoginComponent implements OnInit {
 
-  loginForm: FormGroup;
-  emailErrorText = '';
-  passwordErrorText = '';
-  firstnameErrorText = '';
-  lastnameErrorText = '';
-  suemailErrorText = '';
-  supasswordErrorText = '';
-  supassword2ErrorText = '';
+  //===========================================================================
+  // Public Interface
+  //===========================================================================
+  public loginForm: FormGroup;
+  public emailErrorText       = '';
+  public passwordErrorText    = '';
+  public firstnameErrorText   = '';
+  public lastnameErrorText    = '';
+  public suemailErrorText     = '';
+  public supasswordErrorText  = '';
+  public supassword2ErrorText = '';
+  public backendErrorText     = '';
 
-  // Constructor
   constructor( private fb: FormBuilder, private loginService: LoginService ) {
       this.loginForm = this.fb.group({
               email: [ '', [ Validators.required, Validators.email ] ],
@@ -35,7 +42,8 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  // Control Getters for convenience
+  //___________________________________________________________________________
+  // Form control accessors
   get email()       { return this.loginForm.get('email');       }
   get password()    { return this.loginForm.get('password');    }
   get firstname()   { return this.loginForm.get('firstname');   }
@@ -46,39 +54,39 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {}
 
-  // Execute new user signup API call
-  SignupAction() {
-    this.ClearErrorText();
-    const signupRequest = this.ExtractSignupRequest();
-    if (this.ValidateSignup(signupRequest)) {
-      console.log('LoginComponent: signup request ', signupRequest);
-      this.loginService.SignupUser(signupRequest).subscribe(
-        (data) => { console.log('RECEIVED DATA', data); }
-      );
-    }
-  }
-
-  // Execute existing user login API call
-  LoginAction() {
+  //___________________________________________________________________________
+  // Login
+  // Log in to the application. Extracts a LoginRequest from the form and
+  // logs in to the back end via the login service.
+  public Login() {
     this.ClearErrorText();
     const loginRequest = this.ExtractLoginRequest();
-    if (this.ValidateLogin(loginRequest)) {
+    if (this.ValidLogin(loginRequest)) {
       console.log('LoginComponent: login request ', loginRequest);
-      this.loginService.LoginUser(loginRequest).subscribe(
-        (loginResponse: LoginResponse) => {
-          console.log('Storing access token in localstorage', loginResponse.token);
-          window.localStorage.setItem('littlechatToken', loginResponse.token);
-        }
-      );
+      this.loginService.LoginUser(loginRequest).subscribe(this.HandleLoginResponse,
+          this.HandleNetworkError);
     }
   }
 
+  //___________________________________________________________________________
+  // Execute new user signup API call
+  Signup() {
+    this.ClearErrorText();
+    const signupRequest = this.ExtractSignupRequest();
+    if (this.ValidSignup(signupRequest)) {
+      console.log('LoginComponent: signup request ', signupRequest);
+      this.loginService.SignupUser(signupRequest).subscribe(this.HandleSignupResponse,
+          this.HandleNetworkError);
+    }
+  }
 
+  //___________________________________________________________________________
   // Control disabling of login button
   LoginDisabled(): boolean {
       return (this.email.value.length === 0 || this.password.value.length === 0);
   }
 
+  //___________________________________________________________________________
   // Control disabling of signup button
   SignupDisabled(): boolean {
       return (this.firstname.value.length === 0   ||
@@ -89,19 +97,85 @@ export class LoginComponent implements OnInit {
   }
 
 
-  // Clear the error text fields
-  private ClearErrorText() {
-      this.emailErrorText = '';
-      this.passwordErrorText = '';
-      this.firstnameErrorText = '';
-      this.lastnameErrorText = '';
-      this.suemailErrorText = '';
-      this.supasswordErrorText = '';
-      this.supassword2ErrorText = '';
+
+  //===========================================================================
+  // Private interface
+  //===========================================================================
+
+  //___________________________________________________________________________
+  // Handle the back end response to a login request.
+  private HandleLoginResponse(httpResponse: HttpResponse<LoginResponse>) {
+    const loginResponse: LoginResponse = httpResponse.body;
+    if (!this.BackEndLoginError(loginResponse)) {
+      console.log('LoginComponent: Storing access token in localstorage', loginResponse.token);
+      window.localStorage.setItem('littlechatToken', loginResponse.token);
+    }
   }
 
-  // Validate login fields
-  private ValidateLogin(login: LoginRequest): boolean {
+  //___________________________________________________________________________
+  // Handle an error on a login/signup request that prevented return of a
+  // backend response.
+  private HandleNetworkError(errorResponse: ErrorResponse) {
+    console.log('Network Error: ', errorResponse);
+    this.backendErrorText = 'Network Error: ' + errorResponse.statusText;
+  }
+
+
+  //___________________________________________________________________________
+  // Handle the back end response to a signup request.
+  private HandleSignupResponse(httpResponse: HttpResponse<SignupResponse>) {
+    const signupResponse: SignupResponse = httpResponse.body;
+    if (!this.BackEndSignupError(signupResponse)) {
+      console.log('Storing access token in localstorage', signupResponse.token);
+      window.localStorage.setItem('littlechatToken', signupResponse.token);
+    }
+  }
+
+  //___________________________________________________________________________
+  // Handle an error on a signup request that prevented return of a
+  // backend response.
+  private HandleSignupError(error: any) {
+    console.log('Here is the signup error: ', error);
+  }
+
+  //___________________________________________________________________________
+  // Flag a back-end login error that came from the backend response
+  private BackEndLoginError(loginResponse: LoginResponse): boolean {
+    let err = false;
+    if (loginResponse.error) {
+      this.backendErrorText = 'Login Error: ' + loginResponse.errorMessage;
+      err = true;
+    }
+    return err;
+  }
+
+  //___________________________________________________________________________
+  // Flag a back-end signup error that came from the backend response
+  private BackEndSignupError(signupResponse: SignupResponse): boolean {
+    let err = false;
+    if (signupResponse.error) {
+      this.backendErrorText = 'Signup Error: ' + signupResponse.errorMessage;
+      err = true;
+    }
+    return err;
+  }
+
+  //___________________________________________________________________________
+  // Clear the error text fields
+  private ClearErrorText() {
+      this.emailErrorText       = '';
+      this.passwordErrorText    = '';
+      this.firstnameErrorText   = '';
+      this.lastnameErrorText    = '';
+      this.suemailErrorText     = '';
+      this.supasswordErrorText  = '';
+      this.supassword2ErrorText = '';
+      //this.backendErrorText     = '';
+  }
+
+  //___________________________________________________________________________
+  // Flag if loginRequest was invalid
+  private ValidLogin(login: LoginRequest): boolean {
     let valid = true;
     if (this.email.errors) {
       this.emailErrorText = 'Email is required and must be in valid email format';
@@ -109,13 +183,15 @@ export class LoginComponent implements OnInit {
     }
     if (this.password.errors) {
       this.passwordErrorText = 'Password is required and must have length >= 6';
+      this.backendErrorText = 'testy testy';
       valid = false;
     }
     return valid;
   }
 
+  //___________________________________________________________________________
   // Validate signup fields
-  private ValidateSignup(signup: SignupRequest): boolean {
+  private ValidSignup(signup: SignupRequest): boolean {
     let valid = true;
     if (this.firstname.errors) {
       this.firstnameErrorText = 'First name is required';
@@ -141,6 +217,15 @@ export class LoginComponent implements OnInit {
     return valid;
   }
 
+  // Extract the LoginRequest from the form
+  private ExtractLoginRequest(): LoginRequest {
+    const login: LoginRequest = {
+      email: this.email.value,
+      password: this.password.value,
+    };
+    return login;
+  }
+
   // Extract the SignupRequest from the form
   private ExtractSignupRequest(): SignupRequest {
     const signup: SignupRequest = {
@@ -151,15 +236,6 @@ export class LoginComponent implements OnInit {
       password2: this.supassword2.value
     };
     return signup;
-  }
-
-  // Extract the LoginRequest from the form
-  private ExtractLoginRequest(): LoginRequest {
-    const login: LoginRequest = {
-      email: this.email.value,
-      password: this.password.value,
-    };
-    return login;
   }
 
 }

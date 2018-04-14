@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
-import { catchError} from 'rxjs/operators';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import 'rxjs/add/operator/timeout';
+import { catchError} from 'rxjs/operators';
+import { Observable } from 'rxjs/Observable';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+
+//import 'rxjs/add/observable/throw';
+//import 'rxjs/add/operator/map';
 
 import { SignupRequest } from '../models/signuprequest';
 import { LoginRequest } from '../models/loginrequest';
 import { LoginResponse } from '../models/loginresponse';
 import { SignupResponse } from '../models/signupresponse';
+import { ErrorResponse } from '../models/errorresponse';
 
 @Injectable()
 export class LoginService {
@@ -19,33 +21,39 @@ export class LoginService {
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly timeout = 20000;
 
-  //___________________________________________________________________________
+  //===========================================================================
   // Public interface
+  //===========================================================================
   constructor(private http: HttpClient) {}
 
   LoginUser(login: LoginRequest) {
         console.log('LoginService: login request ', login);
-        return this.http.post<LoginResponse>(this.loginUrl, login)
-            .timeout(this.timeout);
+        return this.http.post<LoginResponse>(this.loginUrl, login, { observe: 'response' })
+        .timeout(this.timeout)
+        .pipe(catchError(this.HandleError));
   }
 
   SignupUser(signup: SignupRequest) {
         console.log('LoginService: signup request ', signup);
-        const token: string = window.localStorage.getItem('littlechatToken');
-        let headers: HttpHeaders = new HttpHeaders();
-        headers = headers.append('authorization', 'Bearer ' + token);
-        return this.http.post<SignupResponse>(this.signupUrl, signup, {headers: headers})
-            .timeout(this.timeout);
-  } 
+        //const token: string = window.localStorage.getItem('littlechatToken');
+        //let headers: HttpHeaders = new HttpHeaders();
+        //headers = headers.append('authorization', 'Bearer ' + token);
+        return this.http.post<SignupResponse>(this.signupUrl, signup, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError));
+  }
 
   //___________________________________________________________________________
   // Private interface
-  private handleError(error: Response | any) {
-        const errorObject = {
-          message: error.message ? error.message : error.toString(),
-          response: error
+  private HandleError(error, caught) {
+        const errorResponse: ErrorResponse = {
+          response: error,
+          url: error.url ? error.url : '',
+          status: error.status ? error.status : '',
+          statusText: error.statusText ? error.statusText : '',
+          message: error.message ? error.message : error.toString()
         };
-        console.error('LoginService: error: ', errorObject);
-        return Observable.throw(errorObject);
+        console.error('LoginService: error: ', errorResponse);
+        return new ErrorObservable(errorResponse);
   }
 }
