@@ -47,14 +47,14 @@ export class LoginService {
   //___________________________________________________________________________
   // Private interface
   private HandleError(error, caught) {
-        const errorResponse: ErrorResponse = {
-          response: error,
+        const er: ErrorResponse = {
+          response: JSON.stringify(error),
           url: error.url ? error.url : '',
           status: error.status ? error.status : '',
           statusText: error.statusText ? error.statusText : '',
-          message: error.message ? error.message : error.toString()
+          message: error.message ? error.message : '',
         };
-        console.error('LoginService: error: ', errorResponse);
-        return new ErrorObservable(errorResponse);
+        console.log('LoginService: error: ', er);
+        return new ErrorObservable(er);
   }
 }

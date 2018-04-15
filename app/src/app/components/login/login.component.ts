@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, OnInit, Injectable, ApplicationRef, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 
@@ -21,16 +21,17 @@ export class LoginComponent implements OnInit {
   // Public Interface
   //===========================================================================
   public loginForm: FormGroup;
-  public emailErrorText       = '';
-  public passwordErrorText    = '';
-  public firstnameErrorText   = '';
-  public lastnameErrorText    = '';
-  public suemailErrorText     = '';
-  public supasswordErrorText  = '';
-  public supassword2ErrorText = '';
-  public backendErrorText     = '';
+  public emailErrorText         = '';
+  public passwordErrorText      = '';
+  public firstnameErrorText     = '';
+  public lastnameErrorText      = '';
+  public suemailErrorText       = '';
+  public supasswordErrorText    = '';
+  public supassword2ErrorText   = '';
+  public backendLoginErrorText  = '';
+  public backendSignupErrorText = '';
 
-  constructor( private fb: FormBuilder, private loginService: LoginService ) {
+  constructor( private fb: FormBuilder, private loginService: LoginService, private zone: NgZone ) {
       this.loginForm = this.fb.group({
               email: [ '', [ Validators.required, Validators.email ] ],
            password: [ '', [ Validators.required, Validators.minLength(6)] ],
@@ -63,8 +64,11 @@ export class LoginComponent implements OnInit {
     const loginRequest = this.ExtractLoginRequest();
     if (this.ValidLogin(loginRequest)) {
       console.log('LoginComponent: login request ', loginRequest);
-      this.loginService.LoginUser(loginRequest).subscribe(this.HandleLoginResponse,
-          this.HandleNetworkError);
+      this.loginService.LoginUser(loginRequest).subscribe(
+          this.HandleLoginResponse,
+          (error) => { this.zone.run( () => { this.HandleNetworkError('login', error); } ); }
+      );
+      console.log('finished the login request flow');
     }
   }
 
@@ -75,8 +79,10 @@ export class LoginComponent implements OnInit {
     const signupRequest = this.ExtractSignupRequest();
     if (this.ValidSignup(signupRequest)) {
       console.log('LoginComponent: signup request ', signupRequest);
-      this.loginService.SignupUser(signupRequest).subscribe(this.HandleSignupResponse,
-          this.HandleNetworkError);
+      this.loginService.SignupUser(signupRequest).subscribe(
+          this.HandleSignupResponse,
+          (error) => { this.zone.run( () => { this.HandleNetworkError('signup', error); } ); }
+      );
     }
   }
 
@@ -115,9 +121,13 @@ export class LoginComponent implements OnInit {
   //___________________________________________________________________________
   // Handle an error on a login/signup request that prevented return of a
   // backend response.
-  private HandleNetworkError(errorResponse: ErrorResponse) {
+  private HandleNetworkError(etype: string, errorResponse: ErrorResponse) {
     console.log('Network Error: ', errorResponse);
-    this.backendErrorText = 'Network Error: ' + errorResponse.statusText;
+    if (etype === 'login') {
+      this.backendLoginErrorText = 'Network error: ' + errorResponse.message;
+    } else {
+      this.backendSignupErrorText = 'Network error: ' + errorResponse.message;
+    }
   }
 
 
@@ -143,7 +153,7 @@ export class LoginComponent implements OnInit {
   private BackEndLoginError(loginResponse: LoginResponse): boolean {
     let err = false;
     if (loginResponse.error) {
-      this.backendErrorText = 'Login Error: ' + loginResponse.errorMessage;
+      this.backendLoginErrorText = 'Login Error: ' + loginResponse.errorMessage;
       err = true;
     }
     return err;
@@ -154,7 +164,7 @@ export class LoginComponent implements OnInit {
   private BackEndSignupError(signupResponse: SignupResponse): boolean {
     let err = false;
     if (signupResponse.error) {
-      this.backendErrorText = 'Signup Error: ' + signupResponse.errorMessage;
+      this.backendSignupErrorText = 'Signup Error: ' + signupResponse.errorMessage;
       err = true;
     }
     return err;
@@ -163,14 +173,15 @@ export class LoginComponent implements OnInit {
   //___________________________________________________________________________
   // Clear the error text fields
   private ClearErrorText() {
-      this.emailErrorText       = '';
-      this.passwordErrorText    = '';
-      this.firstnameErrorText   = '';
-      this.lastnameErrorText    = '';
-      this.suemailErrorText     = '';
-      this.supasswordErrorText  = '';
-      this.supassword2ErrorText = '';
-      //this.backendErrorText     = '';
+      this.emailErrorText           = '';
+      this.passwordErrorText        = '';
+      this.firstnameErrorText       = '';
+      this.lastnameErrorText        = '';
+      this.suemailErrorText         = '';
+      this.supasswordErrorText      = '';
+      this.supassword2ErrorText     = '';
+      this.backendLoginErrorText    = '';
+      this.backendSignupErrorText   = '';
   }
 
   //___________________________________________________________________________
@@ -183,7 +194,6 @@ export class LoginComponent implements OnInit {
     }
     if (this.password.errors) {
       this.passwordErrorText = 'Password is required and must have length >= 6';
-      this.backendErrorText = 'testy testy';
       valid = false;
     }
     return valid;
