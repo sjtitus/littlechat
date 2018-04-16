@@ -19,16 +19,18 @@ export class Routes {
     router.post('/api/signup', this.api.signup);
     this._express.use('/', router);
    
-    // Log errors
+    //______________________________________________________
+    // Catch errors: generic 500 with the error message
     this._express.use(function (err, req, res, next) {
-      console.error("API error: ", err);
-      next(); 
+      console.log('API Routes: caught error, sending 500', err);
+      res.status(500).json({ error: err.message });
     });
 
-    // Send a 404 for all unhandled routes 
+    //______________________________________________________
+    // Unhandled routes: send a 404 
     this._express.use(function(req, res, next){
-      res.status(404);
-      res.send({ error: 'Not found' });
+      console.log(`API Routes: unhandled URL: ${req.originalUrl}, sending 404`);
+      res.status(404).json({ error: 'URL Not found' });
     });
   }
 }

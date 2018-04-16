@@ -15,22 +15,30 @@ export class Api {
       res.json({ message: 'Hello from root' });
   }   
 
+  //___________________________________________________________________________
   // Login
+  // Existing user login.
   login: RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.log('Api: login requesthandler');
-      let loginResponse: LoginResponse = {
-        token: Token.Generate({ userId: 123 }),
-        userId: "123",
-        error: false,
-        errorMessage: ''
-      };
-
-      res.status(200).json(loginResponse); 
+      const loginRequest: LoginRequest = req.body;
+      const err: boolean = true;
+      if (err) {
+        throw new Error('Here is an API error');
+      }
+      else {
+        let loginResponse: LoginResponse = {
+          token: Token.Generate({ userId: 123 }),
+          userId: "123",
+          error: false,
+          errorMessage: ''
+        };
+        res.status(200).json(loginResponse); 
+      }
   } 
 
   //___________________________________________________________________________
   // Signup
-  // Process a new user signup request.
+  // New user signup.
   signup:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.debug('Api: signup');
       const signuprequest: SignupRequest = req.body;

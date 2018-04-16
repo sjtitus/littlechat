@@ -27,9 +27,9 @@ export class LoginService {
   //===========================================================================
   constructor(private http: HttpClient) {}
 
-  LoginUser(login: LoginRequest) {
-        console.log('LoginService: login request ', login);
-        return this.http.post<LoginResponse>(this.loginUrl, login, { observe: 'response' })
+  LoginUser(loginRequest: LoginRequest) {
+        console.log('LoginService: login request ', loginRequest);
+        return this.http.post<LoginResponse>(this.loginUrl, loginRequest, { observe: 'response' })
         .timeout(this.timeout)
         .pipe(catchError(this.HandleError));
   }
@@ -48,11 +48,12 @@ export class LoginService {
   // Private interface
   private HandleError(error, caught) {
         const er: ErrorResponse = {
-          response: JSON.stringify(error),
+          response: error,
           url: error.url ? error.url : '',
           status: error.status ? error.status : '',
           statusText: error.statusText ? error.statusText : '',
           message: error.message ? error.message : '',
+          error: error.error ? error.error : ''
         };
         console.log('LoginService: error: ', er);
         return new ErrorObservable(er);

@@ -5,4 +5,5 @@ export interface  ErrorResponse {
     status: string;
     statusText: string;
     message: string;
+    error: any;
 }
