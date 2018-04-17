@@ -65,10 +65,9 @@ export class LoginComponent implements OnInit {
     if (this.ValidLogin(loginRequest)) {
       console.log('LoginComponent: login request ', loginRequest);
       this.loginService.LoginUser(loginRequest).subscribe(
-          this.HandleLoginResponse,
-          (error) => { this.zone.run( () => { this.HandleNetworkError('login', error); } ); }
+        (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
+           (loginError) => { this.HandleNetworkError('login', loginError);  }
       );
-      console.log('finished the login request flow');
     }
   }
 
@@ -80,8 +79,8 @@ export class LoginComponent implements OnInit {
     if (this.ValidSignup(signupRequest)) {
       console.log('LoginComponent: signup request ', signupRequest);
       this.loginService.SignupUser(signupRequest).subscribe(
-          this.HandleSignupResponse,
-          (error) => { this.zone.run( () => { this.HandleNetworkError('signup', error); } ); }
+        (signupResponse) => { this.HandleSignupResponse(signupResponse);       },
+           (signupError) => { this.HandleNetworkError('signup', signupError);  }
       );
     }
   }

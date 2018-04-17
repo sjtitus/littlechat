@@ -6,4 +6,5 @@ export interface  ErrorResponse {
     statusText: string;
     message: string;
     error: any;
+    offline: boolean;
 }

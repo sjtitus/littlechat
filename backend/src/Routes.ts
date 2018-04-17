@@ -24,7 +24,7 @@ export class Routes {
     this._express.use(function (err, req, res, next) {
       console.log('API Routes: caught error, sending 500', err);
       res.status(500).json({ error: err.message });
-    });
+    }); 
 
     //______________________________________________________
     // Unhandled routes: send a 404 

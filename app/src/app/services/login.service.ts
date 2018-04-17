@@ -18,9 +18,9 @@ import { ErrorResponse } from '../models/errorresponse';
 @Injectable()
 export class LoginService {
 
-  private readonly loginUrl = 'http://localhost:4200/api/login';
+  private readonly loginUrl = 'http://localhost:420/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
-  private readonly timeout = 20000;
+  private readonly timeout = 500000;
 
   //===========================================================================
   // Public interface
@@ -46,16 +46,18 @@ export class LoginService {
 
   //___________________________________________________________________________
   // Private interface
-  private HandleError(error, caught) {
+  private HandleError(httperr, caught) {
         const er: ErrorResponse = {
-          response: error,
-          url: error.url ? error.url : '',
-          status: error.status ? error.status : '',
-          statusText: error.statusText ? error.statusText : '',
-          message: error.message ? error.message : '',
-          error: error.error ? error.error : ''
+          response: httperr,
+          url: httperr.url ? httperr.url : '',
+          status: httperr.status ? httperr.status : '',
+          statusText: httperr.statusText ? httperr.statusText : '',
+          message: httperr.message ? httperr.message : '',
+          error: httperr.error ? httperr.error : '',
+          offline: ((httperr.status != null) && (+(httperr.status) <= 0))
         };
-        console.log('LoginService: error: ', er);
+        console.log('LoginService: error response: ', httperr);
+        console.log('LoginService: error object: ', er);
         return new ErrorObservable(er);
   }
 }
