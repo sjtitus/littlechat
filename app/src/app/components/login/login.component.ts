@@ -20,27 +20,35 @@ export class LoginComponent implements OnInit {
   //===========================================================================
   // Public Interface
   //===========================================================================
-  public loginForm: FormGroup;
-  public validationErrText: ValidationErrText;
 
+  public static minPasswordLen = 6;
+  public loginForm: FormGroup;
+  public vErrText = {
+    email: 'Email is required and must be in valid email format',
+    password: `Password is required and must have length >= ${LoginComponent.minPasswordLen}` ,
+    firstname: 'First name is required',
+    lastname: 'Last name is required',
+    suemail: 'Email is required and must be in valid email format',
+    supassword: `Password is required and must have length >= ${LoginComponent.minPasswordLen}`,
+    supassword2: 'Repeated password must match'
+  };
   public backendLoginErrorText  = '';
   public backendSignupErrorText = '';
 
   constructor( private fb: FormBuilder, private loginService: LoginService, private zone: NgZone ) {
-      this.validationErrText = new ValidationErrText();
       this.loginForm = this.fb.group({
               email: [ '', [ Validators.required, Validators.email ] ],
-           password: [ '', [ Validators.required, Validators.minLength(6)] ],
+           password: [ '', [ Validators.required, Validators.minLength(LoginComponent.minPasswordLen)] ],
           firstname: [ '', [ Validators.required ] ],
            lastname: [ '', [ Validators.required ] ],
             suemail: [ '', [ Validators.required, Validators.email ] ],
-         supassword: [ '', [ Validators.required, Validators.minLength(6) ] ],
-        supassword2: [ '', [ Validators.required, Validators.minLength(6) ] ],
+         supassword: [ '', [ Validators.required, Validators.minLength(LoginComponent.minPasswordLen) ] ],
+        supassword2: [ '', [ Validators.required, Validators.minLength(LoginComponent.minPasswordLen) ] ],
       });
   }
 
   //___________________________________________________________________________
-  // Form control accessors
+  // Form control accessors (convenience)
   get email()       { return this.loginForm.get('email');       }
   get password()    { return this.loginForm.get('password');    }
   get firstname()   { return this.loginForm.get('firstname');   }
@@ -52,57 +60,51 @@ export class LoginComponent implements OnInit {
   ngOnInit() {}
 
   //___________________________________________________________________________
-  // Login
-  // Log in to the application. Extracts a LoginRequest from the form and
-  // logs in to the back end via the login service.
+  // Log in to the application
   public Login() {
     this.ClearErrors();
-    if (this.ValidLoginForm()) {
-      const loginRequest = this.ExtractLoginRequest();
-      console.log('LoginComponent: login request ', loginRequest);
-      this.loginService.LoginUser(loginRequest).subscribe(
-        (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
-           (loginError) => { this.HandleError('login', loginError);  }
-      );
-    }
+    const loginRequest = this.ExtractLoginRequest();
+    console.log('LoginComponent: login request ', loginRequest);
+    this.loginService.LoginUser(loginRequest).subscribe(
+      (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
+         (loginError) => { this.HandleError('login', loginError);  }
+    );
+  }
+
+  //___________________________________________________________________________
+  // Signup for a new account
+  Signup() {
+    this.ClearErrors();
+    const signupRequest = this.ExtractSignupRequest();
+    console.log('LoginComponent: signup request ', signupRequest);
+    this.loginService.SignupUser(signupRequest).subscribe(
+      (signupResponse) => { this.HandleSignupResponse(signupResponse);       },
+         (signupError) => { this.HandleError('signup', signupError);  }
+    );
   }
 
   private ClearErrors() {
-    this.validationErrText.Clear();
     this.backendLoginErrorText = '';
     this.backendSignupErrorText = '';
   }
 
   //___________________________________________________________________________
-  // Execute new user signup API call
-  Signup() {
-    this.ClearErrors();
-    if (this.ValidSignupForm()) {
-      const signupRequest = this.ExtractSignupRequest();
-      console.log('LoginComponent: signup request ', signupRequest);
-      this.loginService.SignupUser(signupRequest).subscribe(
-        (signupResponse) => { this.HandleSignupResponse(signupResponse);       },
-           (signupError) => { this.HandleError('signup', signupError);  }
-      );
-    }
-  }
-
-  //___________________________________________________________________________
   // Login disabled unless all login fields present
   LoginDisabled(): boolean {
-      return (this.email.value.length === 0 || this.password.value.length === 0);
+    return (this.email.errors !== null || this.password.errors !== null );
   }
 
   //___________________________________________________________________________
   // Signup disabled unless all signup fields present
   SignupDisabled(): boolean {
-      return (this.firstname.value.length === 0     ||
-              this.lastname.value.length === 0      ||
-              this.suemail.value.length === 0       ||
-              this.supassword.value.length === 0    ||
-              this.supassword2.value.length === 0);
+      return (this.firstname.errors !== null    ||
+              this.lastname.errors !== null     ||
+              this.suemail.errors !== null      ||
+              this.supassword.errors !== null   ||
+              this.supassword2.errors !== null  ||
+              this.supassword2.value !== this.supassword.value
+            );
   }
-
 
   //===========================================================================
   // Private interface
@@ -122,6 +124,7 @@ export class LoginComponent implements OnInit {
   // Handle signup response from API
   private HandleSignupResponse(httpResponse: HttpResponse<SignupResponse>) {
     const signupResponse: SignupResponse = httpResponse.body;
+    console.log('signup response', signupResponse);
     if (this.SignupSuccess(signupResponse)) {
       console.log('Storing access token in localstorage', signupResponse.token);
       window.localStorage.setItem('littlechatToken', signupResponse.token);
@@ -158,31 +161,6 @@ export class LoginComponent implements OnInit {
   }
 
   //___________________________________________________________________________
-  // Validate login fields
-  private ValidLoginForm(): boolean {
-    if (this.email.errors)    { this.validationErrText.EmailError();     }
-    if (this.password.errors) { this.validationErrText.PasswordError();  }
-    return this.validationErrText.ValidLogin();
-  }
-
-  //___________________________________________________________________________
-  // Validate signup fields
-  private ValidSignupForm(): boolean {
-    if (this.firstname.errors)  { this.validationErrText.FirstnameError(); }
-    if (this.lastname.errors)   { this.validationErrText.LastnameError();  }
-    if (this.suemail.errors)    { this.validationErrText.SuEmailError();   }
-    if (this.supassword.errors) {
-      this.validationErrText.SuPasswordError();
-    } else {
-      // first password has been supplied, check that passwords match
-      if (this.supassword2.value !== this.supassword.value) {
-        this.validationErrText.SuPassword2Error();
-      }
-    }
-    return this.validationErrText.ValidSignup();
-  }
-
-  //___________________________________________________________________________
   // Extract the LoginRequest from the form
   private ExtractLoginRequest(): LoginRequest {
     const login: LoginRequest = {
@@ -207,48 +185,3 @@ export class LoginComponent implements OnInit {
 
 }
 
-
-class ValidationErrText {
-
-  email: string;
-  password: string;
-  firstname: string;
-  lastname: string;
-  suemail: string;
-  supassword: string;
-  supassword2: string;
-
-  constructor() { this.Clear(); }
-
-  public Clear() {
-    this.email = '';
-    this.password = '';
-    this.firstname = '';
-    this.lastname = '';
-    this.suemail = '';
-    this.supassword = '';
-    this.supassword2 = '';
-  }
-
-  public EmailError()        { this.Invalidate('email', 'Email is required and must be in valid email format');    }
-  public PasswordError()     { this.Invalidate('password', 'Password is required and must have length >= 6');      }
-  public FirstnameError()    { this.Invalidate('firstname', 'First name is required');                             }
-  public LastnameError()     { this.Invalidate('lastname', 'Last name is required');                               }
-  public SuEmailError()      { this.Invalidate('suemail', 'Email is required and must be in valid email format');  }
-  public SuPasswordError()   { this.Invalidate('supassword', 'Password is required and must have length >= 6');    }
-  public SuPassword2Error()  { this.Invalidate('supassword2', 'Repeated password must match');                     }
-
-  public ValidLogin(): boolean {
-    return (this.email.length === 0 && this.password.length === 0);
-  }
-
-  public ValidSignup(): boolean {
-    return (this.firstname.length === 0     &&
-            this.lastname.length === 0      &&
-            this.suemail.length === 0       &&
-            this.supassword.length === 0    &&
-            this.supassword2.length === 0);
-  }
-
-  private Invalidate(field: string, errText: string) { (this)[field] = errText; }
-}
