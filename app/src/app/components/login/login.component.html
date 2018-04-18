@@ -9,18 +9,20 @@
     <div align="left">
       <label for="email"><b>Email</b></label>
       <input type="text" placeholder="Email" id="email" name="email" formControlName="email">
-      <div class="alert alert-danger" [hidden]="emailErrorText.length === 0"> {{emailErrorText}} </div>
+      <div class="alert alert-danger" [hidden]="loginValidation.email.length === 0"> {{loginValidation.email}} </div>
     </div>
     <div align="left">
       <label for="password"><b>Password</b></label>
       <input type="password" placeholder="Password" id="password" name="password" formControlName="password">
-      <div class="alert alert-danger" [hidden]="passwordErrorText.length === 0"> {{passwordErrorText}} </div>
+      <div class="alert alert-danger" [hidden]="loginValidation.password.length === 0"> {{loginValidation.password}} </div>
     </div>
 
     <!-- Login button and error text -->
     <div class="centered">
       <button type="button" [disabled]="LoginDisabled()" name="login" (click)="Login()">Login</button>
-      <div class="alert alert-danger" [hidden]="backendLoginErrorText.length === 0"> {{backendLoginErrorText}} </div>
+      <div class="alert alert-danger" [hidden]="backendLoginErrorText.length === 0"> 
+          {{backendLoginErrorText}} 
+      </div>
     </div> 
     
     <div class="centered">
@@ -30,28 +32,28 @@
       <div align="left">
         <label for="firstname"><b>First Name</b></label>
         <input type="text" placeholder="First Name" id="firstname" name="firstname" formControlName="firstname">
-      <div class="alert alert-danger" [hidden]="firstnameErrorText.length === 0"> {{firstnameErrorText}} </div>
+      <div class="alert alert-danger" [hidden]="loginValidation.firstname.length === 0"> {{loginValidation.firstname}} </div>
       </div>
       <div align="left">
         <label for="lastname"><b>Last Name</b></label>
         <input type="text" placeholder="Last Name" id="lastname" name="lastname" formControlName="lastname">
-        <div class="alert alert-danger" [hidden]="lastnameErrorText.length === 0"> {{lastnameErrorText}} </div>
+        <div class="alert alert-danger" [hidden]="loginValidation.lastname.length === 0"> {{loginValidation.lastname}} </div>
       </div>
       <div align="left">
         <label for="suemail"><b>Email</b></label>
         <input type="text" placeholder="Email" id="suemail" name="suemail" formControlName="suemail">
-        <div class="alert alert-danger" [hidden]="suemailErrorText.length === 0"> {{suemailErrorText}} </div>
+        <div class="alert alert-danger" [hidden]="loginValidation.suemail.length === 0"> {{loginValidation.suemail}} </div>
       </div>
       <div align="left">
         <label for="supassword"><b>Password</b></label>
         <input type="password" placeholder="Password" id="supassword" name="supassword" formControlName="supassword">
-        <div class="alert alert-danger" [hidden]="supasswordErrorText.length === 0"> {{supasswordErrorText}} </div>
+        <div class="alert alert-danger" [hidden]="loginValidation.supassword.length === 0"> {{loginValidation.supassword}} </div>
       </div>
 
       <div align="left">
         <label for="supassword2"><b>Repeat Password</b></label>
         <input type="password" placeholder="Repeat Password" id="supassword2" name="supassword2" formControlName="supassword2">
-        <div class="alert alert-danger" [hidden]="supassword2ErrorText.length === 0" > {{supassword2ErrorText}} </div>
+        <div class="alert alert-danger" [hidden]="loginValidation.supassword2.length === 0" > {{loginValidation.supassword2}} </div>
       </div>
       <!-- Signup button and error text -->
       <button type="button" [disabled]="SignupDisabled()" name="signup" (click)="Signup()">Sign up</button>

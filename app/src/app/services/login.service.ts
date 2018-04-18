@@ -18,7 +18,7 @@ import { ErrorResponse } from '../models/errorresponse';
 @Injectable()
 export class LoginService {
 
-  private readonly loginUrl = 'http://localhost:420/api/login';
+  private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly timeout = 500000;
 
