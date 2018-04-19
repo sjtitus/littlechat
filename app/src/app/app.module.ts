@@ -6,6 +6,7 @@ import { MessagelistComponent } from './components/messagelist/messagelist.compo
 import { MessageentryComponent } from './components/messageentry/messageentry.component';
 import { MessageService } from './services/message.service';
 import { LoginService } from './services/login.service';
+import { TokenService } from './services/token.service';
 import { LoginComponent } from './components/login/login.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -33,7 +34,7 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [MessageService, LoginService],
+  providers: [MessageService, LoginService, TokenService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
