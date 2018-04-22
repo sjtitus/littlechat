@@ -1,8 +1,10 @@
-import { Component, OnInit, Injectable, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, Injectable, ApplicationRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 
 import { LoginService } from '../../services/login.service';
+import { TokenService } from '../../services/token.service';
+
 import { SignupRequest } from '../../models/signuprequest';
 import { SignupResponse } from '../../models/signupresponse';
 import { LoginRequest } from '../../models/loginrequest';
@@ -35,7 +37,7 @@ export class LoginComponent implements OnInit {
   public backendLoginErrorText  = '';
   public backendSignupErrorText = '';
 
-  constructor( private fb: FormBuilder, private loginService: LoginService, private zone: NgZone ) {
+  constructor( private fb: FormBuilder, private loginService: LoginService, private tokenService: TokenService ) {
       this.loginForm = this.fb.group({
               email: [ '', [ Validators.required, Validators.email ] ],
            password: [ '', [ Validators.required, Validators.minLength(LoginComponent.minPasswordLen)] ],

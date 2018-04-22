@@ -4,9 +4,15 @@ import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class TokenService {
 
-  constructor() { }
+  public storageAvailable: boolean;
+
+  constructor() {
+    this.storageAvailable = this.StorageAvailable();
+    console.log('TokenService: storage available: ', this.storageAvailable);
+  }
 
   public StorageAvailable(): boolean {
+    console.log('TokenService: determining if localstorage is available');
     let storage;
     try {
         storage = window['localStorage'];
