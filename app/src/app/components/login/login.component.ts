@@ -1,6 +1,7 @@
 import { Component, OnInit, Injectable, ApplicationRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import { LoginService } from '../../services/login.service';
 import { TokenService } from '../../services/token.service';
@@ -37,7 +38,8 @@ export class LoginComponent implements OnInit {
   public backendLoginErrorText  = '';
   public backendSignupErrorText = '';
 
-  constructor( private fb: FormBuilder, private loginService: LoginService, private tokenService: TokenService ) {
+  constructor( private fb: FormBuilder, private loginService: LoginService, private tokenService: TokenService,
+    private router: Router ) {
       this.loginForm = this.fb.group({
               email: [ '', [ Validators.required, Validators.email ] ],
            password: [ '', [ Validators.required, Validators.minLength(LoginComponent.minPasswordLen)] ],
@@ -66,7 +68,7 @@ export class LoginComponent implements OnInit {
   public Login() {
     this.ClearErrors();
     const loginRequest = this.ExtractLoginRequest();
-    console.log('LoginComponent: login request ', loginRequest);
+    console.log('LoginComponent: login request', loginRequest);
     this.loginService.LoginUser(loginRequest).subscribe(
       (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
          (loginError) => { this.HandleError('login', loginError);  }
@@ -108,6 +110,7 @@ export class LoginComponent implements OnInit {
             );
   }
 
+
   //===========================================================================
   // Private interface
   //===========================================================================
@@ -117,8 +120,10 @@ export class LoginComponent implements OnInit {
   private HandleLoginResponse(httpResponse: HttpResponse<LoginResponse>) {
     const loginResponse: LoginResponse = httpResponse.body;
     if (this.LoginSuccess(loginResponse)) {
-      console.log('LoginComponent: Storing access token in localstorage', loginResponse.token);
-      window.localStorage.setItem('littlechatToken', loginResponse.token);
+      // Store the authorization token
+      this.tokenService.Save('littlechatToken', loginResponse.token);
+      // Now we need to redirect to the home page
+      this.router.navigate(['/home']);
     }
   }
 
@@ -147,10 +152,16 @@ export class LoginComponent implements OnInit {
   //___________________________________________________________________________
   // Was login successful?
   private LoginSuccess(loginResponse: LoginResponse): boolean {
+    let err = false;
     if (loginResponse.error) {
       this.backendLoginErrorText = 'Login Error: ' + loginResponse.errorMessage;
+      err = true;
     }
-    return !loginResponse.error;
+    else if (!('token' in loginResponse) || loginResponse.token.length === 0) {
+      this.backendLoginErrorText = 'Login Error: auth token not present or 0-length';
+      err = true;
+    }
+    return !err;
   }
 
   //___________________________________________________________________________
