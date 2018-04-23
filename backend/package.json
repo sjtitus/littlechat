@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit --reporter spec --compilers ts:ts-node/register test/**/*.test.ts"
+    "test": "mocha --exit --reporter spec --compilers ts:ts-node/register test/**/*.test.ts",
+    "start": "node --inspect=5858 -r ts-node/register src/Server.ts",
+    "dev": "nodemon --inspect src/Server.ts 5858"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +28,7 @@
     "nodemon": "^1.17.3",
     "revalidator": "^0.3.1",
     "ts-node": "^5.0.1",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.3"
   },
   "dependencies": {
     "@types/mocha": "^2.2.48",
