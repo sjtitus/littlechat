@@ -4,37 +4,40 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Client Build",
-            "identifier": "Client Build",
-            "type": "typescript",
-            "tsconfig": "app\\tsconfig.json",
-            "problemMatcher": [
-                "$tsc"
-            ]
-        },
-        {
-            "label": "Server Build",
-            "identifier": "Server Build",
-            "type": "typescript",
-            "tsconfig": "backend\\tsconfig.json",
-            "problemMatcher": [
-                "$tsc"
-            ]
-        },
-        {
             "label": "Client Start",
             "identifier": "Client Start",
             "type": "npm",
             "script": "start",
             "path": "app/",
-            "problemMatcher": [] 
+            "isBackground": true,
+            "problemMatcher": []
         },
         {
-            "label": "Server Watch",
-            "identifier": "Server Watch",
+            "label": "Server Debug",
+            "identifier": "Server Debug",
+            "dependsOn": [
+                "Server Debug Start",
+                "Server Debug Code Watch"
+            ],
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Server Debug Start",
+            "identifier": "Server Debug Start",
+            "type": "npm",
+            "script": "monitor",
+            "path": "backend/",
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Server Debug Code Watch",
+            "identifier": "Server Debug Code Watch",
             "type": "typescript",
             "tsconfig": "backend\\tsconfig.json",
             "option": "watch",
+            "isBackground": true,
             "problemMatcher": [
                 "$tsc-watch"
             ]
