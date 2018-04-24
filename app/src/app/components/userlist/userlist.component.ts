@@ -5,8 +5,8 @@
 ________________________________________________________________________________
 */
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-import { User } from '../../models/user';
-import { MessageService } from '../../services/message.service';
+import { User, GetUsersRequest, GetUsersResponse } from '../../models/user';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-userlist',
@@ -19,15 +19,42 @@ export class UserlistComponent implements OnInit {
   @Output() userSelected = new EventEmitter<User>();  // Output event: new user selected
   private _selectedUser: User;                        // Currently selected user
 
-  constructor(private messageService: MessageService) {
-    console.log('Userlist: fetching users from MessageService');
+  constructor(private apiService: ApiService) {
     this.userlist = this.messageService.GetUsers();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
+
+  GetUsers() {
+    console.log('Userlist: fetching users from MessageService');
+    const apiReq: GetUsersRequest = { userId: 100 };
+    this.apiService.GetUsers(apiReq).subscribe(
+        (resp) => { this.HandleGetUsersResponse(resp);       },
+         (err) => { this.HandleError('GetUsers', err);  }
+    );
+  }
+
+  private HandleGetUsersResponse(httpResponse: HttpResponse<GetUsersResponse>) {
+    const apiResp: GetUsersResponse = httpResponse.body;
+    console.log('GetUsers response', apiResp);
+    if (!apiResp.error) {
+      this.userlist = apiResp.users;
+    }
+    else {
+      console.log('GetUsers error:', apiResp.errorMessage);
+    }
+  }
+
+  //___________________________________________________________________________
+  // Handle an API error
+  private HandleError(etype: string, errorResponse: ErrorResponse) {
+    console.log(`API Error [${etype}]`, errorResponse);
+  }
 
   // selectUser: select the new user (chat target)
-  selectUser(user: User) {
+  SelectUser(user: User) {
     this._selectedUser = user;
     console.log('Userlist: new chat target', user);
     // selectUser: notify listeners when a new chat target is selected.

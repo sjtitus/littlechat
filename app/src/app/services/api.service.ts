@@ -10,17 +10,21 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 //import 'rxjs/add/operator/map';
 
 import { SignupRequest } from '../models/signuprequest';
+import { SignupResponse } from '../models/signupresponse';
 import { LoginRequest } from '../models/loginrequest';
 import { LoginResponse } from '../models/loginresponse';
-import { SignupResponse } from '../models/signupresponse';
 import { ErrorResponse } from '../models/errorresponse';
+import { UserMessagesRequest } from '../models/usermessagesrequest';
+import { UserMessagesResponse } from '../models/usermessagesresponse';
+
 
 @Injectable()
-export class LoginService {
+export class ApiService {
 
   private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
-  private readonly timeout = 500000;
+  private readonly msgsUrl = 'http://localhost:4200/api/messages';
+  private readonly timeout = 20000;
 
   //===========================================================================
   // Public interface
@@ -28,18 +32,25 @@ export class LoginService {
   constructor(private http: HttpClient) {}
 
   LoginUser(loginRequest: LoginRequest) {
-        console.log('LoginService: login request ', loginRequest);
+        console.log('ApiService: login request ', loginRequest);
         return this.http.post<LoginResponse>(this.loginUrl, loginRequest, { observe: 'response' })
         .timeout(this.timeout)
         .pipe(catchError(this.HandleError));
   }
 
-  SignupUser(signup: SignupRequest) {
-        console.log('LoginService: signup request ', signup);
+  SignupUser(signupRequest: SignupRequest) {
+        console.log('ApiService: signup request ', signupRequest);
         //const token: string = window.localStorage.getItem('littlechatToken');
         //let headers: HttpHeaders = new HttpHeaders();
         //headers = headers.append('authorization', 'Bearer ' + token);
-        return this.http.post<SignupResponse>(this.signupUrl, signup, { observe: 'response' })
+        return this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError));
+  }
+
+  GetUserMessages(msgsRequest: UserMessagesRequest) {
+        console.log('ApiService: get user message request ', msgsRequest);
+        return this.http.post<UserMessagesResponse>(this.msgsUrl, msgsRequest, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError));
   }
@@ -56,8 +67,8 @@ export class LoginService {
           error: httperr.error ? httperr.error : '',
           offline: ((httperr.status != null) && (+(httperr.status) <= 0))
         };
-        console.log('LoginService: error response: ', httperr);
-        console.log('LoginService: error object: ', er);
+        console.log('ApiService: error response: ', httperr);
+        console.log('ApiService: error object: ', er);
         return new ErrorObservable(er);
   }
 }

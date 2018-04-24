@@ -23,9 +23,9 @@ export class MessageentryComponent implements OnInit {
   ngOnInit() {}
 
   SendMessage(event: any) {
-    const msg: Message = {content: event.target.value};
-    console.log('MessageEntry: sending message:', msg.content, 'to user', this.targetUser);
-    this.messageService.SendMessage(this.targetUser, msg);
+    const content = event.target.value;
+    console.log('MessageEntry: sending message:', content, 'to user', this.targetUser);
+    //this.messageService.SendMessage(this.targetUser, msg);
     event.target.value = '';  // clear the UI
   }
 }

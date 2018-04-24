@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { LoginService } from '../../services/login.service';
+import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
 
 import { SignupRequest } from '../../models/signuprequest';
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
   public backendLoginErrorText  = '';
   public backendSignupErrorText = '';
 
-  constructor( private fb: FormBuilder, private loginService: LoginService, private tokenService: TokenService,
+  constructor( private fb: FormBuilder, private apiService: ApiService, private tokenService: TokenService,
     private router: Router ) {
       this.loginForm = this.fb.group({
               email: [ '', [ Validators.required, Validators.email ] ],
@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
     this.ClearErrors();
     const loginRequest = this.ExtractLoginRequest();
     console.log('LoginComponent: login request', loginRequest);
-    this.loginService.LoginUser(loginRequest).subscribe(
+    this.apiService.LoginUser(loginRequest).subscribe(
       (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
          (loginError) => { this.HandleError('login', loginError);  }
     );
@@ -81,7 +81,7 @@ export class LoginComponent implements OnInit {
     this.ClearErrors();
     const signupRequest = this.ExtractSignupRequest();
     console.log('LoginComponent: signup request ', signupRequest);
-    this.loginService.SignupUser(signupRequest).subscribe(
+    this.apiService.SignupUser(signupRequest).subscribe(
       (signupResponse) => { this.HandleSignupResponse(signupResponse);       },
          (signupError) => { this.HandleError('signup', signupError);  }
     );
@@ -120,9 +120,7 @@ export class LoginComponent implements OnInit {
   private HandleLoginResponse(httpResponse: HttpResponse<LoginResponse>) {
     const loginResponse: LoginResponse = httpResponse.body;
     if (this.LoginSuccess(loginResponse)) {
-      // Store the authorization token
       this.tokenService.Save('littlechatToken', loginResponse.token);
-      // Now we need to redirect to the home page
       this.router.navigate(['/home']);
     }
   }

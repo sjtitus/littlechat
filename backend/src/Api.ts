@@ -21,7 +21,7 @@ export class Api {
   login: RequestHandler = function(req:Request, res:Response, next:NextFunction) {
       console.log('Api: login requesthandler'); 
       const loginRequest: LoginRequest = req.body;
-      console.log('Api: new ancient no way');
+      console.log('Api: new joe');
       let loginResponse: LoginResponse = {
           token: Token.Generate({ userId: 123 }),
           userId: "123",

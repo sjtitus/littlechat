@@ -5,7 +5,7 @@ import { UserlistComponent } from './components/userlist/userlist.component';
 import { MessagelistComponent } from './components/messagelist/messagelist.component';
 import { MessageentryComponent } from './components/messageentry/messageentry.component';
 import { MessageService } from './services/message.service';
-import { LoginService } from './services/login.service';
+import { ApiService } from './services/api.service';
 import { TokenService } from './services/token.service';
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -29,7 +29,7 @@ import { AppRoutingModule } from './modules/routing/routing.module';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [MessageService, LoginService, TokenService],
+  providers: [MessageService, ApiService, TokenService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

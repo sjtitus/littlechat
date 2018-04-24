@@ -42,5 +42,11 @@
                 "$tsc-watch"
             ]
         },
+        {
+            "type": "npm",
+            "script": "build",
+            "path": "app/",
+            "problemMatcher": []
+        }
     ]
 }

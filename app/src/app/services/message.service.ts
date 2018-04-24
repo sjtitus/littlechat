@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from '../models/user';
 import { Message } from '../models/message';
 import { Subject } from 'rxjs/Subject';
+import { ApiService } from '../services/api.service';
 
 @Injectable()
 export class MessageService {
@@ -10,7 +11,7 @@ export class MessageService {
   private newMessageSource = new Subject<Message>();
   newMessageSource$ = this.newMessageSource.asObservable();
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
 
   // Send the message to the back end and post it to the front end
   SendMessage(user: User, msg: Message) {
@@ -25,6 +26,8 @@ export class MessageService {
 
   // GetMessages: fetch a user's messages from the back end
   GetMessages(user: User): Message[] {
+
+    /*
     const msgs: Message[] = [
       { content: 'message 1' },
       { content: 'message 2' },
@@ -46,10 +49,12 @@ export class MessageService {
       m.content = user.email + ' ' + m.content;
       return m;
     });
+    */
   }
 
   // GetUsers: get the list of users from the back end
   GetUsers(): User[] {
+    /*
     const users: User[] = [
       {email: 'Steve', password: ''},
       {email: 'Bob', password: ''},
@@ -59,6 +64,7 @@ export class MessageService {
       {email: 'Jess12', password: ''}
     ];
     return users;
+    */
   }
 
 }
