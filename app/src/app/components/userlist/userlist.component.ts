@@ -7,6 +7,8 @@ ________________________________________________________________________________
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { User, GetUsersRequest, GetUsersResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { ErrorResponse } from '../../models/errorresponse';
 
 @Component({
   selector: 'app-userlist',
@@ -20,11 +22,10 @@ export class UserlistComponent implements OnInit {
   private _selectedUser: User;                        // Currently selected user
 
   constructor(private apiService: ApiService) {
-    this.userlist = this.messageService.GetUsers();
   }
 
   ngOnInit() {
-
+    this.GetUsers();
   }
 
   GetUsers() {
@@ -52,6 +53,7 @@ export class UserlistComponent implements OnInit {
   private HandleError(etype: string, errorResponse: ErrorResponse) {
     console.log(`API Error [${etype}]`, errorResponse);
   }
+
 
   // selectUser: select the new user (chat target)
   SelectUser(user: User) {

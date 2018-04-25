@@ -16,6 +16,7 @@ import { LoginResponse } from '../models/loginresponse';
 import { ErrorResponse } from '../models/errorresponse';
 import { UserMessagesRequest } from '../models/usermessagesrequest';
 import { UserMessagesResponse } from '../models/usermessagesresponse';
+import { GetUsersRequest, GetUsersResponse } from '../models/user';
 
 
 @Injectable()
@@ -24,6 +25,7 @@ export class ApiService {
   private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly msgsUrl = 'http://localhost:4200/api/messages';
+  private readonly usersUrl = 'http://localhost:4200/api/users';
   private readonly timeout = 20000;
 
   //===========================================================================
@@ -44,6 +46,13 @@ export class ApiService {
         //let headers: HttpHeaders = new HttpHeaders();
         //headers = headers.append('authorization', 'Bearer ' + token);
         return this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError));
+  }
+
+  GetUsers(req: GetUsersRequest) {
+        console.log('ApiService: get users request', req);
+        return this.http.post<GetUsersResponse>(this.usersUrl, req, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError));
   }

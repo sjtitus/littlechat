@@ -17,7 +17,8 @@ export class Routes {
     router.get('/api', this.api.root);
     router.post('/api/login', this.api.login);
     router.post('/api/signup', this.api.signup);
-    this._express.use('/', router);
+    router.post('/api/users', this.api.users);
+    this._express.use('/', router); 
    
     //______________________________________________________
     // Catch errors: generic 500 with the error message

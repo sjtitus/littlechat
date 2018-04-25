@@ -26,7 +26,7 @@ export class MessageService {
 
   // GetMessages: fetch a user's messages from the back end
   GetMessages(user: User): Message[] {
-
+    return [];
     /*
     const msgs: Message[] = [
       { content: 'message 1' },
@@ -54,6 +54,7 @@ export class MessageService {
 
   // GetUsers: get the list of users from the back end
   GetUsers(): User[] {
+    return [];
     /*
     const users: User[] = [
       {email: 'Steve', password: ''},
