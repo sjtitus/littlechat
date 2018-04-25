@@ -1,4 +1,10 @@
 <div class="leftpane yautoscroll column menu border">
+  <div class="alert alert-danger" [hidden]="applicationError==null">
+    {{ applicationError }} 
+  </div>
+  <div class="alert alert-danger" [hidden]="networkError==null">
+    {{ networkError }} 
+  </div>
   <ul>
     <li *ngFor="let user of userlist" (click) = "SelectUser(user)"> {{user.email}} </li>
   </ul>

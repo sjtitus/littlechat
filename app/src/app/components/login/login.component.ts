@@ -6,10 +6,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
 
-import { SignupRequest } from '../../models/signuprequest';
-import { SignupResponse } from '../../models/signupresponse';
-import { LoginRequest } from '../../models/loginrequest';
-import { LoginResponse } from '../../models/loginresponse';
+import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../../models/login';
 import { ErrorResponse } from '../../models/errorresponse';
 
 @Component({

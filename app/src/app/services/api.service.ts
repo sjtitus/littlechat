@@ -9,14 +9,9 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 //import 'rxjs/add/observable/throw';
 //import 'rxjs/add/operator/map';
 
-import { SignupRequest } from '../models/signuprequest';
-import { SignupResponse } from '../models/signupresponse';
-import { LoginRequest } from '../models/loginrequest';
-import { LoginResponse } from '../models/loginresponse';
+import { GetUsersRequest, GetUsersResponse, UserMessagesRequest, UserMessagesResponse } from '../models/user';
+import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 import { ErrorResponse } from '../models/errorresponse';
-import { UserMessagesRequest } from '../models/usermessagesrequest';
-import { UserMessagesResponse } from '../models/usermessagesresponse';
-import { GetUsersRequest, GetUsersResponse } from '../models/user';
 
 
 @Injectable()

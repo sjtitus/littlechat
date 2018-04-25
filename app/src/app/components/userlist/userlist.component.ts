@@ -17,20 +17,42 @@ import { ErrorResponse } from '../../models/errorresponse';
 })
 
 export class UserlistComponent implements OnInit {
-  userlist: User[];                                   // All users
-  @Output() userSelected = new EventEmitter<User>();  // Output event: new user selected
-  private _selectedUser: User;                        // Currently selected user
+
+  @Output() userSelected = new EventEmitter<User>();  // Event to broadcast currently selected contact
+  userlist: User[];                                   // Chat contacts for current user
+  applicationError: string;
+  networkError: string;
+
+  private _selectedUser: User;                        // Currently selected contact
+
 
   constructor(private apiService: ApiService) {
   }
 
   ngOnInit() {
-    this.GetUsers();
+    this.GetUsers();    // load user's contacts from back end
   }
 
+  //___________________________________________________________________________
+  // selectUser: select chat target user
+  SelectUser(user: User) {
+    this._selectedUser = user;
+    console.log('Userlist: new chat target', user);
+    // Notify listeners
+    this.userSelected.emit(this._selectedUser);
+  }
+
+
+  //=======================================================
+  // Backend Access Methods
+  //=======================================================
+
+  //___________________________________________________________________________
+  // GetUsers
+  // Load user's contacts from backend
   GetUsers() {
-    console.log('Userlist: fetching users from MessageService');
     const apiReq: GetUsersRequest = { userId: 100 };
+    console.log(`Userlist: GetUsers (userId=${apiReq.userId})`);
     this.apiService.GetUsers(apiReq).subscribe(
         (resp) => { this.HandleGetUsersResponse(resp);       },
          (err) => { this.HandleError('GetUsers', err);  }
@@ -39,29 +61,24 @@ export class UserlistComponent implements OnInit {
 
   private HandleGetUsersResponse(httpResponse: HttpResponse<GetUsersResponse>) {
     const apiResp: GetUsersResponse = httpResponse.body;
-    console.log('GetUsers response', apiResp);
+    console.log('Userlist: GetUsers response', apiResp);
     if (!apiResp.error) {
       this.userlist = apiResp.users;
     }
     else {
-      console.log('GetUsers error:', apiResp.errorMessage);
+      // Handle backend logical errors
+      console.log('Userlist: GetUsers application error:', apiResp.errorMessage);
+      this.applicationError = `Userlist: GetUsers application error: '${apiResp.errorMessage}'`;
     }
   }
 
   //___________________________________________________________________________
-  // Handle an API error
+  // Handle backend networking errors
   private HandleError(etype: string, errorResponse: ErrorResponse) {
-    console.log(`API Error [${etype}]`, errorResponse);
+    console.log(`Userlist: GetUsers network error [${etype}]`, errorResponse);
+    this.networkError = `Userlist: GetUsers network error: '${errorResponse.message}'`;
   }
 
-
-  // selectUser: select the new user (chat target)
-  SelectUser(user: User) {
-    this._selectedUser = user;
-    console.log('Userlist: new chat target', user);
-    // selectUser: notify listeners when a new chat target is selected.
-    this.userSelected.emit(this._selectedUser);
-  }
 
 }
 

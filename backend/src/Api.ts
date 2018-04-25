@@ -1,12 +1,9 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
-import { SignupRequest } from "../../app/src/app/models/signuprequest";
-import { SignupResponse } from "../../app/src/app/models/signupresponse";
-import { LoginRequest } from "../../app/src/app/models/loginrequest";
-import { LoginResponse } from "../../app/src/app/models/loginresponse";
+import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../../app/src/app/models/login";
 import { User, GetUsersRequest, GetUsersResponse } from "../../app/src/app/models/user";
 import { Token } from "./Token"; 
-
 //import * as revalidator from "revalidator"; 
+
 export class Api {
  
   constructor() {}

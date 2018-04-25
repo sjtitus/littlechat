@@ -1,3 +1,4 @@
+import { Message } from './message';
 
 export interface User {
   id: number;
@@ -13,4 +14,16 @@ export interface  GetUsersResponse {
   errorMessage: string;
   userId: number;
   users: User[];
+}
+
+export interface  UserMessagesRequest {
+    userId: number;
+    maxMessages: number;
+}
+
+export interface  UserMessagesResponse {
+  error: boolean;
+  errorMessage: string;
+  userId: number;
+  messages: Message[];
 }
