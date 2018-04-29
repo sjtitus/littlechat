@@ -3,6 +3,7 @@ import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../.
 import { User, GetUsersRequest, GetUsersResponse } from "../../app/src/app/models/user";
 import { Token } from "./Token"; 
 //import * as revalidator from "revalidator"; 
+const db = require('./db');
 
 export class Api {
  
@@ -16,9 +17,11 @@ export class Api {
   //___________________________________________________________________________
   // Login
   // Existing user login.
-  login: RequestHandler = function(req:Request, res:Response, next:NextFunction) {
+  login: RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
     console.log('Api: login'); 
     const loginRequest: LoginRequest = req.body;
+    const { rows } = await db.query('SELECT * FROM usr WHERE id = $1', [1])
+    console.log("user: ",rows[0].firstname); 
     let loginResponse: LoginResponse = {
         token: Token.Generate({ userId: 123 }),
         userId: "123",

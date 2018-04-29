@@ -6,6 +6,8 @@ import { Token } from './Token';
 import * as jwt from 'jsonwebtoken';
 
 console.log("Backend (DEBUG=",process.env.DEBUG,")");
+console.log("Dbase user",process.env.PGUSER);
+console.log(`Database: host=${process.env.PGHOST}, user=${process.env.PGUSER}, db=${process.env.PGDATABASE}`);
 
 const port = normalizePort(process.env.PORT || 3000);
 

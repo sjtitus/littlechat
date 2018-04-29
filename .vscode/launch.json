@@ -12,7 +12,7 @@
             "port": 5858,
             "restart": true,
             "protocol": "inspector",
-            "preLaunchTask": "Server Debug"
+            "preLaunchTask": "Server Debug",
         },
         {
             "type": "node",

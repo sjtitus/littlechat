@@ -29,6 +29,15 @@
             "script": "monitor",
             "path": "backend/",
             "isBackground": true,
+            "options": {
+              "env": {
+                "PGUSER": "postgres",
+                "PGHOST": "localhost", 
+                "PGPASSWORD": "katja1_!", 
+                "PGDATABASE": "littlechat", 
+                "PGPORT": "5432" 
+              }
+            },
             "problemMatcher": []
         },
         {

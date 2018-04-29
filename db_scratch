@@ -1,0 +1,10 @@
+
+CREATE table usr (
+	id serial not null primary key,
+	firstName varchar(128) not null,
+	lastName varchar(128) not null,
+	emailAddress varchar(256) unique not null,
+	dateTimeCreated timestamptz not null,
+	dateTimeModified timestamptz not null,
+	isActive boolean not null
+)

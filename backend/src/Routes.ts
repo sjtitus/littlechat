@@ -3,6 +3,7 @@ import * as expressPackage from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import { Api } from './Api';
+import PromiseRouter from 'express-promise-router';
 
 
 export class Routes {
@@ -11,7 +12,7 @@ export class Routes {
   constructor(private _express: expressPackage.Application) {}
 
   public Install(): void {
-    let router = expressPackage.Router();
+    let router = PromiseRouter(); 
 
     // Create routes 
     router.get('/api', this.api.root);
