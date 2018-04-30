@@ -11,7 +11,7 @@ export class Auth {
     constructor() {}
 
     public static async Login(loginRequest:LoginRequest) {
-      const { rows } = await db.query('SELECT * FROM usr WHERE emailaddress = $1', ['sjtitus@alumni.duke.edu'])
+      const { rows } = await db.query('SELECT * FROM usr WHERE emailaddress = $1', ['stitus@knowland.com'])
       console.log("user:",rows.length); 
       let loginResponse: LoginResponse = {
           token: Token.Generate({ userId: 123 }),
