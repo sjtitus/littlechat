@@ -1,5 +1,9 @@
+//_____________________________________________________________________________
+// Database
+
 const { Pool } = require('pg')
 
+console.log('db: creating new connection pool');
 const pool = new Pool();
 
 module.exports = {

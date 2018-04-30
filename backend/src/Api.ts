@@ -1,9 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../../app/src/app/models/login";
 import { User, GetUsersRequest, GetUsersResponse } from "../../app/src/app/models/user";
-import { Token } from "./Token"; 
-//import * as revalidator from "revalidator"; 
-const db = require('./db');
+import { Auth } from "./Auth";
 
 export class Api {
  
@@ -20,14 +18,7 @@ export class Api {
   login: RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
     console.log('Api: login'); 
     const loginRequest: LoginRequest = req.body;
-    const { rows } = await db.query('SELECT * FROM usr WHERE id = $1', [1])
-    console.log("user: ",rows[0].firstname); 
-    let loginResponse: LoginResponse = {
-        token: Token.Generate({ userId: 123 }),
-        userId: "123",
-        error: false,
-        errorMessage: '' 
-    };
+    const loginResponse: LoginResponse = await Auth.Login(loginRequest);  
     res.status(200).json(loginResponse); 
   }
   
