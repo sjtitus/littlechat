@@ -6,7 +6,7 @@ export interface  LoginRequest {
 export interface  LoginResponse {
     error: boolean;
     errorMessage: string;
-    userId: string;
+    userId: number;
     token: string;
 }
 

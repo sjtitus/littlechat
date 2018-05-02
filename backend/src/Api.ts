@@ -1,5 +1,4 @@
 /*_____________________________________________________________________________
-  API
   Littlechat API 
 _______________________________________________________________________________
  */
@@ -7,7 +6,7 @@ import { RequestHandler, Request, Response, NextFunction } from "express";
 
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../../app/src/app/models/login";
 import { User, GetUsersRequest, GetUsersResponse } from "../../app/src/app/models/user";
-import * as Auth from "./Auth";
+import * as Auth from "./auth";
 
 
 //___________________________________________________________________________
