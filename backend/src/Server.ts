@@ -1,12 +1,7 @@
 import * as http from 'http';
-
-// Express application for the API 
-import ExpressApp from './ExpressApp';
-import { Token } from './Token';
-import * as jwt from 'jsonwebtoken';
+import ExpressApp from './expressApp';
 
 console.log(`Environment: Database: host=${process.env.PGHOST}, user=${process.env.PGUSER}, db=${process.env.PGDATABASE}`);
-
 const port = normalizePort(process.env.PORT || 3000);
 
 console.log('setting port to ', port);
@@ -22,7 +17,6 @@ server.on('listening', onListening);
 
 //_____________________________________________________________________________
 // Functions
-
 function normalizePort(val: number|string): number|string|boolean {
   let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
   if (isNaN(port)) return val;

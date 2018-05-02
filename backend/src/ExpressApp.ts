@@ -7,11 +7,11 @@ import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import { Routes } from './Routes';
+import { Routes } from './routes';
 
 class ExpressApp {
-  public express: express.Application;    // express app
-  private routes: Routes;                 // app-specific routes
+  public express: express.Application; 
+  private routes: Routes;
 
   constructor() {
     this.express = express();

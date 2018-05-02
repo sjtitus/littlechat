@@ -2,12 +2,11 @@ import * as path from 'path';
 import * as expressPackage from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import { Api } from './Api';
+import * as api from './Api';
 import PromiseRouter from 'express-promise-router';
 
 
 export class Routes {
-  api: Api = new Api();
   
   constructor(private _express: expressPackage.Application) {}
 
@@ -15,10 +14,9 @@ export class Routes {
     let router = PromiseRouter(); 
 
     // Create routes 
-    router.get('/api', this.api.root);
-    router.post('/api/login', this.api.login);
-    router.post('/api/signup', this.api.signup);
-    router.post('/api/users', this.api.users);
+    router.post('/api/login', api.login);
+    router.post('/api/signup',api.signup);
+    router.post('/api/contacts', api.contacts);
     this._express.use('/', router); 
   
 
@@ -27,7 +25,7 @@ export class Routes {
     this._express.use(function (err, req, res, next) {
       console.log('API Routes: caught error, sending 500', err);
       res.status(500).json({ error: err.message });
-    }); 
+    });  
 
     //______________________________________________________
     // Unhandled routes: send a 404 
