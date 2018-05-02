@@ -21,6 +21,6 @@ export interface  SignupRequest {
 export interface  SignupResponse {
     error: boolean;
     errorMessage: string;
-    userId: string;
+    userId: number;
     token: string;
 }
