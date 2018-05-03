@@ -10,7 +10,7 @@ const {promisify} = require('util');
 import * as db from './db/db';
 
 const async_pbkdf2 = promisify(crypto.pbkdf2); 
-crypto.DEFAULT_ENCODING = 'hex';
+//crypto.DEFAULT_ENCODING = 'hex';
 
 //_____________________________________________________________________________
 // Login
@@ -67,7 +67,8 @@ async function _authenticate(user: any, password: string) {
     throw new Error(`Auth::Login: internal error: user ${user.id} has no password`);
   } 
   // check password
-  let encryptedpasswd = await async_pbkdf2(password,pw.salt,pw.iter,128,'sha256');
+  let ebuff = await async_pbkdf2(password,pw.salt,pw.iter,128,'sha256');
+  let encryptedpasswd = ebuff.toString('hex'); 
   console.log(`Auth::_authenticate: encpasswd: ${encryptedpasswd}`);
   return true;
 }
