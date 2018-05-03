@@ -7,29 +7,35 @@ import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../.
 import * as crypto from 'crypto';
 const {promisify} = require('util');
 
-import * as db from './db';
-const async_pbkdf2 = promisify(crypto.pbkdf2);
+import * as db from './db/db';
+
+const async_pbkdf2 = promisify(crypto.pbkdf2); 
+crypto.DEFAULT_ENCODING = 'hex';
 
 //_____________________________________________________________________________
 // Login
 // Existing user login
 export async function Login(loginRequest:LoginRequest) {
   console.log(`Auth::Login: '${loginRequest.email}'`);
-  let loginResponse: LoginResponse = {token: '', userId: 0, error: false, errorMessage: ''};
-  // Find the user 
-  const { rows:users } = await db.query(db.sqlQueries.usrGetByEmail, [loginRequest.email]); 
-  if (users.length === 0 || !users[0].isactive) { 
-    loginResponse.error = true;
-    loginResponse.errorMessage = `User not found`; 
+  let loginResponse: LoginResponse = {token: '', userId: 0, error: true, errorMessage: ''};
+  //
+  // Make sure user exists and is active 
+  const user = await db.getUserByEmail(loginRequest.email);
+  if (user == null) { 
+    loginResponse.errorMessage = `User ${loginRequest.email} not found`; 
     return loginResponse; 
   }
-  let user = users[0];
-  console.log(`Auth::Login: found '${user.firstname} ${user.lastname} (id=${user.id})'`);
-  // Authenticate the user
-  if (!_authenticate(user, loginRequest.password)) {
-
+  if (!user.active) {
+    loginResponse.errorMessage = `User ${loginRequest.email} is inactive`; 
+    return loginResponse;
   }
-  // Authenticate the user 
+  console.log(`Auth::Login: found '${user.firstname} ${user.lastname} (id=${user.id})'`);
+  //
+  // Authenticate the user
+  const authok = await _authenticate(user, loginRequest.password);
+  if (!authok) {
+    console.log('badness');
+  }
   return loginResponse;
 }
 
@@ -55,13 +61,14 @@ export async function SignUp(signupRequest:SignupRequest) {
 // Authenticate the given user and password, return true if authentication
 // succeeds.
 async function _authenticate(user: any, password: string) {
-  console.log(`Auth::_authenticate: '${user.id}'`);
-  const { rows:pwinfo } = await db.query(db.sqlQueries.passwdGetById, [user.id]); 
-  if (pwinfo.length === 0) { 
+  console.log(`Auth::_authenticate: ${user.emailaddress} (id=${user.id})`);
+  const pw = await db.getPasswordByUserId(user.id);
+  if (pw == null) {
     throw new Error(`Auth::Login: internal error: user ${user.id} has no password`);
-  }
+  } 
   // check password
-  let encryptedpass = await async_pbkdf2(password,pwinfo.salt,pwinfo.iter,256,'sha256');
+  let encryptedpasswd = await async_pbkdf2(password,pw.salt,pw.iter,128,'sha256');
+  console.log(`Auth::_authenticate: encpasswd: ${encryptedpasswd}`);
   return true;
 }
 
