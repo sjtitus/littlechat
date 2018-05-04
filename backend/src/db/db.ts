@@ -29,3 +29,8 @@ export async function getPasswordByUserId( uid: number ) {
   return (passwords.length === 0) ? null:passwords[0]; 
 }
 
+export async function createUser( firstname: string, lastname: string, email: string, 
+  password: string, salt: string, encrypted_password: string, crypt_iters: number ) {
+    return true;
+}
+

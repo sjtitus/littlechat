@@ -25,9 +25,9 @@ export const login: RequestHandler = async function(req:Request, res:Response, n
 // New user signup.
 export const signup:RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
   console.debug('Api::signup');
-  const signuprequest: SignupRequest = req.body;
-  const signupResponse: SignupResponse = await Auth.SignUp(signuprequest);  
-  res.status(200).json(signuprequest);
+  const signupRequest: SignupRequest = req.body;
+  const signupResponse: SignupResponse = await Auth.SignUp(signupRequest);  
+  res.status(200).json(signupResponse);
 }
 
 
