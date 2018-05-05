@@ -13,7 +13,7 @@ import * as Auth from "./auth";
 // Login
 // Log in an existing user 
 export const login: RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
-  console.log('Api: login');
+  console.log('Api::login');
   const loginRequest: LoginRequest = req.body;
   const loginResponse: LoginResponse = await Auth.Login(loginRequest);  
   res.status(200).json(loginResponse); 
@@ -23,23 +23,11 @@ export const login: RequestHandler = async function(req:Request, res:Response, n
 //___________________________________________________________________________
 // Signup
 // New user signup.
-export const signup:RequestHandler = function(req:Request, res:Response, next:NextFunction) {
-  console.debug('Api: signup');
-  const signuprequest: SignupRequest = req.body;
-  /*
-  let vMessage = revalidator.validate(signuprequest, {
-    properties: {
-        suemail: {
-          description: 'new user email address',
-          type: 'string',
-          format: 'email',
-          required: true
-        }
-    }
-  });
-  */
-  console.log(signuprequest);
-  res.status(200).json(signuprequest);
+export const signup:RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
+  console.debug('Api::signup');
+  const signupRequest: SignupRequest = req.body;
+  const signupResponse: SignupResponse = await Auth.SignUp(signupRequest);  
+  res.status(200).json(signupResponse);
 }
 
 
