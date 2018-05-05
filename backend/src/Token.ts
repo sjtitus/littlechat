@@ -16,3 +16,5 @@ export class Token {
         return jwt.sign(payload, Token.secret, { expiresIn: Token.lifetime });
     }
 }
+
+

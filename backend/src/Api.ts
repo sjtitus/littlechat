@@ -13,7 +13,7 @@ import * as Auth from "./auth";
 // Login
 // Log in an existing user 
 export const login: RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
-  console.log('Api::login');
+  console.log('Api::login');  
   const loginRequest: LoginRequest = req.body;
   const loginResponse: LoginResponse = await Auth.Login(loginRequest);  
   res.status(200).json(loginResponse); 
