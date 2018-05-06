@@ -1,10 +1,11 @@
 <div class="header">
+  <h3>Welcome, {{currentUser.email}}</h3>
   <h1>{{headerMessage}}</h1>
 </div>
 
 <div class="clearfix mainarea border">
 
-  <app-userlist (userSelected)="setTargetUser($event)"></app-userlist>
+  <app-userlist [currentUser]="currentUser" (userSelected)="setTargetUser($event)"></app-userlist>
   
   <div class="rightpane column border">
      

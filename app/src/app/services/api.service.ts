@@ -9,7 +9,7 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 //import 'rxjs/add/observable/throw';
 //import 'rxjs/add/operator/map';
 
-import { GetUsersRequest, GetUsersResponse, UserMessagesRequest, UserMessagesResponse } from '../models/user';
+import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse } from '../models/user';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 import { ErrorResponse } from '../models/errorresponse';
 
@@ -20,7 +20,7 @@ export class ApiService {
   private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly msgsUrl = 'http://localhost:4200/api/messages';
-  private readonly usersUrl = 'http://localhost:4200/api/users';
+  private readonly contactsUrl = 'http://localhost:4200/api/contacts';
   private readonly timeout = 20000;
 
   //===========================================================================
@@ -45,9 +45,9 @@ export class ApiService {
             .pipe(catchError(this.HandleError));
   }
 
-  GetUsers(req: GetUsersRequest) {
-        console.log('ApiService: get users request', req);
-        return this.http.post<GetUsersResponse>(this.usersUrl, req, { observe: 'response' })
+  GetContacts(req: GetContactsRequest) {
+        console.log('ApiService: get contacts request', req);
+        return this.http.post<GetContactsResponse>(this.contactsUrl, req, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError));
   }

@@ -40,7 +40,7 @@ export async function Login(loginRequest:LoginRequest) {
   }
   //___________________________________________________
   // Successful auth: return new auth token
-  const tok = Token.Generate({ userId: dbuser.id });
+  const tok = Token.Generate({ userId: dbuser.id, email: dbuser.email });
   console.log(`Auth::Login: Auth succeeded for user ${loginRequest.email} (id = ${dbuser.id})`);
   loginResponse.userId = dbuser.id;
   loginResponse.token = tok;
@@ -78,7 +78,7 @@ export async function SignUp(signupRequest:SignupRequest) {
   console.log(`Auth::Signup: new user id = ${newUserId}`);
   //______________________________________________
   // Generate auth token 
-  const tok = Token.Generate({ userId: newUserId });
+  const tok = Token.Generate({ userId: newUserId, email: signupRequest.email });
   console.log(`Auth::Signup: new user auth token = ${tok}`);
   signupResponse.userId = newUserId;
   signupResponse.token = tok;

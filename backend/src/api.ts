@@ -5,9 +5,9 @@ _______________________________________________________________________________
 import { RequestHandler, Request, Response, NextFunction } from "express";
 
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../../app/src/app/models/login";
-import { User, GetUsersRequest, GetUsersResponse } from "../../app/src/app/models/user";
+import { User, GetContactsRequest, GetContactsResponse } from "../../app/src/app/models/user";
 import * as Auth from "./auth";
-
+import * as Contact from "./contact";
 
 //___________________________________________________________________________
 // Login
@@ -24,8 +24,8 @@ export const login: RequestHandler = async function(req:Request, res:Response, n
 // Signup
 // New user signup.
 export const signup:RequestHandler = async function(req:Request, res:Response, next:NextFunction) {
-  console.debug('Api::signup');
   const signupRequest: SignupRequest = req.body;
+  console.debug(`Api::Signup: request for ${signupRequest.email}`);
   const signupResponse: SignupResponse = await Auth.SignUp(signupRequest);  
   res.status(200).json(signupResponse);
 }
@@ -34,16 +34,11 @@ export const signup:RequestHandler = async function(req:Request, res:Response, n
 //___________________________________________________________________________
 // Contacts 
 // List contacts for a specified user  
-export const contacts:RequestHandler = function(req: Request, res:Response, next:NextFunction) {
-  console.log('Api::contacts'); 
-  const usersRequest: GetUsersRequest = req.body;
-  let usersResponse: GetUsersResponse = {
-    error: false,
-    errorMessage: '',
-    userId: 100, 
-    users: [ {id:100, email:'email100'},  {id:101, email:'email101'},  {id:102, email:'email102'} ] 
-  }
-  res.status(200).json(usersResponse);
+export const contacts:RequestHandler = async function(req: Request, res:Response, next:NextFunction) {
+  const getContactsRequest: GetContactsRequest = req.body;
+  console.debug(`Api::Contacts: request for user id ${getContactsRequest.userId}`);
+  const getContactsResponse: GetContactsResponse = await Contact.GetContacts(getContactsRequest); 
+  res.status(200).json(getContactsResponse);
 }
 
 

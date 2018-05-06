@@ -1,20 +1,25 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
+import { User } from '../models/user';
 import * as jwt from 'jsonwebtoken';
 
 
 @Injectable()
 export class TokenService implements CanActivate {
 
-  public storageAvailable: boolean;
+  private storageAvailable: boolean;
+  private currentUser: User = {id: -1, email: ''};
 
   constructor(private router: Router) {
     this.storageAvailable = this.StorageAvailable();
     console.log('TokenService: storage available: ', this.storageAvailable);
   }
 
+  get CurrentUser(): User {
+    return this.currentUser;
+  }
 
-  public StorageAvailable(): boolean {
+  private StorageAvailable(): boolean {
     console.log('TokenService: determining if localstorage is available');
     let storage;
     try {
@@ -40,15 +45,17 @@ export class TokenService implements CanActivate {
   }
 
   canActivate(): boolean {
-    console.log("TokenService: checking activation");
+    console.log('TokenService: checking activation');
     if (!this.IsAuthenticatedClientSide()) {
+      this.currentUser.id = -1;
+      this.currentUser.email = '';
       this.router.navigate(['login']);
       return false;
     }
     return true;
   }
 
-  public IsAuthenticatedClientSide(): boolean {
+  private IsAuthenticatedClientSide(): boolean {
     const token = window.localStorage.getItem('littlechatToken');
     if (token == null) {
       console.log('TokenService: failed auth: no token');
@@ -60,7 +67,10 @@ export class TokenService implements CanActivate {
       console.log('TokenService: failed auth: token expired %d seconds ago', current_time - jwtoken.exp);
       return false;
     }
+    console.log('TokenService: successful auth: token', jwtoken);
     console.log('TokenService: successful auth: token expires in %d seconds', jwtoken.exp - current_time);
+    this.currentUser.id = jwtoken.userId;
+    this.currentUser.email = jwtoken.email;
     return true;
   }
 

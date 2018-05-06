@@ -116,6 +116,7 @@ export class LoginComponent implements OnInit {
   // Handle login response from API
   private HandleLoginResponse(httpResponse: HttpResponse<LoginResponse>) {
     const loginResponse: LoginResponse = httpResponse.body;
+    console.log('LoginComponent: login response', loginResponse);
     if (this.LoginSuccess(loginResponse)) {
       this.tokenService.Save('littlechatToken', loginResponse.token);
       this.router.navigate(['/home']);
@@ -126,7 +127,7 @@ export class LoginComponent implements OnInit {
   // Handle signup response from API
   private HandleSignupResponse(httpResponse: HttpResponse<SignupResponse>) {
     const signupResponse: SignupResponse = httpResponse.body;
-    console.log('signup response', signupResponse);
+    console.log('LoginComponent: signup response', signupResponse);
     if (this.SignupSuccess(signupResponse)) {
       this.tokenService.Save('littlechatToken', signupResponse.token);
       this.router.navigate(['/home']);

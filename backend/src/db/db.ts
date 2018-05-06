@@ -15,6 +15,7 @@ const sql = {
   createUser: 'SELECT * from createUser($1,$2,$3,$4,$5,$6)', 
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
   getPasswordByUserId: 'SELECT * FROM passwd WHERE idusr = $1',
+  getContactsByUserId: 'SELECT * FROM usr'
 }
 
 //=========================================================
@@ -24,6 +25,14 @@ const sql = {
 //______________________________________________________________________________
 // Run a query against the connection pool
 export async function query(text, params) { return pool.query(text, params) }
+
+//______________________________________________________________________________
+// getContactsByUserId
+// Returns: db contact list for user with specified user id 
+export async function getContactsByUserId( uid: number ) {
+  const { rows:contacts } = await query(sql.getContactsByUserId, []); 
+  return contacts; 
+}
 
 //______________________________________________________________________________
 // createUser

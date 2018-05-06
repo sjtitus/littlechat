@@ -6,6 +6,6 @@
     {{ networkError }} 
   </div>
   <ul>
-    <li *ngFor="let user of userlist" (click) = "SelectUser(user)"> {{user.email}} </li>
+    <li *ngFor="let contact of contactList" (click) = "SelectContact(contact)"> {{contact.email}} </li>
   </ul>
 </div>

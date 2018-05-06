@@ -5,7 +5,7 @@
 ________________________________________________________________________________
 */
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-import { User, GetUsersRequest, GetUsersResponse } from '../../models/user';
+import { User, GetContactsRequest, GetContactsResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../models/errorresponse';
@@ -18,28 +18,33 @@ import { ErrorResponse } from '../../models/errorresponse';
 
 export class UserlistComponent implements OnInit {
 
-  @Output() userSelected = new EventEmitter<User>();  // Event to broadcast currently selected contact
-  userlist: User[];                                   // Chat contacts for current user
+  @Input() set currentUser(user: User) {
+    console.log(`UserListComponent: setting current user to ${user.email}`);
+    this._currentUser = user;
+  }
+  @Output() contactSelected = new EventEmitter<User>();  // Event to broadcast currently selected contact
+
+  contactList: User[];             // Chat contacts for current user
   applicationError: string;
   networkError: string;
 
-  private _selectedUser: User;                        // Currently selected contact
+  private _selectedContact: User;
+  private _currentUser: User;
 
-
-  constructor(private apiService: ApiService) {
-  }
+  constructor(private apiService: ApiService) {}
 
   ngOnInit() {
-    this.GetUsers();    // load user's contacts from back end
+    console.log(`UserListComponent: OnInit: current user is ${this._currentUser.email}`);
+    this.GetContacts();
   }
 
   //___________________________________________________________________________
-  // selectUser: select chat target user
-  SelectUser(user: User) {
-    this._selectedUser = user;
-    console.log('Userlist: new chat target', user);
+  // Select contact to chat with
+  SelectContact(contact: User) {
+    this._selectedContact = contact;
+    console.log('Userlist: new chat target', contact);
     // Notify listeners
-    this.userSelected.emit(this._selectedUser);
+    this.contactSelected.emit(this._selectedContact);
   }
 
 
@@ -48,35 +53,34 @@ export class UserlistComponent implements OnInit {
   //=======================================================
 
   //___________________________________________________________________________
-  // GetUsers
   // Load user's contacts from backend
-  GetUsers() {
-    const apiReq: GetUsersRequest = { userId: 100 };
-    console.log(`Userlist: GetUsers (userId=${apiReq.userId})`);
-    this.apiService.GetUsers(apiReq).subscribe(
-        (resp) => { this.HandleGetUsersResponse(resp);       },
-         (err) => { this.HandleError('GetUsers', err);  }
+  GetContacts() {
+    const apiReq: GetContactsRequest = { userId: this._currentUser.id };
+    console.log(`Userlist: GetContacts (userId=${apiReq.userId})`);
+    this.apiService.GetContacts(apiReq).subscribe(
+        (resp) => { this.HandleGetContactsResponse(resp);       },
+         (err) => { this.HandleError('GetContacts', err);  }
     );
   }
 
-  private HandleGetUsersResponse(httpResponse: HttpResponse<GetUsersResponse>) {
-    const apiResp: GetUsersResponse = httpResponse.body;
-    console.log('Userlist: GetUsers response', apiResp);
+  private HandleGetContactsResponse(httpResponse: HttpResponse<GetContactsResponse>) {
+    const apiResp: GetContactsResponse = httpResponse.body;
+    console.log('Userlist: GetContacts response', apiResp);
     if (!apiResp.error) {
-      this.userlist = apiResp.users;
+      this.contactList = apiResp.contacts;
     }
     else {
       // Handle backend logical errors
-      console.log('Userlist: GetUsers application error:', apiResp.errorMessage);
-      this.applicationError = `Userlist: GetUsers application error: '${apiResp.errorMessage}'`;
+      console.log(`Userlist: GetContacts error: ${apiResp.errorMessage}`);
+      this.applicationError = `Userlist: GetContacts error: '${apiResp.errorMessage}'`;
     }
   }
 
   //___________________________________________________________________________
   // Handle backend networking errors
   private HandleError(etype: string, errorResponse: ErrorResponse) {
-    console.log(`Userlist: GetUsers network error [${etype}]`, errorResponse);
-    this.networkError = `Userlist: GetUsers network error: '${errorResponse.message}'`;
+    console.log(`Userlist: ${etype} network error:`, errorResponse);
+    this.networkError = `Userlist: ${etype} network error: ${errorResponse.message}`;
   }
 
 

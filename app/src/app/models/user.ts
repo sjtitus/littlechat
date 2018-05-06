@@ -5,15 +5,15 @@ export interface User {
   email: string;
 }
 
-export interface GetUsersRequest {
+export interface GetContactsRequest {
   userId: number;
 }
 
-export interface  GetUsersResponse {
+export interface  GetContactsResponse {
   error: boolean;
   errorMessage: string;
   userId: number;
-  users: User[];
+  contacts: User[];
 }
 
 export interface  UserMessagesRequest {

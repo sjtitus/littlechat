@@ -4,8 +4,9 @@
   Uses 3 child components: UserList, MessageList, MessageEntry.
 ________________________________________________________________________________
 */
-import { Component, Output } from '@angular/core';
+import { Component, Output, OnInit } from '@angular/core';
 import { User } from '../../models/user';
+import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-home',
@@ -13,13 +14,23 @@ import { User } from '../../models/user';
   styleUrls: ['../../app.component.css']
 })
 
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+
   targetUser: User;   // user we're chatting with
   headerMessage = 'Select Chat Partner';
+  currentUser: User;
+
+  constructor( private tokenService: TokenService ) {
+  }
 
   setTargetUser(user: User) {
     this.targetUser = user;
     this.headerMessage = this.targetUser.email;
+  }
+
+  ngOnInit() {
+    this.currentUser = this.tokenService.CurrentUser;
+    console.log('HomeComponent: currentUser:', this.currentUser);
   }
 
 }
