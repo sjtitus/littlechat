@@ -40,6 +40,7 @@ export class TokenService implements CanActivate {
   }
 
   canActivate(): boolean {
+    console.log("TokenService: checking activation");
     if (!this.IsAuthenticatedClientSide()) {
       this.router.navigate(['login']);
       return false;

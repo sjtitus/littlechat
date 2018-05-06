@@ -128,8 +128,8 @@ export class LoginComponent implements OnInit {
     const signupResponse: SignupResponse = httpResponse.body;
     console.log('signup response', signupResponse);
     if (this.SignupSuccess(signupResponse)) {
-      console.log('Storing access token in localstorage', signupResponse.token);
-      window.localStorage.setItem('littlechatToken', signupResponse.token);
+      this.tokenService.Save('littlechatToken', signupResponse.token);
+      this.router.navigate(['/home']);
     }
   }
 
