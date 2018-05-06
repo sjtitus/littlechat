@@ -35,7 +35,7 @@ export const signup:RequestHandler = async function(req:Request, res:Response, n
 // Contacts 
 // List contacts for a specified user  
 export const contacts:RequestHandler = function(req: Request, res:Response, next:NextFunction) {
-  console.log('Api: contacts'); 
+  console.log('Api::contacts'); 
   const usersRequest: GetUsersRequest = req.body;
   let usersResponse: GetUsersResponse = {
     error: false,

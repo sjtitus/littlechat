@@ -27,7 +27,7 @@ export class Routes {
     //______________________________________________________
     // Catch errors: generic 500 with the error message
     this._express.use(function (err, req, res, next) {
-      console.log('API Routes: caught error, sending 500', err);
+      console.log('Routes: caught error, sending 500', err);
       let errtext = err.message;
       if (err.stack != null) { errtext = errtext + `stack: ${err.stack}` }
       res.status(500).json({ message: err.message, error: err, stack: err.stack });
@@ -36,7 +36,7 @@ export class Routes {
     //______________________________________________________
     // Unhandled routes: send a 404 
     this._express.use(function(req, res, next){
-      console.log(`API Routes: unhandled URL: ${req.originalUrl}, sending 404`);
+      console.log(`Routes: unhandled URL: ${req.originalUrl}, sending 404`);
       res.status(404).json({ error: 'URL Not found' });
     });
 
