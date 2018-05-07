@@ -16,16 +16,16 @@ import { TokenService } from '../../services/token.service';
 
 export class HomeComponent implements OnInit {
 
-  targetUser: User;   // user we're chatting with
+  chatContact: User;   // user we're chatting with
   headerMessage = 'Select Chat Partner';
   currentUser: User;
 
   constructor( private tokenService: TokenService ) {
   }
 
-  setTargetUser(user: User) {
-    this.targetUser = user;
-    this.headerMessage = this.targetUser.email;
+  public SetChatContact(contact: User) {
+    this.chatContact = contact;
+    this.headerMessage = this.chatContact.email;
   }
 
   ngOnInit() {

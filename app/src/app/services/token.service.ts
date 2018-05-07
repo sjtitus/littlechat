@@ -45,13 +45,14 @@ export class TokenService implements CanActivate {
   }
 
   canActivate(): boolean {
-    console.log('TokenService: checking activation');
+    console.log('TokenService: checking auth');
     if (!this.IsAuthenticatedClientSide()) {
       this.currentUser.id = -1;
       this.currentUser.email = '';
       this.router.navigate(['login']);
       return false;
     }
+    console.log('TokenService: auth ok');
     return true;
   }
 
@@ -69,6 +70,7 @@ export class TokenService implements CanActivate {
     }
     console.log('TokenService: successful auth: token', jwtoken);
     console.log('TokenService: successful auth: token expires in %d seconds', jwtoken.exp - current_time);
+    console.log(`TokenService: setting current user to ${jwtoken.email}`);
     this.currentUser.id = jwtoken.userId;
     this.currentUser.email = jwtoken.email;
     return true;

@@ -13,43 +13,23 @@ export class MessageService {
 
   constructor(private apiService: ApiService) { }
 
-  // Send the message to the back end and post it to the front end
-  SendMessage(user: User, msg: Message) {
-    console.log('MessageService: sending/posting message:', msg, 'to user', user);
-    this.PostMessage(msg);
+  //___________________________________________________________________________
+  // SendMessage
+  SendMessage(msg: Message) {
+    console.log(`MessageService::SendMessage: from ${msg.from} to ${msg.to}`);
+    this.PostMessageToUI(msg);
   }
 
-  // PostMessage: post a new message to the front end
-  PostMessage(msg: Message) {
+  //___________________________________________________________________________
+  // PostMessageToUI
+  private PostMessageToUI(msg: Message) {
     this.newMessageSource.next(msg);
   }
 
+  //___________________________________________________________________________
   // GetMessages: fetch a user's messages from the back end
   GetMessages(user: User): Message[] {
     return [];
-    /*
-    const msgs: Message[] = [
-      { content: 'message 1' },
-      { content: 'message 2' },
-      { content: 'message 3' },
-      { content: 'message 4' },
-      { content: 'message 5' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 6' },
-      { content: 'message 16' },
-    ];
-    return msgs.map( m => {
-      m.content = user.email + ' ' + m.content;
-      return m;
-    });
-    */
   }
 
   // GetUsers: get the list of users from the back end

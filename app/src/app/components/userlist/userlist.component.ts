@@ -9,6 +9,7 @@ import { User, GetContactsRequest, GetContactsResponse } from '../../models/user
 import { ApiService } from '../../services/api.service';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../models/errorresponse';
+import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-userlist',
@@ -18,10 +19,6 @@ import { ErrorResponse } from '../../models/errorresponse';
 
 export class UserlistComponent implements OnInit {
 
-  @Input() set currentUser(user: User) {
-    console.log(`UserListComponent: setting current user to ${user.email}`);
-    this._currentUser = user;
-  }
   @Output() contactSelected = new EventEmitter<User>();  // Event to broadcast currently selected contact
 
   contactList: User[];             // Chat contacts for current user
@@ -29,12 +26,13 @@ export class UserlistComponent implements OnInit {
   networkError: string;
 
   private _selectedContact: User;
-  private _currentUser: User;
+  private currentUser: User;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private tokenService: TokenService) {}
 
   ngOnInit() {
-    console.log(`UserListComponent: OnInit: current user is ${this._currentUser.email}`);
+    this.currentUser = this.tokenService.CurrentUser;
+    console.log(`UserListComponent: OnInit: current user is ${this.currentUser.email}`);
     this.GetContacts();
   }
 
@@ -55,7 +53,7 @@ export class UserlistComponent implements OnInit {
   //___________________________________________________________________________
   // Load user's contacts from backend
   GetContacts() {
-    const apiReq: GetContactsRequest = { userId: this._currentUser.id };
+    const apiReq: GetContactsRequest = { userId: this.currentUser.id };
     console.log(`Userlist: GetContacts (userId=${apiReq.userId})`);
     this.apiService.GetContacts(apiReq).subscribe(
         (resp) => { this.HandleGetContactsResponse(resp);       },

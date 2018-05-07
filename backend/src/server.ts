@@ -1,5 +1,6 @@
 import * as http from 'http';
 import ExpressApp from './expressApp';
+import WebSocketServer from './websocketserver';
 
 console.log(`Environment: Database: host=${process.env.PGHOST}, user=${process.env.PGUSER}, db=${process.env.PGDATABASE}`);
 const port = normalizePort(process.env.PORT || 3000);
@@ -9,10 +10,17 @@ ExpressApp.set('port', port);
 ExpressApp.set('view engine', 'html');
 const server = http.createServer(ExpressApp); 
 
-// start listening
+// API: start listening
+console.log('starting API server');
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+
+console.log('starting WS server');
+const wsServer: WebSocketServer = new WebSocketServer();
+wsServer.Start();
+
 
 
 //_____________________________________________________________________________

@@ -4,18 +4,14 @@
 </div>
 
 <div class="clearfix mainarea border">
-
-  <app-userlist [currentUser]="currentUser" (userSelected)="setTargetUser($event)"></app-userlist>
-  
+  <app-userlist (contactSelected)="SetChatContact($event)"></app-userlist>
   <div class="rightpane column border">
-     
-      <app-messagelist *ngIf="targetUser" [targetUser]="targetUser"></app-messagelist>
-      <app-messageentry *ngIf="targetUser" [targetUser]="targetUser"></app-messageentry>
-
+      <app-messagelist *ngIf="chatContact" [chatContact]="chatContact"></app-messagelist>
+      <app-messageentry *ngIf="chatContact" [chatContact]="chatContact"></app-messageentry>
   </div>
 </div>
 
 <div class="footer">
   <p>LittleChat</p>
 </div>
-
+ 
