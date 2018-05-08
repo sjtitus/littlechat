@@ -18,7 +18,7 @@ server.on('listening', onListening);
 
 
 console.log('starting WS server');
-const wsServer: WebSocketServer = new WebSocketServer();
+const wsServer: WebSocketServer = new WebSocketServer(server);
 wsServer.Start();
 
 

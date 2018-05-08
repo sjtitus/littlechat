@@ -13,8 +13,7 @@ export default class WebSocketServer {
         this.app = express();
         this.server = createServer(this.app);
         this.port = process.env.PORT || WebSocketServer.PORT;
-        this.io = socketIo(this.server);
-        //this.listen(); 
+        this.io = socketIo(this.server,{ serveClient: false, pingInterval: 10000, pingTimeout: 5000, cookie: false });
     }
 
     public Start(): void {
@@ -38,3 +37,27 @@ export default class WebSocketServer {
         return this.app;
     }
 }
+
+/* Auth with tokens
+const client = io({
+  transportOptions: {
+    polling: {
+      extraHeaders: {
+        'Authorization': 'Bearer abc'
+      }
+    }
+  }
+});
+
+// server-side
+const io = require('socket.io')();
+
+// middleware
+io.use((socket, next) => {
+  let header = socket.handshake.headers['authorization'];
+  if (isValidJwt(header)) {
+    return next();
+  }
+  return next(new Error('authentication error'));
+});
+*/
