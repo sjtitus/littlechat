@@ -1,40 +1,54 @@
 import * as http from 'http';
 import ExpressApp from './expressApp';
 import WebSocketServer from './websocketserver';
+import * as socketIo from 'socket.io';
 
-console.log(`Environment: Database: host=${process.env.PGHOST}, user=${process.env.PGUSER}, db=${process.env.PGDATABASE}`);
-const port = normalizePort(process.env.PORT || 3000);
+const port = 3000;   // port to serve the API
 
-console.log('setting port to ', port);
+// Dump database information from ENV
+const pghost = process.env.PGHOST;
+const pguser = process.env.PGUSER;
+const pgdb = process.env.PGDATABASE;
+if (!pghost || !pguser || !pgdb)
+{
+  throw new Error('Server: Database env vars (PGHOST, PGUSER, PGDATABASE) must be defined');
+}
+console.log(`Server: Database Info: host=${pghost}, user=${pguser}, db=${pgdb}`);
+
+// TODO: simple database startup test to ensure we have DB connectivity
+
+// Create the server
 ExpressApp.set('port', port);
 ExpressApp.set('view engine', 'html');
 const server = http.createServer(ExpressApp); 
 
-// API: start listening
-console.log('starting API server');
+// Configure websockets 
+const io = socketIo(server, { serveClient: false, pingInterval: 10000, pingTimeout: 5000, cookie: false });
+//io.listen(server);
+io.on('connect', (socket: any) => {
+    console.log('Websockets: connected client');
+    socket.on('message', (m) => {
+        console.log('Websockets: (message) %s', JSON.stringify(m));
+    });
+    socket.on('disconnect', () => {
+        console.log('Websockets: client disconnected');
+    });
+});
+
+// Start listening for connections 
+console.log(`Server: starting API server on port ${port}`);
 server.listen(port);
+
 server.on('error', onError);
 server.on('listening', onListening);
-
-
-console.log('starting WS server');
-const wsServer: WebSocketServer = new WebSocketServer(server);
-wsServer.Start();
 
 
 
 //_____________________________________________________________________________
 // Functions
-function normalizePort(val: number|string): number|string|boolean {
-  let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
-  if (isNaN(port)) return val;
-  else if (port >= 0) return port;
-  else return false;
-}
-
 function onError(error: NodeJS.ErrnoException): void {
   if (error.syscall !== 'listen') throw error;
-  let bind = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
+  let bind = `Port ${port}`;
   switch(error.code) {
     case 'EACCES':
       console.error(`${bind} requires elevated privileges`);
@@ -51,6 +65,5 @@ function onError(error: NodeJS.ErrnoException): void {
 
 function onListening(): void {
   let addr = server.address();
-  let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-  console.log(`Listening on ${bind}`);
+  console.log(`API: Listening on port ${port}`);
 }
