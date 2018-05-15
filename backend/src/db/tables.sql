@@ -20,6 +20,33 @@ CREATE TABLE public.passwd (
     timestampmodified timestamp with time zone NOT NULL
 );
 
+CREATE TABLE audience (
+	id bigserial primary key,
+	timestampcreated timestamp with time zone NOT NULL,
+	membershash character(128) NOT NULL 
+);
+
+CREATE TABLE audience_usr (
+	id_audience bigint references audience(id),
+	id_usr integer references usr(id)
+);
+
+CREATE TABLE conversation (
+	id bigserial primary key,
+	idowner integer references usr(id),
+	idaudience bigint references audience(id),
+	timestampcreated timestamp with time zone NOT NULL,
+	timestampmodified timestamp with time zone NOT NULL
+);
+
+CREATE TABLE message (
+	id bigserial primary key,
+	id_conversation bigint references conversation(id),
+	id_sender integer references usr(id),
+	timestampcreated timestamp with time zone NOT NULL,
+	content varchar(16384) NOT NULL 
+);
+
 CREATE OR REPLACE FUNCTION createUser(
 	firstname varchar, 
 	lastname varchar, 
@@ -47,7 +74,6 @@ $$
 LANGUAGE 'plpgsql';
 
 
-select * from usr;
-
+-- select * from usr;
 --drop table passwd;
 --drop table usr;
