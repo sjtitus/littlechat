@@ -7,6 +7,7 @@ ________________________________________________________________________________
 import { Component, Output, OnInit } from '@angular/core';
 import { User } from '../../models/user';
 import { TokenService } from '../../services/token.service';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +21,7 @@ export class HomeComponent implements OnInit {
   headerMessage = 'Select Chat Partner';
   currentUser: User;
 
-  constructor( private tokenService: TokenService ) {
+  constructor( private tokenService: TokenService, private webSocketService: WebSocketService ) {
   }
 
   public SetChatContact(contact: User) {

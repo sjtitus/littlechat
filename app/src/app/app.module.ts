@@ -13,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { AppRoutingModule } from './modules/routing/routing.module';
+import { WebSocketService } from './services/websocket.service';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,7 @@ import { AppRoutingModule } from './modules/routing/routing.module';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [MessageService, ApiService, TokenService],
+  providers: [MessageService, ApiService, TokenService, WebSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

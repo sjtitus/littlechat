@@ -4,10 +4,11 @@
 ________________________________________________________________________________
 */
 import { Component, OnInit, Input } from '@angular/core';
-import { MessageService } from '../../services/message.service';
 import { User } from '../../models/user';
 import { Message } from '../../models/message';
 import { TokenService } from '../../services/token.service';
+import { MessageService } from '../../services/message.service';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-messageentry',
@@ -20,7 +21,8 @@ export class MessageentryComponent implements OnInit {
   private currentUser: User;
   @Input() chatContact: User;
 
-  constructor(private messageService: MessageService, private tokenService: TokenService) {}
+  constructor(private messageService: MessageService, private tokenService: TokenService,
+    private webSocketService: WebSocketService) {}
 
   ngOnInit() {
     this.currentUser = this.tokenService.CurrentUser;
@@ -36,7 +38,7 @@ export class MessageentryComponent implements OnInit {
       sent: new Date().toISOString(),
       stored: null
     };
-    this.messageService.SendMessage(message);
+    this.webSocketService.send('message', JSON.stringify(message), (resp) => { console.log(`response: ${resp}`); });
     event.target.value = '';  // clear the UI
   }
 }
