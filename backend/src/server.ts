@@ -27,8 +27,10 @@ const io = socketIo(server, { serveClient: false, pingInterval: 10000, pingTimeo
 //io.listen(server);
 io.on('connect', (socket: any) => {
     console.log('Websockets: connected client');
-    socket.on('message', (m) => {
+    socket.on('message', (m, ack) => {
         console.log('Websockets: (message) %s', JSON.stringify(m));
+        console.log('Calling ack');
+        ack('My first ack');
     });
     socket.on('disconnect', () => {
         console.log('Websockets: client disconnected');

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
+import { Message } from '../models/message';
 
 import * as socketIo from 'socket.io-client';
 
@@ -15,7 +16,8 @@ export class WebSocketService {
         this.socket = socketIo(SERVER_URL, { autoConnect: true });
     }
 
-    public send(event: string, message: string, callback?: (returnmsg: string) => void): void {
+    public send(event: string, message: Message, callback?: (returnmsg: any) => void): void {
+        console.log(`WebSocketService: sending message:`, message);
         this.socket.emit(event, message, callback);
     }
 

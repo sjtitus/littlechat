@@ -22,6 +22,7 @@ export default class WebSocketServer {
     }
 
     public OnSocketConnect(socket: any) {
+
       console.log('WebSocketServer: connected client');
       socket.on('message', (m) => { this.OnSocketMessage(m); });
       socket.on('disconnect', () => { this.OnSocketDisconnect(); });
@@ -34,6 +35,8 @@ export default class WebSocketServer {
 
     public OnSocketMessage(msg: any) {
       console.log('WebSocketServer (message): %s', JSON.stringify(msg));
+      console.log('Calling ack');
+      //ack('My first acknowledgement!');
     }
     
 }

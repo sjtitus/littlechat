@@ -6,7 +6,7 @@
       "inlineSourceMap": true,
       "alwaysStrict": true,
       "strictNullChecks": true,
-      "moduleResolution": "node"
+      "moduleResolution": "node",
     },
     "include": [
       "src/**/*.ts"

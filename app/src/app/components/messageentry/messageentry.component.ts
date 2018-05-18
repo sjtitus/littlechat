@@ -38,7 +38,7 @@ export class MessageentryComponent implements OnInit {
       sent: new Date().toISOString(),
       stored: null
     };
-    this.webSocketService.send('message', JSON.stringify(message), (resp) => { console.log(`response: ${resp}`); });
+    this.webSocketService.send('message', message, (resp) => { console.log(`response:`, resp); });
     event.target.value = '';  // clear the UI
   }
 }

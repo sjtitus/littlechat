@@ -35,17 +35,6 @@ export class MessageService {
   // GetUsers: get the list of users from the back end
   GetUsers(): User[] {
     return [];
-    /*
-    const users: User[] = [
-      {email: 'Steve', password: ''},
-      {email: 'Bob', password: ''},
-      {email: 'Luke', password: ''},
-      {email: 'Arden', password: ''},
-      {email: 'Jess', password: ''},
-      {email: 'Jess12', password: ''}
-    ];
-    return users;
-    */
   }
 
 }
