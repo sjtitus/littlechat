@@ -19,26 +19,17 @@ console.log(`Server: Database Info: host=${pghost}, user=${pguser}, db=${pgdb}`)
 
 // Create the server
 ExpressApp.set('port', port);
+
 ExpressApp.set('view engine', 'html');
 const server = http.createServer(ExpressApp); 
 
-// Configure websockets 
-const io = socketIo(server, { serveClient: false, pingInterval: 10000, pingTimeout: 5000, cookie: false });
-//io.listen(server);
-io.on('connect', (socket: any) => {
-    console.log('Websockets: connected client');
-    socket.on('message', (m, ack) => {
-        console.log('Websockets: (message) %s', JSON.stringify(m));
-        console.log('Calling ack');
-        ack('My first ack');
-    });
-    socket.on('disconnect', () => {
-        console.log('Websockets: client disconnected');
-    });
-});
+// Create the websocketserver that will use same server/port
+const webSocketServer = new WebSocketServer(server);
+console.log(`Server: Starting WebSocketServer`); 
+webSocketServer.Start();
 
 // Start listening for connections 
-console.log(`Server: starting API server on port ${port}`);
+console.log(`Server: server starting on port ${port}`);
 server.listen(port);
 
 server.on('error', onError);

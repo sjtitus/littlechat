@@ -1,10 +1,11 @@
-import { createServer, Server } from 'http';
-import * as express from 'express';
+import { Server } from 'http';
 import * as socketIo from 'socket.io';
+import MessageHandler from './messagehandler';
 
 export default class WebSocketServer {
     private server: Server;
     private io: SocketIO.Server;
+    private messageHandler: MessageHandler;
 
     constructor(server: Server) {
         this.server = server; 
@@ -14,6 +15,7 @@ export default class WebSocketServer {
           pingTimeout: 5000, 
           cookie: false 
         });
+        this.messageHandler = new MessageHandler(this);
     }
 
     public Start(): void {
@@ -22,23 +24,19 @@ export default class WebSocketServer {
     }
 
     public OnSocketConnect(socket: any) {
-
-      console.log('WebSocketServer: connected client');
-      socket.on('message', (m) => { this.OnSocketMessage(m); });
-      socket.on('disconnect', () => { this.OnSocketDisconnect(); });
-
+      console.log(`WebSocketServer: socket ${socket.id} connected`);
+      socket.on('disconnect', () => { this.OnSocketDisconnect(socket); });
+      socket.on('error', (err) => { this.OnSocketError(socket, err); });
+      this.messageHandler.HandleSocket(socket);
     }
     
-    public OnSocketDisconnect() {
-      console.log('WebSocketServer: socket disconnected');
-    }
-
-    public OnSocketMessage(msg: any) {
-      console.log('WebSocketServer (message): %s', JSON.stringify(msg));
-      console.log('Calling ack');
-      //ack('My first acknowledgement!');
+    public OnSocketDisconnect(socket: any) {
+      console.log(`WebSocketServer: socket ${socket.id} disconnected`);
     }
     
+    public OnSocketError(socket: any, err) {
+      console.log(`WebSocketServer: socket ${socket.id} error:`,err);
+    }
 }
 
 /* Auth with tokens

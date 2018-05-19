@@ -37,9 +37,6 @@ export class ApiService {
 
   SignupUser(signupRequest: SignupRequest) {
         console.log('ApiService: signup request ', signupRequest);
-        //const token: string = window.localStorage.getItem('littlechatToken');
-        //let headers: HttpHeaders = new HttpHeaders();
-        //headers = headers.append('authorization', 'Bearer ' + token);
         return this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError));
