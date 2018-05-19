@@ -5,7 +5,7 @@ import { Message } from '../models/message';
 
 import * as socketIo from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = 'http://localhost:4200';
 
 @Injectable()
 export class WebSocketService {
@@ -13,7 +13,17 @@ export class WebSocketService {
 
     constructor() {
         console.log(`WebSocketService: initializing (URL ${SERVER_URL})`);
-        this.socket = socketIo(SERVER_URL, { autoConnect: true });
+        this.socket = socketIo(SERVER_URL, {
+            path: '/sock',
+            autoConnect: true,
+            transportOptions: {
+              polling: {
+                extraHeaders: {
+                  'Authorization': 'Bearer abc'
+                }
+              }
+            }
+        });
     }
 
     public send(event: string, message: Message, callback?: (returnmsg: any) => void): void {

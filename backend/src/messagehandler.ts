@@ -8,7 +8,7 @@ export default class MessageHandler {
 
     public HandleSocket(socket: any) {
       console.log(`MessageHandler: managing socket ${socket.id}`);
-      socket.on('message', (msg:Message, ack) => { this.OnMessage(socket, msg, ack); });
+      socket.on('message', (m,ack) => { this.OnMessage(socket,m,ack); } ); 
     }
 
     //_________________________________________________________________________

@@ -4,5 +4,12 @@
       "secure": false,
       "logLevel": "debug",
       "changeOrigin": true
+    },
+    "/sock/*": {
+      "target": "http://localhost:3000/socket.io/",
+      "secure": false,
+      "logLevel": "debug",
+      "ws": true,
+      "changeOrigin": true
     }
 }

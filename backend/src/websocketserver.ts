@@ -15,6 +15,16 @@ export default class WebSocketServer {
           pingTimeout: 5000, 
           cookie: false 
         });
+        /*
+        this.io.use((socket, next) => {
+          let header = socket.handshake.headers['authorization'];
+          console.log(`WebSocketServer: socket ${socket.id}, auth: ${header}`);
+          if (true) {
+            return next();
+          }
+          //return next(new Error('authentication error'));
+        });
+        */
         this.messageHandler = new MessageHandler(this);
     }
 
@@ -27,6 +37,7 @@ export default class WebSocketServer {
       console.log(`WebSocketServer: socket ${socket.id} connected`);
       socket.on('disconnect', () => { this.OnSocketDisconnect(socket); });
       socket.on('error', (err) => { this.OnSocketError(socket, err); });
+      //socket.on('message', (m) => { console.log(`test got message ${m}`) });
       this.messageHandler.HandleSocket(socket);
     }
     
