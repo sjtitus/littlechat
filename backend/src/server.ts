@@ -25,7 +25,7 @@ const server = http.createServer(ExpressApp);
 
 // Create the websocketserver that will use same server/port
 const webSocketServer = new WebSocketServer(server);
-console.log(`Server: Starting WebSocketServer`); 
+console.log(`Server: Starting WebSocketServer`);
 webSocketServer.Start();
 
 // Start listening for connections 

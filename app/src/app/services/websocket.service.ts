@@ -14,7 +14,7 @@ export class WebSocketService {
     constructor() {
         console.log(`WebSocketService: initializing (URL ${SERVER_URL})`);
         this.socket = socketIo(SERVER_URL, {
-            path: '/sock',
+            path: '/mysock',
             autoConnect: true,
             transportOptions: {
               polling: {

@@ -1,14 +1,15 @@
-import { Server } from 'http';
+import * as http from 'http';
 import * as socketIo from 'socket.io';
 import MessageHandler from './messagehandler';
 
 export default class WebSocketServer {
-    private server: Server;
+    private server: http.Server;
     private io: SocketIO.Server;
     private messageHandler: MessageHandler;
+    private port: number = 8080;
 
-    constructor(server: Server) {
-        this.server = server; 
+    constructor(server: http.Server) {
+        this.server = http.createServer(); 
         this.io = socketIo(this.server,{ 
           serveClient: false, 
           pingInterval: 10000, 
@@ -22,12 +23,13 @@ export default class WebSocketServer {
             return next();
           }
           //return next(new Error('authentication error'));
-        });
+        }); 
         this.messageHandler = new MessageHandler(this);
     }
 
     public Start(): void {
-        this.io.listen(this.server);
+        console.log(`WebSocketServer: listening on port ${this.port}`);
+        this.io.listen(this.port);
         this.io.on('connect', (socket: any) => { this.OnSocketConnect(socket); });
     }
 

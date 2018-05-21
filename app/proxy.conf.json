@@ -5,8 +5,8 @@
       "logLevel": "debug",
       "changeOrigin": true
     },
-    "/sock/*": {
-      "target": "http://localhost:3000/socket.io/",
+    "/mysock/*": {
+      "target": "http://localhost:8080/socket.io/",
       "secure": false,
       "logLevel": "debug",
       "ws": true,

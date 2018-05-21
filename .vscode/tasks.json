@@ -3,65 +3,72 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "Client Start",
-            "identifier": "Client Start",
-            "type": "npm",
-            "script": "start",
-            "path": "app/",
-            "isBackground": true,
-            "problemMatcher": []
+      {
+        "label": "Client Start",
+        "identifier": "Client Start",
+        "type": "npm",
+        "script": "start",
+        "path": "app/",
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Server Debug",
+        "identifier": "Server Debug",
+        "dependsOn": [
+          "Server Debug Start",
+          "Server Debug Code Watch"
+        ],
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Server Debug Start",
+        "identifier": "Server Debug Start",
+        "type": "npm",
+        "script": "monitor",
+        "path": "backend/",
+        "isBackground": true,
+        "options": {
+          "env": {
+            "PGUSER": "postgres",
+            "PGHOST": "localhost",
+            "PGPASSWORD": "katja1_!",
+            "PGDATABASE": "littlechat",
+            "PGPORT": "5432",
+            "DEBUG": "*"
+          }
         },
-        {
-            "label": "Server Debug",
-            "identifier": "Server Debug",
-            "dependsOn": [
-                "Server Debug Start",
-                "Server Debug Code Watch"
-            ],
-            "isBackground": true,
-            "problemMatcher": []
-        },
-        {
-            "label": "Server Debug Start",
-            "identifier": "Server Debug Start",
-            "type": "npm",
-            "script": "monitor",
-            "path": "backend/",
-            "isBackground": true,
-            "options": {
-                "env": {
-                    "PGUSER": "postgres",
-                    "PGHOST": "localhost",
-                    "PGPASSWORD": "katja1_!",
-                    "PGDATABASE": "littlechat",
-                    "PGPORT": "5432"
-                }
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Server Debug Code Watch",
-            "identifier": "Server Debug Code Watch",
-            "type": "typescript",
-            "tsconfig": "backend\\tsconfig.json",
-            "option": "watch",
-            "isBackground": true,
-            "problemMatcher": [
-                "$tsc-watch"
-            ]
-        },
-        {
-            "type": "npm",
-            "script": "build",
-            "path": "app/",
-            "problemMatcher": []
-        },
-        {
-            "type": "npm",
-            "script": "test",
-            "path": "app/",
-            "problemMatcher": []
-        }
+        "problemMatcher": []
+      },
+      {
+        "label": "Server Debug Code Watch",
+        "identifier": "Server Debug Code Watch",
+        "type": "typescript",
+        "tsconfig": "backend\\tsconfig.json",
+        "option": "watch",
+        "isBackground": true,
+        "problemMatcher": [
+          "$tsc-watch"
+        ]
+      },
+      {
+        "type": "npm",
+        "script": "build",
+        "path": "app/",
+        "problemMatcher": []
+      },
+      {
+        "type": "npm",
+        "script": "test",
+        "path": "app/",
+        "problemMatcher": []
+      },
+      {
+        "type": "npm",
+        "script": "lint",
+        "path": "app/",
+        "problemMatcher": []
+      }
     ]
-}
+  }
