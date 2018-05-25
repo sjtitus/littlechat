@@ -1,7 +1,12 @@
 export interface  Message {
-    from: number;
-    to: number;
-    content: string;
-    sent: string;
-    stored: null | string;
+  from: number;
+  to: number;
+  content: string;
+  timeSent: string;
+  hashCode: string;
+}
+
+export interface MessageAck {
+  hashCode: string;
+  timeReceived: string;
 }

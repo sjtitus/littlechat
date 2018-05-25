@@ -1,5 +1,5 @@
 import WebSocketServer from './websocketserver';
-import { Message }  from '../../app/src/app/models/message';
+import { Message, MessageAck }  from '../../app/src/app/models/message';
 
 export default class MessageHandler {
 
@@ -16,7 +16,12 @@ export default class MessageHandler {
     // Handle an incoming littlechat message 
     public async OnMessage(socket: any, message: Message, ack: Function) {
       console.log(`MessageHandler:OnMessage: incoming message from ${message.from}:`,message);
-      // Acknowledge that the message was received
+      const messageAck: MessageAck = {
+        hashCode: message.hashCode,
+        timeReceived: new Date().toISOString()
+      }
+      // Acknowledge message receipt to client 
+      ack(messageAck); 
       // Log the message to the database
       // Broadcast the message to the audience 
     }

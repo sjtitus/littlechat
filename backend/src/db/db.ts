@@ -16,6 +16,7 @@ const sql = {
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
   getPasswordByUserId: 'SELECT * FROM passwd WHERE idusr = $1',
   getContactsByUserId: 'SELECT * FROM usr'
+  getConversationsByUserId: 'SELECT * FROM usr'
 }
 
 //=========================================================

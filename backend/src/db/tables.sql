@@ -74,6 +74,45 @@ $$
 LANGUAGE 'plpgsql';
 
 
+-- Get a user's audiences with members listed 
+select 
+	au.id_audience as audience_id, 
+	u.id as user_id,
+	u.email as user_email 
+from usr as u
+	inner join audience_usr as au on u.id = au.id_usr
+where 
+	au.id_audience in (
+		select a.id 
+		from audience as a
+   			inner join audience_usr as au ON a.id = au.id_audience
+   			where au.id_usr = 1
+	)
+
+  -- Get the members of an audience
+select
+  *
+from usr as u 
+  inner join audience_usr as au on u.id = au.id_usr
+where
+  au.id_audience = 1
+
+
+
+  -- Get a user's conversations
+select 
+	c.* 
+from conversation as c
+	inner join audience a on a.id = c.idaudience
+where 
+	a.id in (
+		select a.id 
+		from audience as a
+   			inner join audience_usr as au ON a.id = au.id_audience
+   			where au.id_usr = 1
+	)
+
+
 -- select * from usr;
 --drop table passwd;
 --drop table usr;
