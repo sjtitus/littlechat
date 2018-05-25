@@ -15,7 +15,7 @@ const sql = {
   createUser: 'SELECT * from createUser($1,$2,$3,$4,$5,$6)', 
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
   getPasswordByUserId: 'SELECT * FROM passwd WHERE idusr = $1',
-  getContactsByUserId: 'SELECT * FROM usr'
+  getContactsByUserId: 'SELECT * FROM usr',
   getConversationsByUserId: 'SELECT * FROM usr'
 }
 
@@ -26,6 +26,16 @@ const sql = {
 //______________________________________________________________________________
 // Run a query against the connection pool
 export async function query(text, params) { return pool.query(text, params) }
+
+
+//______________________________________________________________________________
+// getConversationsByUserId
+// Returns: db conversation list for user with specified user id 
+export async function getConversationsByUserId( uid: number ) {
+  const { rows:conversations } = await query(sql.getConversationsByUserId, []); 
+  return conversations; 
+}
+
 
 //______________________________________________________________________________
 // getContactsByUserId
