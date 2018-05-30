@@ -9,6 +9,7 @@ import { Message, MessageAck } from '../../models/message';
 import { TokenService } from '../../services/token.service';
 import { MessageService } from '../../services/message.service';
 import { WebSocketService } from '../../services/websocket.service';
+//import {Md5} from 'ts-md5/dist/md5';
 
 @Component({
   selector: 'app-messageentry',
@@ -34,7 +35,7 @@ export class MessageentryComponent implements OnInit {
     const content: string = event.target.value as string;
     console.log('MessageEntry: sending message:', content, 'to user', this.chatContact);
     const timeSent: string = new Date().toISOString();
-    const hashCode: string = Md5.hashStr(timeSent + content) as string;
+    const hashCode = '';  //Md5.hashStr(timeSent + content) as string;
     const message: Message = {
       from: this.currentUser.id,
       to: this.chatContact.id,
