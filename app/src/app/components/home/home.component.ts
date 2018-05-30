@@ -21,8 +21,7 @@ export class HomeComponent implements OnInit {
   headerMessage = 'Select Chat Partner';
   currentUser: User;
 
-  constructor( private tokenService: TokenService, private webSocketService: WebSocketService ) {
-  }
+  constructor( private tokenService: TokenService, private webSocketService: WebSocketService) {}
 
   public SetChatContact(contact: User) {
     this.chatContact = contact;
@@ -31,7 +30,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.currentUser = this.tokenService.CurrentUser;
+    const authToken: string = this.tokenService.Get('littlechatToken');
     console.log('HomeComponent: currentUser:', this.currentUser);
+    console.log(`HomeComponent: instantiating WebSocketService with token=${authToken}`);
+    this.webSocketService.Start(authToken);
   }
+
 
 }

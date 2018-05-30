@@ -1,52 +1,62 @@
 
+drop table usr cascade;
+drop table passwd cascade;
+drop table conversation cascade;
+drop table message cascade;
+drop table conversation_usr cascade;
+
 CREATE TABLE usr (
     id serial primary key,
-    firstname character varying(128) NOT NULL,
-    lastname character varying(128) NOT NULL,
+    firstName character varying(128) NOT NULL,
+    lastName character varying(128) NOT NULL,
     email character varying(128) NOT NULL,
-    timestampcreated timestamp with time zone NOT NULL,
-    timestampmodified timestamp with time zone NOT NULL,
+    timestampCreated timestamp with time zone NOT NULL,
+    timestampModified timestamp with time zone NOT NULL,
     active boolean NOT NULL,
     validated boolean NOT NULL
 );
 
-CREATE TABLE public.passwd (
+CREATE TABLE passwd (
     id serial primary key,
-    idusr integer references usr(id),
+    id_usr integer references usr(id),
     salt character(32) NOT NULL,
     passwd character(256) NOT NULL,
     iter integer NOT NULL,
-    timestampcreated timestamp with time zone NOT NULL,
-    timestampmodified timestamp with time zone NOT NULL
-);
-
-CREATE TABLE audience (
-	id bigserial primary key,
-	timestampcreated timestamp with time zone NOT NULL,
-	membershash character(128) NOT NULL 
-);
-
-CREATE TABLE audience_usr (
-	id_audience bigint references audience(id),
-	id_usr integer references usr(id)
+    timestampCreated timestamp with time zone NOT NULL,
+    timestampModified timestamp with time zone NOT NULL
 );
 
 CREATE TABLE conversation (
 	id bigserial primary key,
-	idowner integer references usr(id),
-	idaudience bigint references audience(id),
-	timestampcreated timestamp with time zone NOT NULL,
-	timestampmodified timestamp with time zone NOT NULL
+  name varchar(128),
+  membersHash character(256) NOT NULL,
+	timestampCreated timestamp with time zone NOT NULL,
+	timestampModified timestamp with time zone NOT NULL,
+	timestampLastMessage timestamp with time zone default NULL
 );
 
 CREATE TABLE message (
 	id bigserial primary key,
 	id_conversation bigint references conversation(id),
 	id_sender integer references usr(id),
-	timestampcreated timestamp with time zone NOT NULL,
+	timestampCreated timestamp with time zone NOT NULL,
 	content varchar(16384) NOT NULL 
 );
 
+CREATE TABLE conversation_usr (
+  id bigserial primary key,
+  id_conversation bigint references conversation(id),
+  id_usr integer references usr(id),
+  timestampLastMessage timestamp with time zone default NULL,
+  timestampLastRead timestamp with time zone default NULL,
+  numUnreadMessages integer default 0 
+);
+
+
+
+--
+-- Stored Procedures (Functions)
+--
 CREATE OR REPLACE FUNCTION createUser(
 	firstname varchar, 
 	lastname varchar, 
@@ -61,17 +71,19 @@ DECLARE myid usr.id%TYPE;
 DECLARE curtime timestamptz = current_timestamp;
 BEGIN
   -- Insert the user 
-  INSERT INTO usr(firstname, lastname, email, timestampcreated, timestampmodified, active, validated)
+  INSERT INTO usr(firstname, lastname, email, timestampCreated, timestampModified, active, validated)
 	VALUES (firstname, lastname, email, curtime, curtime, true, false)
   RETURNING id INTO myid;
   -- Insert password information
-  INSERT INTO passwd( idusr, salt, passwd, iter, timestampcreated, timestampmodified)
+  INSERT INTO passwd( id_usr, salt, passwd, iter, timestampCreated, timestampModified)
   VALUES (myid,salt,encrypted_password,crypt_iters, curtime, curtime);
   -- return newly-created user's id 
   RETURN myid;
 END
 $$
 LANGUAGE 'plpgsql';
+
+
 
 
 -- select * from usr;

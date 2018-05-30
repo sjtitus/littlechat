@@ -36,7 +36,6 @@
             "PGPASSWORD": "katja1_!",
             "PGDATABASE": "littlechat",
             "PGPORT": "5432",
-            "DEBUG": "*"
           }
         },
         "problemMatcher": []
@@ -68,6 +67,12 @@
         "type": "npm",
         "script": "lint",
         "path": "app/",
+        "problemMatcher": []
+      },
+      {
+        "type": "npm",
+        "script": "debug",
+        "path": "backend/",
         "problemMatcher": []
       }
     ]

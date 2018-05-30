@@ -25,7 +25,9 @@ export class MessageentryComponent implements OnInit {
     private webSocketService: WebSocketService) {}
 
   ngOnInit() {
+    console.log('MessageEntry Init: WebSocketService token:', this.webSocketService.authToken);
     this.currentUser = this.tokenService.CurrentUser;
+    console.log('MessageEntry Init: current user', this.currentUser);
   }
 
   SendMessage(event: any) {

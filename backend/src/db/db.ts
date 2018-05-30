@@ -14,7 +14,7 @@ const pool = new Pool();
 const sql = {
   createUser: 'SELECT * from createUser($1,$2,$3,$4,$5,$6)', 
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
-  getPasswordByUserId: 'SELECT * FROM passwd WHERE idusr = $1',
+  getPasswordByUserId: 'SELECT * FROM passwd WHERE id_usr = $1',
   getContactsByUserId: 'SELECT * FROM usr'
 }
 

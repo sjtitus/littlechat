@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as socketIo from 'socket.io';
 import MessageHandler from './messagehandler';
+import { Token } from './token';
 
 export default class WebSocketServer {
     private server: http.Server;
@@ -17,12 +18,19 @@ export default class WebSocketServer {
           cookie: false 
         });
         this.io.use((socket, next) => {
-          let header = socket.handshake.headers['authorization'];
-          console.log(`WebSocketServer: socket ${socket.id}, auth: ${header}`);
-          if (true) {
-            return next();
+          let authToken: string = socket.handshake.headers['authorization'];
+          console.log(`WebSocketServer: socket ${socket.id}, auth: ${authToken}`);
+          if (authToken != null && authToken.length > 0)
+          {
+            console.log(`WebSocketServer: verify auth token: ${authToken}`);
+            const authPayload = Token.Verify(authToken);
+            console.log(`WebSocketServer: auth token payload`, authPayload);
           }
-          //return next(new Error('authentication error'));
+          if (true) {
+            //return next();
+            console.log(`WebSocketServer: throwing auth error`);
+            return next(new Error('authentication error'));
+          }
         }); 
         this.messageHandler = new MessageHandler(this);
     }

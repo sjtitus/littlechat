@@ -15,6 +15,11 @@ export class Token {
     public static Generate(payload: any): string {
         return jwt.sign(payload, Token.secret, { expiresIn: Token.lifetime });
     }
+
+    public static Verify(token: string) {
+        return jwt.verify(token, this.secret); 
+    }
+
 }
 
 

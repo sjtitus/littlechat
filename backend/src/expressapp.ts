@@ -9,15 +9,9 @@ import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import { Routes } from './routes';
   
-const myLogger = function (req, res, next) {
-    console.log('TITUS LOG');
-    next();
-}
-
 class ExpressApp {
   public express: express.Application; 
   private routes: Routes;
-
 
   constructor() {
     this.express = express();
@@ -28,7 +22,6 @@ class ExpressApp {
 
 
   private middleware(): void {
-    this.express.use(myLogger);
     this.express.use(logger('dev'));
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({ extended: false }));

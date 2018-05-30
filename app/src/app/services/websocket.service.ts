@@ -10,21 +10,30 @@ const SERVER_URL = 'http://localhost:4200';
 @Injectable()
 export class WebSocketService {
     private socket;
+    private _authToken: string;
 
-    constructor() {
-        console.log(`WebSocketService: initializing (URL ${SERVER_URL})`);
+    constructor() {}
+
+    public Start(token: string) {
+        console.log(`WebSocketService: starting service (URL ${SERVER_URL})`);
+        console.log(`WebSocketService: authToken: ${token})`);
+        this._authToken = token;
         this.socket = socketIo(SERVER_URL, {
             path: '/mysock',
             autoConnect: true,
             transportOptions: {
               polling: {
                 extraHeaders: {
-                  'Authorization': 'Bearer abc'
+                  'Authorization': this._authToken
                 }
               }
             }
         });
+        console.log(`Client WebSocketService: installing error handler`);
+        this.socket.on('error', (err) => { console.log('Client WebSocketService ERROR!: ', err); });
     }
+
+    public get authToken(): string { return this._authToken; }
 
     public send(event: string, message: Message, callback?: (returnmsg: any) => void): void {
         console.log(`WebSocketService: sending message:`, message);
@@ -36,13 +45,5 @@ export class WebSocketService {
             this.socket.on(event, () => observer.next());
         });
     }
-
-    /*
-    public onMessage(): Observable<string> {
-        return new Observable<string>(observer => {
-            this.socket.on('message', (data: string) => observer.next(data));
-        });
-    }
-    */
 
 }
