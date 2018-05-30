@@ -5,7 +5,7 @@ ________________________________________________________________________________
 */
 import { Component, OnInit, Input } from '@angular/core';
 import { User } from '../../models/user';
-import { Message } from '../../models/message';
+import { Message, MessageAck } from '../../models/message';
 import { TokenService } from '../../services/token.service';
 import { MessageService } from '../../services/message.service';
 import { WebSocketService } from '../../services/websocket.service';
@@ -31,16 +31,26 @@ export class MessageentryComponent implements OnInit {
   }
 
   SendMessage(event: any) {
-    const content = event.target.value;
+    const content: string = event.target.value as string;
     console.log('MessageEntry: sending message:', content, 'to user', this.chatContact);
+    const timeSent: string = new Date().toISOString();
+    const hashCode: string = Md5.hashStr(timeSent + content) as string;
     const message: Message = {
-      to: this.chatContact.id,
       from: this.currentUser.id,
+      to: this.chatContact.id,
       content: content,
-      sent: new Date().toISOString(),
-      stored: null
+      timeSent: timeSent,
+      hashCode: hashCode
     };
-    this.webSocketService.send('message', message, (resp) => { console.log(`response:`, resp); });
+    this.webSocketService.send('message', message, (ack: MessageAck) => { this.CheckAck(ack, hashCode); });
     event.target.value = '';  // clear the UI
   }
+
+  private CheckAck(ack: MessageAck, hashCode: string) {
+    console.log(`MessageEntry: ack received for message ${hashCode}`);
+    if (ack.hashCode !== hashCode) {
+      throw new Error(`MessageEntry: message acknowledgement failed: sent (${hashCode}) != received (${ack.hashCode})`);
+    }
+  }
+
 }

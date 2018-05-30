@@ -9,7 +9,8 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 //import 'rxjs/add/observable/throw';
 //import 'rxjs/add/operator/map';
 
-import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse } from '../models/user';
+import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse,
+         GetConversationsRequest, GetConversationsResponse } from '../models/user';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 import { ErrorResponse } from '../models/errorresponse';
 
@@ -21,6 +22,7 @@ export class ApiService {
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly msgsUrl = 'http://localhost:4200/api/messages';
   private readonly contactsUrl = 'http://localhost:4200/api/contacts';
+  private readonly conversationsUrl = 'http://localhost:4200/api/conversations';
   private readonly timeout = 20000;
 
   //===========================================================================
@@ -38,6 +40,13 @@ export class ApiService {
   SignupUser(signupRequest: SignupRequest) {
         console.log('ApiService: signup request ', signupRequest);
         return this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError));
+  }
+
+  GetConversations(req: GetConversationsRequest) {
+        console.log('ApiService: get conversations request', req);
+        return this.http.post<GetConversationsResponse>(this.conversationsUrl, req, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError));
   }

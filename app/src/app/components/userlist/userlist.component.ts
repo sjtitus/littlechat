@@ -5,11 +5,12 @@
 ________________________________________________________________________________
 */
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-import { User, GetContactsRequest, GetContactsResponse } from '../../models/user';
+import { User, GetContactsRequest, GetContactsResponse, GetConversationsRequest, GetConversationsResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../models/errorresponse';
 import { TokenService } from '../../services/token.service';
+import { Conversation } from '../../models/conversation';
 
 @Component({
   selector: 'app-userlist',
@@ -22,6 +23,7 @@ export class UserlistComponent implements OnInit {
   @Output() contactSelected = new EventEmitter<User>();  // Event to broadcast currently selected contact
 
   contactList: User[];             // Chat contacts for current user
+  conversationList: Conversation[];
   applicationError: string;
   networkError: string;
 
@@ -34,6 +36,7 @@ export class UserlistComponent implements OnInit {
     this.currentUser = this.tokenService.CurrentUser;
     console.log(`UserListComponent: OnInit: current user is ${this.currentUser.email}`);
     this.GetContacts();
+    this.GetConversations();
   }
 
   //___________________________________________________________________________
@@ -61,6 +64,28 @@ export class UserlistComponent implements OnInit {
     );
   }
 
+  GetConversations() {
+    const apiReq: GetConversationsRequest = { userId: this.currentUser.id };
+    console.log(`Userlist: GetConversations (userId=${apiReq.userId})`);
+    this.apiService.GetConversations(apiReq).subscribe(
+        (resp) => { this.HandleGetConverstaionsResponse(resp);       },
+         (err) => { this.HandleError('GetConversations', err);  }
+    );
+  }
+
+  private HandleGetConverstaionsResponse(httpResponse: HttpResponse<GetConversationsResponse>) {
+    const apiResp: GetConversationsResponse = httpResponse.body;
+    console.log('Userlist: GetConversations response', apiResp);
+    if (!apiResp.error) {
+      this.conversationList = apiResp.conversations;
+    }
+    else {
+      // Handle backend logical errors
+      console.log(`Userlist: GetConversations error: ${apiResp.errorMessage}`);
+      this.applicationError = `Userlist: GetConversations error: '${apiResp.errorMessage}'`;
+    }
+  }
+
   private HandleGetContactsResponse(httpResponse: HttpResponse<GetContactsResponse>) {
     const apiResp: GetContactsResponse = httpResponse.body;
     console.log('Userlist: GetContacts response', apiResp);
@@ -80,7 +105,6 @@ export class UserlistComponent implements OnInit {
     console.log(`Userlist: ${etype} network error:`, errorResponse);
     this.networkError = `Userlist: ${etype} network error: ${errorResponse.message}`;
   }
-
 
 }
 

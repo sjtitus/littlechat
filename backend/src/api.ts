@@ -5,7 +5,7 @@ _______________________________________________________________________________
 import { RequestHandler, Request, Response, NextFunction } from "express";
 
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from "../../app/src/app/models/login";
-import { User, GetContactsRequest, GetContactsResponse } from "../../app/src/app/models/user";
+import { User, GetContactsRequest, GetContactsResponse, GetConversationsRequest, GetConversationsResponse } from "../../app/src/app/models/user";
 import * as Auth from "./auth";
 import * as Contact from "./contact";
 
@@ -39,6 +39,17 @@ export const contacts:RequestHandler = async function(req: Request, res:Response
   console.debug(`Api::Contacts: request for user id ${getContactsRequest.userId}`);
   const getContactsResponse: GetContactsResponse = await Contact.GetContacts(getContactsRequest); 
   res.status(200).json(getContactsResponse);
+}
+
+
+//___________________________________________________________________________
+// Conversations
+// List conversations for a specified user  
+export const conversations:RequestHandler = async function(req: Request, res:Response, next:NextFunction) {
+  const getConversationsRequest: GetConversationsRequest = req.body;
+  console.debug(`Api::Conversations: request for user id ${getConversationsRequest.userId}`);
+  const getConversationsResponse: GetConversationsResponse = await Contact.GetConversations(getConversationsRequest); 
+  res.status(200).json(getConversationsResponse);
 }
 
 
