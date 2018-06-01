@@ -29,8 +29,13 @@ export class WebSocketService {
               }
             }
         });
+        /*
         console.log(`Client WebSocketService: installing error handler`);
-        this.socket.on('error', (err) => { console.log('Client WebSocketService ERROR!: ', err); });
+        this.socket.on('error', (err) => {
+            console.log('Client WebSocketService ERROR!: ', err);
+            console.log('err: socket: ', this.socket);
+        });
+        */
     }
 
     public get authToken(): string { return this._authToken; }
@@ -41,8 +46,9 @@ export class WebSocketService {
     }
 
     public onEvent(event: string): Observable<any> {
+        console.log(`WebSocketService: Setting up event handler for '${event}'`);
         return new Observable<Event>(observer => {
-            this.socket.on(event, () => observer.next());
+            this.socket.on(event, (data) => observer.next(data));
         });
     }
 

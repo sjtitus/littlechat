@@ -30,7 +30,6 @@ export const signup:RequestHandler = async function(req:Request, res:Response, n
   res.status(200).json(signupResponse);
 }
 
-
 //___________________________________________________________________________
 // Contacts 
 // List contacts for a specified user  
@@ -40,7 +39,6 @@ export const contacts:RequestHandler = async function(req: Request, res:Response
   const getContactsResponse: GetContactsResponse = await Contact.GetContacts(getContactsRequest); 
   res.status(200).json(getContactsResponse);
 }
-
 
 //___________________________________________________________________________
 // Conversations

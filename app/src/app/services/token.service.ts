@@ -15,6 +15,55 @@ export class TokenService implements CanActivate {
     console.log('TokenService: storage available: ', this.storageAvailable);
   }
 
+  // Save a token using a specified key
+  public Save(key: string, token: string) {
+    try {
+      console.log(`TokenService: saving token under key '${key}'`);
+      console.log('TokenService: token "%s"', JSON.stringify(this.Decode(token)));
+      window.localStorage.setItem(key, token);
+    } catch (e) {
+      throw new Error(`TokenService: could not save token under key '${key}' in localStorage`);
+    }
+  }
+
+  // Retrieve a token using a specified key
+  public Get(key: string): string | null {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (e) {
+      throw new Error(`TokenService: could not retrieve token with key '${key}' from localStorage`);
+    }
+  }
+
+  // Delete a token using a specified key
+  public Delete(key: string) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch (e) {
+      throw new Error(`TokenService: could not delete token with key '${key}' from localStorage`);
+    }
+  }
+
+  // Decode the specified token
+  public Decode(token: string): string | { [key: string]: any } {
+    return jwt.decode(token);
+  }
+
+  // CanActivate interface
+  // Used to control authenticated access to components
+  canActivate(): boolean {
+    console.log('TokenService: checking auth');
+    if (!this.IsAuthenticatedClientSide()) {
+      this.currentUser.id = -1;
+      this.currentUser.email = '';
+      //this.router.navigate(['login']);
+      //return false;
+      return true;
+    }
+    console.log('TokenService: auth ok');
+    return true;
+  }
+
   get CurrentUser(): User {
     return this.currentUser;
   }
@@ -44,18 +93,6 @@ export class TokenService implements CanActivate {
     }
   }
 
-  canActivate(): boolean {
-    console.log('TokenService: checking auth');
-    if (!this.IsAuthenticatedClientSide()) {
-      this.currentUser.id = -1;
-      this.currentUser.email = '';
-      this.router.navigate(['login']);
-      return false;
-    }
-    console.log('TokenService: auth ok');
-    return true;
-  }
-
   private IsAuthenticatedClientSide(): boolean {
     const token = window.localStorage.getItem('littlechatToken');
     if (token == null) {
@@ -74,37 +111,6 @@ export class TokenService implements CanActivate {
     this.currentUser.id = jwtoken.userId;
     this.currentUser.email = jwtoken.email;
     return true;
-  }
-
-  public Save(key: string, token: string) {
-    try {
-      console.log(`TokenService: saving token under key '${key}'`);
-      console.log('TokenService: token "%s"', JSON.stringify(this.Decode(token)));
-      window.localStorage.setItem(key, token);
-    } catch (e) {
-      throw new Error(`TokenService: could not save token under key '${key}' in localStorage`);
-    }
-
-  }
-
-  public Get(key: string): string | null {
-    try {
-      return window.localStorage.getItem(key);
-    } catch (e) {
-      throw new Error(`TokenService: could not retrieve token with key '${key}' from localStorage`);
-    }
-  }
-
-  public Delete(key: string) {
-    try {
-      window.localStorage.removeItem(key);
-    } catch (e) {
-      throw new Error(`TokenService: could not delete token with key '${key}' from localStorage`);
-    }
-  }
-
-  public Decode(token: string): string | { [key: string]: any } {
-    return jwt.decode(token);
   }
 
 }

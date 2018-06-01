@@ -84,8 +84,6 @@ $$
 LANGUAGE 'plpgsql';
 
 
-<<<<<<< HEAD
-=======
 -- Get a user's audiences with members listed 
 select 
 	au.id_audience as audience_id, 
@@ -123,7 +121,6 @@ where
    			inner join audience_usr as au ON a.id = au.id_audience
    			where au.id_usr = 1
 	)
->>>>>>> 14d6644022d0d681cb7cbc67cd4322edd6ef18cc
 
 
 -- select * from usr;

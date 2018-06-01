@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   chatContact: User;   // user we're chatting with
   headerMessage = 'Select Chat Partner';
   currentUser: User;
+  WebSocketErrorText = '';
 
   constructor( private tokenService: TokenService, private webSocketService: WebSocketService) {}
 
@@ -34,6 +35,13 @@ export class HomeComponent implements OnInit {
     console.log('HomeComponent: currentUser:', this.currentUser);
     console.log(`HomeComponent: instantiating WebSocketService with token=${authToken}`);
     this.webSocketService.Start(authToken);
+    this.webSocketService.onEvent('error').subscribe(
+      (err) => {
+          console.log('HomeComponent: catching websocketservice error: ', err);
+          //console.log('HomeComponent: this', this);
+          this.WebSocketErrorText = err;
+      }
+    );
   }
 
 

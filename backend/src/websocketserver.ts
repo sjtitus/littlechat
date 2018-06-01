@@ -21,9 +21,15 @@ export default class WebSocketServer {
           let authToken: string = socket.handshake.headers['authorization'];
           console.log(`WebSocketServer: socket ${socket.id}, auth: ${authToken}`);
           if (authToken != null && authToken.length > 0)
-          {
+          { 
             console.log(`WebSocketServer: verify auth token: ${authToken}`);
-            const authPayload = Token.Verify(authToken);
+            let authPayload;
+            try {
+              authPayload = Token.Verify(authToken);
+            }
+            catch (err) {
+              console.log(`WebSocketServer: error: verify auth token failed: ${err}`);
+            }
             console.log(`WebSocketServer: auth token payload`, authPayload);
           }
           if (true) {
