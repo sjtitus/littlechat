@@ -62,27 +62,3 @@ export default class WebSocketServer {
       console.log(`WebSocketServer: socket ${socket.id} error:`,err);
     }
 }
-
-/* Auth with tokens
-const client = io({
-  transportOptions: {
-    polling: {
-      extraHeaders: {
-        'Authorization': 'Bearer abc'
-      }
-    }
-  }
-});
-
-// server-side
-const io = require('socket.io')();
-
-// middleware
-io.use((socket, next) => {
-  let header = socket.handshake.headers['authorization'];
-  if (isValidJwt(header)) {
-    return next();
-  }
-  return next(new Error('authentication error'));
-});
-*/
