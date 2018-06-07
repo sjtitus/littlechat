@@ -35,17 +35,15 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     console.log(`HomeComponent::Init: current user is ${this.CurrentUser.email}`);
-    console.log(`HomeComponent::Init: instantiating client-side web socket service`);
+    console.log(`HomeComponent::Init: instantiating client web socket service`);
     const authToken: string = this.tokenService.Retrieve();
     this.webSocketService.Start(authToken);
-    this.webSocketService.onEvent('error').subscribe(
-      (err) => {
-          console.log('HomeComponent: catching websocketservice error: ', err);
-          //console.log('HomeComponent: this', this);
-          this.WebSocketErrorText = err;
-      }
-    );
+    this.webSocketService.onEvent('error').subscribe((err) => this.HandleWebSocketError(err));
   }
 
+  private HandleWebSocketError(err: string) {
+    console.error(`HomeComponent::HandleWebSocketError: client web socket service error: ${err}`);
+    this.WebSocketErrorText = err;
+  }
 
 }
