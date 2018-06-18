@@ -29,6 +29,11 @@ export class MessageentryComponent implements OnInit {
     console.log('MessageEntry Init: WebSocketService token:', this.webSocketService.authToken);
     this.currentUser = this.tokenService.CurrentUser;
     console.log('MessageEntry Init: current user', this.currentUser);
+    this.webSocketService.onEvent('error').subscribe(
+      (err) => {
+          console.log('MessageEntry: catching websocketservice error: ', err);
+      }
+    );
   }
 
   SendMessage(event: any) {

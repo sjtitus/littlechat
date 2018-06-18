@@ -43,6 +43,7 @@ export class WebSocketService {
     public send(event: string, message: Message, callback?: (returnmsg: any) => void): void {
         console.log(`WebSocketService: sending message:`, message);
         this.socket.emit(event, message, callback);
+
     }
 
     public onEvent(event: string): Observable<any> {
