@@ -17,29 +17,32 @@ export default class WebSocketServer {
           pingTimeout: 5000, 
           cookie: false 
         });
-        this.io.use((socket, next) => {
+        this.io.use((socket, next) => { return this.CheckSocketAuth(socket, next); });
+        this.messageHandler = new MessageHandler(this);
+    }
+
+    private CheckSocketAuth(socket, next) {
           let authToken: string = socket.handshake.headers['authorization'];
-          console.log(`WebSocketServer: socket ${socket.id}, auth: ${authToken}`);
+          console.log(`WebSocketServer::CheckSocketAuth: socket ${socket.id}`);
           if (authToken != null && authToken.length > 0)
           { 
-            console.log(`WebSocketServer: verify auth token: ${authToken}`);
+            console.log(`WebSocketServer::CheckSocketAuth: token: ${authToken}`);
             let authPayload;
             try {
               authPayload = Token.Verify(authToken);
             }
             catch (err) {
-              console.log(`WebSocketServer: error: verify auth token failed: ${err}`);
+              console.log(`WebSocketServer::CheckSocketAuth: error: token verify failed: ${err}`);
+              return next(new Error(`WebSocketServer::CheckSocketAuth: error: authentication failed: ${err}`));
             }
-            console.log(`WebSocketServer: auth token payload`, authPayload);
           }
-          if (true) {
-            //return next();
-            console.log(`WebSocketServer: throwing auth error`);
-            return next(new Error('authentication error'));
+          else {
+            return next(new Error(`WebSocketServer::CheckSocketAuth: error: authentication failed, missing auth header`)); 
           }
-        }); 
-        this.messageHandler = new MessageHandler(this);
+          console.log(`WebSocketServer::CheckSocketAuth: verify auth token success`);
+          return next(); 
     }
+
 
     public Start(): void {
         console.log(`WebSocketServer: listening on port ${this.port}`);
@@ -48,17 +51,17 @@ export default class WebSocketServer {
     }
 
     public OnSocketConnect(socket: any) {
-      console.log(`WebSocketServer: socket ${socket.id} connected`);
+      console.log(`WebSocketServer:OnSocketConnect: socket ${socket.id} connected`);
       socket.on('disconnect', () => { this.OnSocketDisconnect(socket); });
       socket.on('error', (err) => { this.OnSocketError(socket, err); });
       this.messageHandler.HandleSocket(socket);
     }
     
     public OnSocketDisconnect(socket: any) {
-      console.log(`WebSocketServer: socket ${socket.id} disconnected`);
+      console.log(`WebSocketServer::OnSocketDisconnect: socket ${socket.id} disconnected`);
     }
     
     public OnSocketError(socket: any, err) {
-      console.log(`WebSocketServer: socket ${socket.id} error:`,err);
+      console.log(`WebSocketServer:OnSocketError: socket ${socket.id} error:`,err);
     }
 }

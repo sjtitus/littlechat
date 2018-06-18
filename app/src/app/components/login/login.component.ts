@@ -118,7 +118,7 @@ export class LoginComponent implements OnInit {
     const loginResponse: LoginResponse = httpResponse.body;
     console.log('LoginComponent: login response', loginResponse);
     if (this.LoginSuccess(loginResponse)) {
-      this.tokenService.Save('littlechatToken', loginResponse.token);
+      this.tokenService.Store(loginResponse.token);
       this.router.navigate(['/home']);
     }
   }
@@ -129,7 +129,7 @@ export class LoginComponent implements OnInit {
     const signupResponse: SignupResponse = httpResponse.body;
     console.log('LoginComponent: signup response', signupResponse);
     if (this.SignupSuccess(signupResponse)) {
-      this.tokenService.Save('littlechatToken', signupResponse.token);
+      this.tokenService.Store(signupResponse.token);
       this.router.navigate(['/home']);
     }
   }

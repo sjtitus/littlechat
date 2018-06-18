@@ -6,7 +6,7 @@
  *  returns the currently authenticated user.
  */
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 
@@ -15,11 +15,10 @@ export class TokenService implements CanActivate {
 
   static TokenKey = 'littleChat';
   private storageAvailable: boolean;
-  private currentUser: User;
 
   //___________________________________________________________________________
   // Constructor
-  constructor() {
+  constructor(private router: Router) {
     console.log(`TokenService::Construct: token key '${TokenService.TokenKey}'`);
     this.storageAvailable = this.StorageAvailable();
     console.log('TokenService::Construct: storage available: ', this.storageAvailable);
@@ -28,10 +27,7 @@ export class TokenService implements CanActivate {
   //___________________________________________________________________________
   // Return the current authenticated user
   public get CurrentUser(): User {
-    if (this.currentUser == null) {
-      throw new Error(`TokenService::CurrentUser: assertion failed: current user is not defined`);
-    }
-    return this.currentUser;
+    return this.GetCurrentUser();
   }
 
   //___________________________________________________________________________
@@ -40,7 +36,6 @@ export class TokenService implements CanActivate {
     console.log(`TokenService::Store: storing token for key '${TokenService.TokenKey}'`);
     try {
       window.localStorage.setItem(TokenService.TokenKey, token);
-      this.SetCurrentUser();
     } catch (e) {
       throw new Error(`TokenService::Store: failed storing token for key '${TokenService.TokenKey}': ${e.message}`);
     }
@@ -51,9 +46,11 @@ export class TokenService implements CanActivate {
   // Retrieve auth token
   // Returns null if no token is stored for the key.
   public Retrieve(): string | null {
-    console.log(`TokenService::Retrieve: retrieving token for key '${TokenService.TokenKey}': %s`);
+    //console.log(`TokenService::Retrieve: retrieving token for key '${TokenService.TokenKey}'`);
     try {
-      return window.localStorage.getItem(TokenService.TokenKey);
+      const tok = window.localStorage.getItem(TokenService.TokenKey);
+      //console.log(`TokenService::Retrieve: token is ${tok}`);
+      return tok;
     } catch (e) {
       throw new Error(`TokenService::Retrieve: failed to retrieve token with key '${TokenService.TokenKey}': ${e.message}`);
     }
@@ -87,13 +84,17 @@ export class TokenService implements CanActivate {
   canActivate(): boolean {
     console.log('TokenService::CanActivate: checking auth');
     const jwtoken: any = this.Decode();
+    console.log('TokenService::CanActivate: token: ', jwtoken);
     if (jwtoken == null) {
-      console.log('TokenService::CanActivate: auth failed: empty token');
+      console.log('TokenService::CanActivate: auth failed: empty token, redirecting to login');
+      this.router.navigate(['login']);
       return false;
     }
     const current_time = new Date().getTime() / 1000;
     if (current_time > jwtoken.exp) {
-      console.log('TokenService::CanActivate: auth failed: token expired %d seconds ago', current_time - jwtoken.exp);
+      console.log('TokenService::CanActivate: auth failed: token expired %d seconds ago, redirecting to login',
+        current_time - jwtoken.exp);
+      this.router.navigate(['login']);
       return false;
     }
     console.log(`TokenService::CanActivate: auth success: token: '${JSON.stringify(jwtoken)}'`);
@@ -103,11 +104,10 @@ export class TokenService implements CanActivate {
 
   //___________________________________________________________________________
   // Set the current user according to the currently stored token
-  private SetCurrentUser() {
+  private GetCurrentUser(): User {
     const jwtoken: any = this.Decode();
-    this.currentUser.email = jwtoken.email;
-    this.currentUser.id = jwtoken.userId;
-    console.log(`TokenService::SetCurrentUser: current user set to '${this.currentUser.email}'`);
+    const u: User = { email: jwtoken.email, id: jwtoken.userId };
+    return u;
   }
 
   //___________________________________________________________________________
