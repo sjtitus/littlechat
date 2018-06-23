@@ -106,7 +106,12 @@ export class TokenService implements CanActivate {
   // Set the current user according to the currently stored token
   private GetCurrentUser(): User {
     const jwtoken: any = this.Decode();
-    const u: User = { email: jwtoken.email, id: jwtoken.userId };
+    const u: User = {
+      firstname: jwtoken.firstname,
+      lastname: jwtoken.lastname,
+      email: jwtoken.email,
+      id: jwtoken.id
+    };
     return u;
   }
 

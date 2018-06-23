@@ -68,7 +68,7 @@ export class LoginComponent implements OnInit {
     console.log('LoginComponent: login request', loginRequest);
     this.apiService.LoginUser(loginRequest).subscribe(
       (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
-         (loginError) => { this.HandleError('login', loginError);  }
+         (loginError) => { this.HandleError('Login', loginError);  }
     );
   }
 
@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
     console.log('LoginComponent: signup request ', signupRequest);
     this.apiService.SignupUser(signupRequest).subscribe(
       (signupResponse) => { this.HandleSignupResponse(signupResponse);       },
-         (signupError) => { this.HandleError('signup', signupError);  }
+         (signupError) => { this.HandleError('Signup', signupError);  }
     );
   }
 

@@ -40,7 +40,7 @@ CREATE TABLE message (
 	id_conversation bigint references conversation(id),
 	id_sender integer references usr(id),
 	timestampCreated timestamp with time zone NOT NULL,
-	content varchar(16384) NOT NULL 
+	content varchar(16384) NOT NULL
 );
 
 CREATE TABLE conversation_usr (
@@ -49,7 +49,7 @@ CREATE TABLE conversation_usr (
   id_usr integer references usr(id),
   timestampLastMessage timestamp with time zone default NULL,
   timestampLastRead timestamp with time zone default NULL,
-  numUnreadMessages integer default 0 
+  numUnreadMessages integer default 0
 );
 
 
@@ -58,42 +58,42 @@ CREATE TABLE conversation_usr (
 -- Stored Procedures (Functions)
 --
 CREATE OR REPLACE FUNCTION createUser(
-	firstname varchar, 
-	lastname varchar, 
-	email varchar, 
+	firstname varchar,
+	lastname varchar,
+	email varchar,
 	salt varchar,
-	encrypted_password varchar, 
+	encrypted_password varchar,
 	crypt_iters integer
 )
-RETURNS usr.id%TYPE 
+RETURNS usr.id%TYPE
 AS $$
 DECLARE myid usr.id%TYPE;
 DECLARE curtime timestamptz = current_timestamp;
 BEGIN
-  -- Insert the user 
+  -- Insert the user
   INSERT INTO usr(firstname, lastname, email, timestampCreated, timestampModified, active, validated)
 	VALUES (firstname, lastname, email, curtime, curtime, true, false)
   RETURNING id INTO myid;
   -- Insert password information
   INSERT INTO passwd( id_usr, salt, passwd, iter, timestampCreated, timestampModified)
   VALUES (myid,salt,encrypted_password,crypt_iters, curtime, curtime);
-  -- return newly-created user's id 
+  -- return newly-created user's id
   RETURN myid;
 END
 $$
 LANGUAGE 'plpgsql';
 
 
--- Get a user's audiences with members listed 
-select 
-	au.id_audience as audience_id, 
+-- Get a user's audiences with members listed
+select
+	au.id_audience as audience_id,
 	u.id as user_id,
-	u.email as user_email 
+	u.email as user_email
 from usr as u
 	inner join audience_usr as au on u.id = au.id_usr
-where 
+where
 	au.id_audience in (
-		select a.id 
+		select a.id
 		from audience as a
    			inner join audience_usr as au ON a.id = au.id_audience
    			where au.id_usr = 1
@@ -102,7 +102,7 @@ where
   -- Get the members of an audience
 select
   *
-from usr as u 
+from usr as u
   inner join audience_usr as au on u.id = au.id_usr
 where
   au.id_audience = 1
@@ -110,13 +110,13 @@ where
 
 
   -- Get a user's conversations
-select 
-	c.* 
+select
+	c.*
 from conversation as c
 	inner join audience a on a.id = c.idaudience
-where 
+where
 	a.id in (
-		select a.id 
+		select a.id
 		from audience as a
    			inner join audience_usr as au ON a.id = au.id_audience
    			where au.id_usr = 1

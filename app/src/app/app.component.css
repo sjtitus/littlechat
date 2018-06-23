@@ -70,6 +70,13 @@
 .msgentrycontainer {
 	padding-top: 15px;
 }
+.menulabel {
+    padding: 4px;
+    margin-bottom: 8px;
+    background-color: #2222cc;
+    color: #ffffff;
+    border: 1px solid #333333;
+}
 .menu li {
     padding: 4px;
     margin-bottom: 8px;

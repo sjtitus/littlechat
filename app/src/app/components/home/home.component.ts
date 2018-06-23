@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
   public SetChatContact(contact: User) {
     console.log(`HomeComponent::SetChatContact: chat contact set to ${contact.email}`);
     this.chatContact = contact;
-    this.headerMessage = this.chatContact.email;
+    this.headerMessage = `${this.chatContact.firstname} ${this.chatContact.lastname}`;
   }
 
   public get CurrentUser(): User {

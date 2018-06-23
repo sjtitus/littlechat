@@ -1,11 +1,11 @@
 <div class="header">
-  <h3>Welcome, {{CurrentUser.email}}</h3>
-  <h1>{{headerMessage}}</h1>
+  <h2>Welcome, {{CurrentUser.firstname}}</h2>
+  <h3>{{headerMessage}}</h3>
 </div>
 <div class="alert alert-danger" [hidden]="WebSocketErrorText.length === 0"> {{WebSocketErrorText}} </div>
 
 <div class="clearfix mainarea border">
-  <app-userlist (contactSelected)="SetChatContact($event)"></app-userlist>
+  <app-contactlist (contactSelected)="SetChatContact($event)"></app-contactlist>
   <div class="rightpane column border">
       <app-messagelist *ngIf="chatContact" [chatContact]="chatContact"></app-messagelist>
       <app-messageentry *ngIf="chatContact" [chatContact]="chatContact"></app-messageentry>
@@ -15,4 +15,4 @@
 <div class="footer">
   <p>LittleChat</p>
 </div>
- 
+

@@ -2,8 +2,10 @@ import { Message } from './message';
 import { Conversation } from './conversation';
 
 export interface User {
-  id: number;
+  firstname: string;
+  lastname: string;
   email: string;
+  id: number;
 }
 
 export interface GetConversationsRequest {

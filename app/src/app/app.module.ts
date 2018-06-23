@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { UserlistComponent } from './components/userlist/userlist.component';
+import { ContactListComponent } from './components/contactlist/contactlist.component';
 import { MessagelistComponent } from './components/messagelist/messagelist.component';
 import { MessageentryComponent } from './components/messageentry/messageentry.component';
 import { MessageService } from './services/message.service';
@@ -18,7 +18,7 @@ import { WebSocketService } from './services/websocket.service';
 @NgModule({
   declarations: [
     AppComponent,
-    UserlistComponent,
+    ContactListComponent,
     MessagelistComponent,
     MessageentryComponent,
     LoginComponent,

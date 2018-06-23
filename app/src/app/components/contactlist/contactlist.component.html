@@ -1,11 +1,12 @@
 <div class="leftpane yautoscroll column menu border">
   <div class="alert alert-danger" [hidden]="applicationError==null">
-    {{ applicationError }} 
+    {{ applicationError }}
   </div>
   <div class="alert alert-danger" [hidden]="networkError==null">
-    {{ networkError }} 
+    {{ networkError }}
   </div>
+  <div class="menulabel"> Contacts </div>
   <ul>
-    <li *ngFor="let contact of contactList" (click) = "SelectContact(contact)"> {{contact.email}} </li>
+    <li *ngFor="let contact of contactList" (click) = "SelectContact(contact)"> {{contact.firstname}} {{contact.lastname}} </li>
   </ul>
 </div>

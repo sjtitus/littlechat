@@ -1,6 +1,6 @@
 /*_____________________________________________________________________________
  * Contact
- * Contact handling 
+ * Contact handling
  *_____________________________________________________________________________
 */
 import { User, GetContactsRequest, GetContactsResponse,
@@ -11,14 +11,19 @@ import { userInfo } from "os";
 import { Conversation } from "../../app/src/app/models/conversation";
 
 //_____________________________________________________________________________
-// GetContacts 
+// GetContacts
 export async function GetContacts(getContactsRequest: GetContactsRequest) {
   const dbContacts = await db.getContactsByUserId(getContactsRequest.userId);
-  let getContactsResponse: GetContactsResponse = { 
+  let getContactsResponse: GetContactsResponse = {
     error: false, errorMessage: '', userId: getContactsRequest.userId, contacts: []
   };
   dbContacts.map((contact) => {
-    const user: User = {id: contact.id, email: contact.email};
+    const user: User = {
+      firstname: contact.firstname,
+      lastname: contact.lastname,
+      email: contact.email,
+      id: contact.id,
+    };
     getContactsResponse.contacts.push(user);
   });
   return getContactsResponse;
@@ -28,13 +33,13 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
 // GetConversations
 export async function GetConversations(getConversationsRequest: GetConversationsRequest) {
   const dbConversations = await db.getConversationsByUserId(getConversationsRequest.userId);
-  let getConversationsResponse: GetConversationsResponse = { 
+  let getConversationsResponse: GetConversationsResponse = {
     error: false, errorMessage: '', userId: getConversationsRequest.userId, conversations: []
   };
   dbConversations.map((dbconv) => {
-    const conv: Conversation = { 
-      owner: {id: 1, email:''},
-      audience: [], 
+    const conv: Conversation = {
+      owner: {firstname: '', lastname: '', id: 1, email:''},
+      audience: [],
       totalMessages: 0,
       lastMessageTime: '2018-05-20 20:49:45.301064-04'
     }
