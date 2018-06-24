@@ -1,5 +1,4 @@
 import { Message } from './message';
-import { Conversation } from './conversation';
 
 export interface User {
   firstname: string;
@@ -8,15 +7,17 @@ export interface User {
   id: number;
 }
 
-export interface GetConversationsRequest {
+export interface GetConversationRequest {
   userId: number;
+  contactEmail: string;
 }
 
-export interface GetConversationsResponse {
+export interface GetConversationResponse {
   error: boolean;
   errorMessage: string;
   userId: number;
-  conversations: Conversation[];
+  contactEmail: string;
+  conversation: Message[];
 }
 
 export interface GetContactsRequest {

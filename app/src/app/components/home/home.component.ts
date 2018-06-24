@@ -39,6 +39,11 @@ export class HomeComponent implements OnInit {
     const authToken: string = this.tokenService.Retrieve();
     this.webSocketService.Start(authToken);
     this.webSocketService.onEvent('error').subscribe((err) => this.HandleWebSocketError(err));
+    this.webSocketService.onEvent('message').subscribe(
+      (msg) => {
+          console.log('HomeComponent: received websocket message: ', msg);
+      }
+    );
   }
 
   private HandleWebSocketError(err: string) {

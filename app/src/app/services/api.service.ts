@@ -10,7 +10,7 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 //import 'rxjs/add/operator/map';
 
 import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse,
-         GetConversationsRequest, GetConversationsResponse } from '../models/user';
+         GetConversationRequest, GetConversationResponse } from '../models/user';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 import { ErrorResponse } from '../models/errorresponse';
 
@@ -22,7 +22,7 @@ export class ApiService {
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly msgsUrl = 'http://localhost:4200/api/messages';
   private readonly contactsUrl = 'http://localhost:4200/api/contacts';
-  private readonly conversationsUrl = 'http://localhost:4200/api/conversations';
+  private readonly conversationUrl = 'http://localhost:4200/api/conversation';
   private readonly timeout = 20000;
 
   //===========================================================================
@@ -44,11 +44,13 @@ export class ApiService {
             .pipe(catchError(this.HandleError));
   }
 
-  GetConversations(req: GetConversationsRequest) {
-        console.log('ApiService: get conversations request', req);
-        return this.http.post<GetConversationsResponse>(this.conversationsUrl, req, { observe: 'response' })
+  async GetConversation(req: GetConversationRequest) {
+        console.log('ApiService: get conversation request', req);
+        return this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
             .timeout(this.timeout)
-            .pipe(catchError(this.HandleError));
+            .toPromise()
+            .catch(err => this.HandleError2(err));
+            //.pipe(catchError(this.HandleError))
   }
 
   GetContacts(req: GetContactsRequest) {
@@ -81,4 +83,21 @@ export class ApiService {
         console.log('ApiService: error object: ', er);
         return new ErrorObservable(er);
   }
+
+  private HandleError2(httperr) {
+        const er: ErrorResponse = {
+          response: httperr,
+          url: httperr.url ? httperr.url : '',
+          status: httperr.status ? httperr.status : '',
+          statusText: httperr.statusText ? httperr.statusText : '',
+          message: httperr.message ? httperr.message : '',
+          error: httperr.error ? httperr.error : '',
+          offline: ((httperr.status != null) && (+(httperr.status) <= 0))
+        };
+        console.log('ApiService: error response: ', httperr);
+        console.log('ApiService: error object: ', er);
+        return er;
+  }
+
+
 }

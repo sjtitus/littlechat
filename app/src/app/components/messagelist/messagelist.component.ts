@@ -1,6 +1,6 @@
 /*______________________________________________________________________________
   Messagelist
-  Fetches and displays the messages for the current chat target.
+  Fetches and displays the conversation with the current chat contact.
 ________________________________________________________________________________
 */
 import { Component, Input, OnInit, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
@@ -17,12 +17,15 @@ import { TokenService } from '../../services/token.service';
 })
 
 export class MessagelistComponent implements OnInit, AfterViewChecked {
-  // _______________________________________________________
-  // Properties
-  private _chatContact: User;                  // current chat target
-  messagelist: Message[];                     // message history for target
+
+  conversation: Message[];
+
   @ViewChild('msgarea') msgarea: ElementRef;  // #msgarea DOM element
-  newMessagesChannel: Subscription;           // incoming new messages
+
+  //newMessagesChannel: Subscription;         // incoming new messages
+
+  // current chat contact
+  private _chatContact: User;
   private currentUser: User;
 
   // _______________________________________________________
@@ -30,29 +33,33 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   // targetUser: setter hook (prop is bound from parent)
   @Input() set chatContact(contact: User) {
     this._chatContact = contact;
-    console.log('Messagelist: chat contact changed to ', contact);
-    this.messagelist = this.messageService.GetMessages(contact);
+    console.log('MessageList: chat contact changed to ', contact);
+    const convPromise = this.messageService.GetConversation(contact.email);
+    convPromise.then( (conversation) => this.setConversation(conversation) )
+      .catch( (err) => console.log(`MessageList: GetConversation error`, err));
   }
 
+  setConversation(conversation) {
+    this.conversation = conversation.body.conversation;
+  }
 
   // _______________________________________________________
   // Methods
   constructor(private messageService: MessageService, private tokenService: TokenService) {
-    // subscribe to new messages being broadcast by messageservice
-    // so we can show them in our list while they're being pushed to the back end.
+    /*
     this.newMessagesChannel = this.messageService.newMessageSource$.subscribe(
       message => {
         this.messagelist.push(message);
       }
     );
+    */
   }
 
   ngOnInit() {
     this.currentUser = this.tokenService.CurrentUser;
   }
 
-  // Lifecycle hook to keep msgs scrolled to the bottom when view changes
-  // (i.e. messages added)
+  // Lifecycle hook to keep msgs scrolled to the bottom when view changes (i.e. messages added)
   ngAfterViewChecked() {
     this.scrollToBottom();
   }

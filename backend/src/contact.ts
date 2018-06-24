@@ -4,11 +4,20 @@
  *_____________________________________________________________________________
 */
 import { User, GetContactsRequest, GetContactsResponse,
-  GetConversationsRequest, GetConversationsResponse } from "../../app/src/app/models/user";
+  GetConversationRequest, GetConversationResponse } from "../../app/src/app/models/user";
+import { Message } from "../../app/src/app/models/message";
 import * as db from './db/db';
 import { contacts } from "./api";
 import { userInfo } from "os";
 import { Conversation } from "../../app/src/app/models/conversation";
+
+const testMessages: Message[] = [
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''}
+];
 
 //_____________________________________________________________________________
 // GetContacts
@@ -30,12 +39,17 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
 }
 
 //_____________________________________________________________________________
-// GetConversations
-export async function GetConversations(getConversationsRequest: GetConversationsRequest) {
-  const dbConversations = await db.getConversationsByUserId(getConversationsRequest.userId);
-  let getConversationsResponse: GetConversationsResponse = {
-    error: false, errorMessage: '', userId: getConversationsRequest.userId, conversations: []
+// GetConversation
+export async function GetConversation(getConversationsRequest: GetConversationRequest) {
+  //const dbConversation = await db.getConversationByUserId(getConversationsRequest.userId);
+  let getConversationsResponse: GetConversationResponse = {
+    error: false,
+    errorMessage: '',
+    userId: getConversationsRequest.userId,
+    contactEmail: getConversationsRequest.contactEmail,
+    conversation: testMessages
   };
+  /*
   dbConversations.map((dbconv) => {
     const conv: Conversation = {
       owner: {firstname: '', lastname: '', id: 1, email:''},
@@ -45,5 +59,6 @@ export async function GetConversations(getConversationsRequest: GetConversations
     }
     getConversationsResponse.conversations.push(conv);
   });
+  */
   return getConversationsResponse;
 }

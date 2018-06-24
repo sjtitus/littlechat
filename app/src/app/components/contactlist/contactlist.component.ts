@@ -5,7 +5,7 @@
 ________________________________________________________________________________
 */
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-import { User, GetContactsRequest, GetContactsResponse, GetConversationsRequest, GetConversationsResponse } from '../../models/user';
+import { User, GetContactsRequest, GetContactsResponse, GetConversationRequest, GetConversationResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
 import { HttpResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../models/errorresponse';

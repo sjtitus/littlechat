@@ -42,7 +42,7 @@ export class MessageentryComponent implements OnInit {
 
   SendMessage(event: any) {
     const content: string = event.target.value as string;
-    console.log('MessageEntry: sending message:', content, 'to user', this._chatContact);
+    console.log(`MessageEntry: sending message '${content}' to user ${this._chatContact}`);
     const timeSent: string = new Date().toISOString();
     const hashCode = '';  //Md5.hashStr(timeSent + content) as string;
     const message: Message = {
@@ -53,7 +53,8 @@ export class MessageentryComponent implements OnInit {
       hashCode: hashCode
     };
     this.webSocketService.send('message', message, (ack: MessageAck) => { this.CheckAck(ack, hashCode); });
-    event.target.value = '';  // clear the UI
+    // clear the text entry
+    event.target.value = '';
   }
 
   private CheckAck(ack: MessageAck, hashCode: string) {
