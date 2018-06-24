@@ -48,9 +48,8 @@ export class ApiService {
         console.log('ApiService: get conversation request', req);
         return this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
             .timeout(this.timeout)
-            .toPromise()
-            .catch(err => this.HandleError2(err));
-            //.pipe(catchError(this.HandleError))
+            .pipe(catchError(this.HandleError))
+            .toPromise();
   }
 
   GetContacts(req: GetContactsRequest) {

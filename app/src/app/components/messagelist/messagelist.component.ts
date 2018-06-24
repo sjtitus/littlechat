@@ -26,21 +26,21 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
 
   // current chat contact
   private _chatContact: User;
-  private currentUser: User;
 
-  // _______________________________________________________
-  // I/O
   // targetUser: setter hook (prop is bound from parent)
   @Input() set chatContact(contact: User) {
     this._chatContact = contact;
     console.log('MessageList: chat contact changed to ', contact);
-    const convPromise = this.messageService.GetConversation(contact.email);
-    convPromise.then( (conversation) => this.setConversation(conversation) )
-      .catch( (err) => console.log(`MessageList: GetConversation error`, err));
+    this.GetConversation(this._chatContact);
   }
 
-  setConversation(conversation) {
-    this.conversation = conversation.body.conversation;
+  private GetConversation(contact: User) {
+    const convPromise = this.messageService.GetConversation(contact.email);
+    convPromise.then(
+      (conv) => { this.conversation = conv; },
+      (err) => { console.log(`MessageList: GetConversation promise error`, err); }
+    )
+    .catch( (err) => console.log(`MessageList: GetConversation catch error`, err) );
   }
 
   // _______________________________________________________
@@ -56,7 +56,6 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
-    this.currentUser = this.tokenService.CurrentUser;
   }
 
   // Lifecycle hook to keep msgs scrolled to the bottom when view changes (i.e. messages added)

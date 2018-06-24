@@ -29,17 +29,24 @@ export class MessageService {
   }
 
   public async GetConversation(contactEmail: string) {
-    console.log(`MessageService: getting conversation for ${contactEmail}`);
-    // we've already loaded this conversation
+    // we've already loaded this conversation, do not reload
     if (contactEmail in this.conversations) {
+      console.log(`MessageService: returning CACHED conversation with ${contactEmail}`);
       return this.conversations[contactEmail];
     }
+    console.log(`MessageService: calling API for conversation with ${contactEmail}`);
     const req: GetConversationRequest = {
       userId: this.tokenService.CurrentUser.id,
       contactEmail: contactEmail
     };
     console.log('MessageService: get conversation request', req);
-    const resp = await this.apiService.GetConversation(req);
+    const resp = await (this.apiService.GetConversation(req).then(
+        (r) => {
+          console.log(`MessageService: caching conversation with ${contactEmail}`);
+          this.conversations[contactEmail] = r.body.conversation;
+          return this.conversations[contactEmail];
+        }
+    ));
     return resp;
   }
 

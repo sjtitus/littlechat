@@ -46,7 +46,6 @@ export const conversation:RequestHandler = async function(req: Request, res:Resp
   const getConversationRequest: GetConversationRequest = req.body;
   console.debug(`Api::Conversations: request for user id ${getConversationRequest.userId}`);
   const getConversationsResponse: GetConversationResponse = await Contact.GetConversation(getConversationRequest);
-  throw new Error("API: conversation: Titus manufactured errror!");
   res.status(200).json(getConversationsResponse);
 }
 
