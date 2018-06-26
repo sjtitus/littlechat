@@ -35,8 +35,6 @@ export class MessageService {
     if (contactEmail in this.conversations) {
       console.log(`MessageService: returning cached conversation with ${contactEmail}`);
       resp.error = false;
-      resp.errorMessage = '';
-      resp.apiError = null;
       resp.contactEmail = contactEmail;
       resp.conversation = this.conversations[contactEmail];
       resp.userId = this.tokenService.CurrentUser.id;
@@ -54,7 +52,10 @@ export class MessageService {
       console.log(`MessageService: caching conversation with ${contactEmail}`);
       this.conversations[contactEmail] = resp.conversation;
     }
-    console.log('MessageService: get conversation response', resp);
+    else {
+      console.log(`MessageService: error calling API for conversation with ${contactEmail}: ${resp.errorMessage}`, resp);
+    }
+    console.log('MessageService: get conversation success', resp);
     return resp;
   }
 

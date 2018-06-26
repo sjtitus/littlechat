@@ -46,15 +46,9 @@ export class ApiService {
 
   async GetConversation(req: GetConversationRequest) {
         console.log('ApiService::GetConversation: request', req);
-        let resp: GetConversationResponse = {
-          error: false,
-          apiError: null,
-          errorMessage: '',
-          conversation: [],
-          userId: -1,
-          contactEmail: ''
-        };
+        let resp: GetConversationResponse = {} as any;
         try {
+          resp.conversation = [];
           const apiResp = await this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
               .timeout(this.timeout)
               .pipe(catchError(this.HandleError))
