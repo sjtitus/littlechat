@@ -10,14 +10,12 @@ import { Message } from '../models/message';
 import { Subject } from 'rxjs/Subject';
 import { ApiService } from '../services/api.service';
 import { TokenService } from '../services/token.service';
-import { HttpResponse } from '@angular/common/http';
-import { ErrorResponse } from '../models/errorresponse';
 
 @Injectable()
 export class MessageService {
 
-  // Data structure for message storage
-  // A message thread (array of messages) for each contact
+  // Data structure for client-side conversation storage
+  // An array of messages by contact
   private conversations: { [contactEmail: string]: Message [] };
 
   // we will "post" newly-created messages as observable for front end
@@ -28,50 +26,31 @@ export class MessageService {
     this.conversations = {};
   }
 
+  //___________________________________________________________________________
+  // GetConversation
+  // Retrieve a conversation from the back end
   public async GetConversation(contactEmail: string) {
-    // we've already loaded this conversation, do not reload
+    // Already loaded this conversation? Use cached version
     if (contactEmail in this.conversations) {
       console.log(`MessageService: returning CACHED conversation with ${contactEmail}`);
       return this.conversations[contactEmail];
     }
+    // Call API to get the conversation
     console.log(`MessageService: calling API for conversation with ${contactEmail}`);
     const req: GetConversationRequest = {
       userId: this.tokenService.CurrentUser.id,
       contactEmail: contactEmail
     };
-    console.log('MessageService: get conversation request', req);
-    const resp = await (this.apiService.GetConversation(req).then(
-        (r) => {
-          console.log(`MessageService: caching conversation with ${contactEmail}`);
-          this.conversations[contactEmail] = r.body.conversation;
-          return this.conversations[contactEmail];
-        }
-    ));
-    return resp;
+    const apiResp = await this.apiService.GetConversation(req);
+    // Extract the response
+    const getResp: GetConversationResponse = apiResp.body;
+    console.log(`MessageService: caching conversation with ${contactEmail}`);
+    // Cache the returned conversation
+    this.conversations[contactEmail] = getResp.conversation;
+    console.log('MessageService: get conversation response', getResp);
+    return getResp;
   }
 
-  private HandleGetConversationResponse(httpResponse: HttpResponse<GetConversationResponse>) {
-    const resp: GetConversationResponse = httpResponse.body;
-    console.log('MessageService: get conversation response', resp);
-    if (resp.error) {
-      console.error(`MessageService: get conversation failed: ${resp.errorMessage}`);
-    }
-    else {
-      console.error(`MessageService: get conversation success: ${resp.conversation.length} messages`);
-      this.conversations[resp.contactEmail] = resp.conversation;
-    }
-  }
-
-  private HandleError(etype: string, errorResponse: ErrorResponse) {
-    console.error(`API network Error: type ${etype}`, errorResponse);
-    /*
-    if (etype === 'login') {
-      this.backendLoginErrorText = 'Network error: ' + errorResponse.message;
-    } else {
-      this.backendSignupErrorText = 'Network error: ' + errorResponse.message;
-    }
-    */
-  }
 
   //___________________________________________________________________________
   // SendMessage
@@ -84,11 +63,6 @@ export class MessageService {
   // PostMessageToUI
   private PostMessageToUI(msg: Message) {
     this.newMessageSource.next(msg);
-  }
-
-  // GetMessages: fetch a user's messages from the back end
-  GetMessages(user: User): Message[] {
-    return [];
   }
 
 }

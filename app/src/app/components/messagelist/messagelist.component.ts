@@ -4,7 +4,7 @@
 ________________________________________________________________________________
 */
 import { Component, Input, OnInit, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
-import { User } from '../../models/user';
+import { User, GetConversationResponse } from '../../models/user';
 import { MessageService } from '../../services/message.service';
 import { Message } from '../../models/message';
 import { Subscription } from 'rxjs/Subscription';
@@ -19,6 +19,7 @@ import { TokenService } from '../../services/token.service';
 export class MessagelistComponent implements OnInit, AfterViewChecked {
 
   conversation: Message[];
+  errorText: string;
 
   @ViewChild('msgarea') msgarea: ElementRef;  // #msgarea DOM element
 
@@ -27,32 +28,28 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   // current chat contact
   private _chatContact: User;
 
+  constructor(private messageService: MessageService, private tokenService: TokenService) {}
+
   // targetUser: setter hook (prop is bound from parent)
   @Input() set chatContact(contact: User) {
     this._chatContact = contact;
     console.log('MessageList: chat contact changed to ', contact);
-    this.GetConversation(this._chatContact);
+    // trick to do an await in a non async function
+    (async () => this.conversation = await this.GetConversation(this._chatContact))();
   }
 
-  private GetConversation(contact: User) {
-    const convPromise = this.messageService.GetConversation(contact.email);
-    convPromise.then(
-      (conv) => { this.conversation = conv; },
-      (err) => { console.log(`MessageList: GetConversation promise error`, err); }
-    )
-    .catch( (err) => console.log(`MessageList: GetConversation catch error`, err) );
-  }
-
-  // _______________________________________________________
-  // Methods
-  constructor(private messageService: MessageService, private tokenService: TokenService) {
-    /*
-    this.newMessagesChannel = this.messageService.newMessageSource$.subscribe(
-      message => {
-        this.messagelist.push(message);
-      }
-    );
-    */
+  private async GetConversation(contact: User) {
+    let conversation: Message[];
+    let resp: GetConversationResponse;
+    try {
+      console.log(`MessageList::GetConversation: retrieving conversation with ${contact.email}`);
+      resp = await this.messageService.GetConversation(contact.email);
+    }
+    catch (err) {
+      console.log(`MessageList::GetConversation: ERROR retrieving conversation with ${contact.email}:`, err);
+      this.errorText = err.message;
+    }
+    return conversation;
   }
 
   ngOnInit() {
