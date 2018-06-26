@@ -44,6 +44,7 @@ export async function GetConversation(getConversationsRequest: GetConversationRe
   //const dbConversation = await db.getConversationByUserId(getConversationsRequest.userId);
   let getConversationsResponse: GetConversationResponse = {
     error: false,
+    apiError: null,
     errorMessage: '',
     userId: getConversationsRequest.userId,
     contactEmail: getConversationsRequest.contactEmail,

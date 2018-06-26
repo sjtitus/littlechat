@@ -39,17 +39,15 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   }
 
   private async GetConversation(contact: User) {
-    let conversation: Message[];
-    let resp: GetConversationResponse;
-    try {
-      console.log(`MessageList::GetConversation: retrieving conversation with ${contact.email}`);
-      resp = await this.messageService.GetConversation(contact.email);
+    console.log(`MessageList::GetConversation: getting conversation with ${contact.email}`);
+    this.errorText = null;
+    const resp: GetConversationResponse = await this.messageService.GetConversation(contact.email);
+    if (resp.error) {
+      console.error(`MessageList::GetConversation: error: ${resp.errorMessage}`);
+      this.errorText = resp.errorMessage;
     }
-    catch (err) {
-      console.log(`MessageList::GetConversation: ERROR retrieving conversation with ${contact.email}:`, err);
-      this.errorText = err.message;
-    }
-    return conversation;
+    console.log(`MessageList::GetConversation: conversation:`, resp.conversation);
+    return resp.conversation;
   }
 
   ngOnInit() {

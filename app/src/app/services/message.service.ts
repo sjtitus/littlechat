@@ -28,12 +28,19 @@ export class MessageService {
 
   //___________________________________________________________________________
   // GetConversation
-  // Retrieve a conversation from the back end
+  // Retrieve a conversation from the back end (or cache)
   public async GetConversation(contactEmail: string) {
-    // Already loaded this conversation? Use cached version
+    let resp: GetConversationResponse = {} as any;
+    // Already loaded: use cache
     if (contactEmail in this.conversations) {
-      console.log(`MessageService: returning CACHED conversation with ${contactEmail}`);
-      return this.conversations[contactEmail];
+      console.log(`MessageService: returning cached conversation with ${contactEmail}`);
+      resp.error = false;
+      resp.errorMessage = '';
+      resp.apiError = null;
+      resp.contactEmail = contactEmail;
+      resp.conversation = this.conversations[contactEmail];
+      resp.userId = this.tokenService.CurrentUser.id;
+      return resp;
     }
     // Call API to get the conversation
     console.log(`MessageService: calling API for conversation with ${contactEmail}`);
@@ -41,14 +48,14 @@ export class MessageService {
       userId: this.tokenService.CurrentUser.id,
       contactEmail: contactEmail
     };
-    const apiResp = await this.apiService.GetConversation(req);
-    // Extract the response
-    const getResp: GetConversationResponse = apiResp.body;
-    console.log(`MessageService: caching conversation with ${contactEmail}`);
-    // Cache the returned conversation
-    this.conversations[contactEmail] = getResp.conversation;
-    console.log('MessageService: get conversation response', getResp);
-    return getResp;
+    resp = await this.apiService.GetConversation(req);
+    // cache only on success
+    if (!resp.error) {
+      console.log(`MessageService: caching conversation with ${contactEmail}`);
+      this.conversations[contactEmail] = resp.conversation;
+    }
+    console.log('MessageService: get conversation response', resp);
+    return resp;
   }
 
 

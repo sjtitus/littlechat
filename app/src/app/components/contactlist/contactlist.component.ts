@@ -8,7 +8,7 @@ import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { User, GetContactsRequest, GetContactsResponse, GetConversationRequest, GetConversationResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
 import { HttpResponse } from '@angular/common/http';
-import { ErrorResponse } from '../../models/errorresponse';
+import { ApiError } from '../../models/apierror';
 import { TokenService } from '../../services/token.service';
 
 @Component({
@@ -81,7 +81,7 @@ export class ContactListComponent implements OnInit {
 
   //___________________________________________________________________________
   // API call failed
-  private HandleApiError(etype: string, errorResponse: ErrorResponse) {
+  private HandleApiError(etype: string, errorResponse: ApiError) {
     console.log(`ContactList: ${etype} api error:`, errorResponse);
     this.networkError = `ContactList: ${etype} api error: ${errorResponse.message}`;
   }

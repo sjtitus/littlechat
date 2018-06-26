@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
 
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../../models/login';
-import { ErrorResponse } from '../../models/errorresponse';
+import { ApiError } from '../../models/apierror';
 
 @Component({
   selector: 'app-login',
@@ -136,7 +136,7 @@ export class LoginComponent implements OnInit {
 
   //___________________________________________________________________________
   // Handle an API error
-  private HandleError(etype: string, errorResponse: ErrorResponse) {
+  private HandleError(etype: string, errorResponse: ApiError) {
     console.log('Network Error: ', errorResponse);
     if (etype === 'login') {
       this.backendLoginErrorText = 'Network error: ' + errorResponse.message;

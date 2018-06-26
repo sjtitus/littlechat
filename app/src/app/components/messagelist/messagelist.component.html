@@ -1,4 +1,7 @@
 <div #msgarea class="content msgarea yautoscroll">
+  <div class="alert alert-danger" [hidden]="errorText==null">
+    {{ errorText }}
+  </div>
   <p *ngFor="let msg of conversation">
     {{msg.content}}
   </p>

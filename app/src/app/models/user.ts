@@ -1,4 +1,5 @@
 import { Message } from './message';
+import { ApiError } from './apierror';
 
 export interface User {
   firstname: string;
@@ -15,6 +16,7 @@ export interface GetConversationRequest {
 export interface GetConversationResponse {
   error: boolean;
   errorMessage: string;
+  apiError: ApiError | null;
   userId: number;
   contactEmail: string;
   conversation: Message[];

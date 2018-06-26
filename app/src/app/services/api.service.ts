@@ -5,6 +5,7 @@ import 'rxjs/add/operator/catch';
 import { catchError} from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ApiError } from '../models/apierror';
 
 //import 'rxjs/add/observable/throw';
 //import 'rxjs/add/operator/map';
@@ -12,7 +13,6 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse,
          GetConversationRequest, GetConversationResponse } from '../models/user';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
-import { ErrorResponse } from '../models/errorresponse';
 
 
 @Injectable()
@@ -45,11 +45,32 @@ export class ApiService {
   }
 
   async GetConversation(req: GetConversationRequest) {
-        console.log('ApiService: get conversation request', req);
-        return this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
-            .timeout(this.timeout)
-            .pipe(catchError(this.HandleError))
-            .toPromise();
+        console.log('ApiService::GetConversation: request', req);
+        let resp: GetConversationResponse = {
+          error: false,
+          apiError: null,
+          errorMessage: '',
+          conversation: [],
+          userId: -1,
+          contactEmail: ''
+        };
+        try {
+          const apiResp = await this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
+              .timeout(this.timeout)
+              .pipe(catchError(this.HandleError))
+              .toPromise();
+          resp = apiResp.body;
+        }
+        catch (e) {
+          const err = e as ApiError;
+          console.error(`ApiService::GetConversation: API error`, err);
+          resp.error = true;
+          resp.apiError = err;
+          resp.errorMessage = err.message;
+        }
+        finally {
+          return resp;
+        }
   }
 
   GetContacts(req: GetContactsRequest) {
@@ -68,8 +89,8 @@ export class ApiService {
 
   //___________________________________________________________________________
   // Private interface
-  private HandleError(httperr, caught) {
-        const er: ErrorResponse = {
+  private HandleError(httperr) {
+        const er: ApiError = {
           response: httperr,
           url: httperr.url ? httperr.url : '',
           status: httperr.status ? httperr.status : '',
@@ -78,25 +99,8 @@ export class ApiService {
           error: httperr.error ? httperr.error : '',
           offline: ((httperr.status != null) && (+(httperr.status) <= 0))
         };
-        console.log('ApiService: error response: ', httperr);
-        console.log('ApiService: error object: ', er);
+        console.log('ApiService: caught error: ', er);
         return new ErrorObservable(er);
   }
-
-  private HandleError2(httperr) {
-        const er: ErrorResponse = {
-          response: httperr,
-          url: httperr.url ? httperr.url : '',
-          status: httperr.status ? httperr.status : '',
-          statusText: httperr.statusText ? httperr.statusText : '',
-          message: httperr.message ? httperr.message : '',
-          error: httperr.error ? httperr.error : '',
-          offline: ((httperr.status != null) && (+(httperr.status) <= 0))
-        };
-        console.log('ApiService: error response: ', httperr);
-        console.log('ApiService: error object: ', er);
-        return er;
-  }
-
 
 }

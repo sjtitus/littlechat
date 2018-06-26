@@ -45,8 +45,8 @@ export const contacts:RequestHandler = async function(req: Request, res:Response
 export const conversation:RequestHandler = async function(req: Request, res:Response, next:NextFunction) {
   const getConversationRequest: GetConversationRequest = req.body;
   console.debug(`Api::Conversations: request for user id ${getConversationRequest.userId}`);
-  const getConversationsResponse: GetConversationResponse = await Contact.GetConversation(getConversationRequest);
-  res.status(200).json(getConversationsResponse);
+  const getConversationResponse: GetConversationResponse = await Contact.GetConversation(getConversationRequest);
+  res.status(200).json(getConversationResponse);
 }
 
 
