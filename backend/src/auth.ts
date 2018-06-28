@@ -14,7 +14,7 @@ import * as mycrypto from './mycrypto';
 // Log in an existing user
 export async function Login(loginRequest:LoginRequest) {
   console.log(`Auth::Login: ${loginRequest.email}`);
-  let loginResponse: LoginResponse = {token: '', userId: 0, error: true, errorMessage: ''};
+  let loginResponse: LoginResponse = {} as any;
   //_________________________________
   // Get user record from db
   const dbuser = await db.getUserByEmail(loginRequest.email);
@@ -62,9 +62,7 @@ export async function Login(loginRequest:LoginRequest) {
 // Sign up a new user
 export async function SignUp(signupRequest:SignupRequest) {
   console.log(`Auth::Signup: ${signupRequest.firstname} ${signupRequest.lastname} (${signupRequest.email})`);
-  let signupResponse: SignupResponse = {
-      token: '', userId: -1, error: true, errorMessage: ''
-  };
+  let signupResponse: SignupResponse = {} as any;
   //______________________________________________
   // User must not exist
   const user = await db.getUserByEmail(signupRequest.email);

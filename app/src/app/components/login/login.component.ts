@@ -62,26 +62,28 @@ export class LoginComponent implements OnInit {
 
   //___________________________________________________________________________
   // Log in to the application
-  public Login() {
+  public async Login() {
     this.ClearErrors();
     const loginRequest = this.ExtractLoginRequest();
     console.log('LoginComponent: login request', loginRequest);
-    this.apiService.LoginUser(loginRequest).subscribe(
-      (loginResponse) => { this.HandleLoginResponse(loginResponse);       },
-         (loginError) => { this.HandleError('Login', loginError);  }
-    );
+    const resp: LoginResponse = await this.apiService.LoginUser(loginRequest);
+    if (this.LoginSuccess(resp)) {
+      this.tokenService.Store(resp.token);
+      this.router.navigate(['/home']);
+    }
   }
 
   //___________________________________________________________________________
   // Signup for a new account
-  Signup() {
+  public async Signup() {
     this.ClearErrors();
     const signupRequest = this.ExtractSignupRequest();
     console.log('LoginComponent: signup request ', signupRequest);
-    this.apiService.SignupUser(signupRequest).subscribe(
-      (signupResponse) => { this.HandleSignupResponse(signupResponse);       },
-         (signupError) => { this.HandleError('Signup', signupError);  }
-    );
+    const resp: SignupResponse = await this.apiService.SignupUser(signupRequest);
+    if (this.SignupSuccess(resp)) {
+      this.tokenService.Store(resp.token);
+      this.router.navigate(['/home']);
+    }
   }
 
   private ClearErrors() {
@@ -105,44 +107,6 @@ export class LoginComponent implements OnInit {
               this.supassword2.errors !== null  ||
               this.supassword2.value !== this.supassword.value
             );
-  }
-
-
-  //===========================================================================
-  // Private interface
-  //===========================================================================
-
-  //___________________________________________________________________________
-  // Handle login response from API
-  private HandleLoginResponse(httpResponse: HttpResponse<LoginResponse>) {
-    const loginResponse: LoginResponse = httpResponse.body;
-    console.log('LoginComponent: login response', loginResponse);
-    if (this.LoginSuccess(loginResponse)) {
-      this.tokenService.Store(loginResponse.token);
-      this.router.navigate(['/home']);
-    }
-  }
-
-  //___________________________________________________________________________
-  // Handle signup response from API
-  private HandleSignupResponse(httpResponse: HttpResponse<SignupResponse>) {
-    const signupResponse: SignupResponse = httpResponse.body;
-    console.log('LoginComponent: signup response', signupResponse);
-    if (this.SignupSuccess(signupResponse)) {
-      this.tokenService.Store(signupResponse.token);
-      this.router.navigate(['/home']);
-    }
-  }
-
-  //___________________________________________________________________________
-  // Handle an API error
-  private HandleError(etype: string, errorResponse: ApiError) {
-    console.log('Network Error: ', errorResponse);
-    if (etype === 'login') {
-      this.backendLoginErrorText = 'Network error: ' + errorResponse.message;
-    } else {
-      this.backendSignupErrorText = 'Network error: ' + errorResponse.message;
-    }
   }
 
   //___________________________________________________________________________

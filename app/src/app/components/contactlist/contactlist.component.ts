@@ -57,33 +57,18 @@ export class ContactListComponent implements OnInit {
 
   //___________________________________________________________________________
   // Load user contacts
-  GetContacts() {
+  public async GetContacts() {
     const apiReq: GetContactsRequest = { userId: this.currentUser.id };
     console.log(`ContactList: GetContacts for userId=${apiReq.userId}`);
-    this.apiService.GetContacts(apiReq).subscribe(
-        (resp) => { this.HandleGetContactsResponse(resp);       },
-         (err) => { this.HandleApiError('GetContacts', err);  }
-    );
-  }
-
-  private HandleGetContactsResponse(httpResponse: HttpResponse<GetContactsResponse>) {
-    const apiResp: GetContactsResponse = httpResponse.body;
-    console.log('ContactList: GetContacts response', apiResp);
-    if (!apiResp.error) {
-      this.contactList = apiResp.contacts;
+    const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
+    if (!resp.error) {
+      this.contactList = resp.contacts;
     }
     else {
       // API call succeeded, but there was an error on the backend
-      console.log(`ContactList: GetContacts backend error: ${apiResp.errorMessage}`);
-      this.applicationError = `ContactList: GetContacts backend error: '${apiResp.errorMessage}'`;
+      console.error(`ContactList: GetContacts backend error: ${resp.errorMessage}`);
+      this.applicationError = `ContactList: GetContacts backend error: '${resp.errorMessage}'`;
     }
-  }
-
-  //___________________________________________________________________________
-  // API call failed
-  private HandleApiError(etype: string, errorResponse: ApiError) {
-    console.log(`ContactList: ${etype} api error:`, errorResponse);
-    this.networkError = `ContactList: ${etype} api error: ${errorResponse.message}`;
   }
 
 }

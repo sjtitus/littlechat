@@ -53,7 +53,7 @@ export class MessageService {
       this.conversations[contactEmail] = resp.conversation;
     }
     else {
-      console.log(`MessageService: error calling API for conversation with ${contactEmail}: ${resp.errorMessage}`, resp);
+      console.error(`MessageService: error calling API for conversation with ${contactEmail}: ${resp.errorMessage}`, resp);
     }
     console.log('MessageService: get conversation success', resp);
     return resp;

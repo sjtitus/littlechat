@@ -3,13 +3,8 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/catch';
 import { catchError} from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { ApiError } from '../models/apierror';
-
-//import 'rxjs/add/observable/throw';
-//import 'rxjs/add/operator/map';
-
 import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse,
          GetConversationRequest, GetConversationResponse } from '../models/user';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
@@ -25,61 +20,109 @@ export class ApiService {
   private readonly conversationUrl = 'http://localhost:4200/api/conversation';
   private readonly timeout = 20000;
 
-  //===========================================================================
-  // Public interface
-  //===========================================================================
   constructor(private http: HttpClient) {}
 
-  LoginUser(loginRequest: LoginRequest) {
-        console.log('ApiService: login request ', loginRequest);
-        return this.http.post<LoginResponse>(this.loginUrl, loginRequest, { observe: 'response' })
-        .timeout(this.timeout)
-        .pipe(catchError(this.HandleError));
+  async LoginUser(loginRequest: LoginRequest) {
+      console.log('ApiService::LoginUser: login request ', loginRequest);
+      let resp: LoginResponse = {} as any;
+      try {
+        const apiResp = await this.http.post<LoginResponse>(this.loginUrl, loginRequest, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError))
+            .toPromise();
+        resp = apiResp.body;
+      }
+      catch (e) {
+        const err = e as ApiError;
+        console.error(`ApiService::LoginUser: API error`, err);
+        resp.error = true;
+        resp.apiError = err;
+        resp.errorMessage = err.message;
+      }
+      finally {
+        return resp;
+      }
   }
 
-  SignupUser(signupRequest: SignupRequest) {
-        console.log('ApiService: signup request ', signupRequest);
-        return this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
+
+  async SignupUser(signupRequest: SignupRequest) {
+      console.log('ApiService::SignupUser: signup request ', signupRequest);
+      let resp: SignupResponse = {} as any;
+      try {
+        const apiResp = await this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
             .timeout(this.timeout)
-            .pipe(catchError(this.HandleError));
+            .pipe(catchError(this.HandleError))
+            .toPromise();
+        resp = apiResp.body;
+      }
+      catch (e) {
+        const err = e as ApiError;
+        console.error(`ApiService::SignupUser: API error`, err);
+        resp.error = true;
+        resp.apiError = err;
+        resp.errorMessage = err.message;
+      }
+      finally {
+        return resp;
+      }
   }
+
 
   async GetConversation(req: GetConversationRequest) {
-        console.log('ApiService::GetConversation: request', req);
-        let resp: GetConversationResponse = {} as any;
-        try {
-          resp.conversation = [];
-          const apiResp = await this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
-              .timeout(this.timeout)
-              .pipe(catchError(this.HandleError))
-              .toPromise();
-          resp = apiResp.body;
-        }
-        catch (e) {
-          const err = e as ApiError;
-          console.error(`ApiService::GetConversation: API error`, err);
-          resp.error = true;
-          resp.apiError = err;
-          resp.errorMessage = err.message;
-        }
-        finally {
-          return resp;
-        }
-  }
-
-  GetContacts(req: GetContactsRequest) {
-        console.log('ApiService: get contacts request', req);
-        return this.http.post<GetContactsResponse>(this.contactsUrl, req, { observe: 'response' })
+      console.log('ApiService::GetConversation: request', req);
+      let resp: GetConversationResponse = {} as any;
+      try {
+        resp.conversation = [];
+        const apiResp = await this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
             .timeout(this.timeout)
-            .pipe(catchError(this.HandleError));
+            .pipe(catchError(this.HandleError))
+            .toPromise();
+        resp = apiResp.body;
+      }
+      catch (e) {
+        const err = e as ApiError;
+        console.error(`ApiService::GetConversation: API error`, err);
+        resp.error = true;
+        resp.apiError = err;
+        resp.errorMessage = err.message;
+      }
+      finally {
+        return resp;
+      }
   }
 
+
+  async GetContacts(req: GetContactsRequest) {
+      console.log('ApiService::GetContacts: request', req);
+      let resp: GetContactsResponse = {} as any;
+      try {
+        const apiResp = await this.http.post<GetContactsResponse>(this.contactsUrl, req, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError))
+            .toPromise();
+        resp = apiResp.body;
+        console.log('ApiService::GetContacts: response', resp);
+      }
+      catch (e) {
+        const err = e as ApiError;
+        console.error(`ApiService::GetContacts: API error`, err);
+        resp.error = true;
+        resp.apiError = err;
+        resp.errorMessage = err.message;
+      }
+      finally {
+        return resp;
+      }
+  }
+
+  /*
   GetUserMessages(msgsRequest: UserMessagesRequest) {
         console.log('ApiService: get user message request ', msgsRequest);
         return this.http.post<UserMessagesResponse>(this.msgsUrl, msgsRequest, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError));
   }
+  */
 
   //___________________________________________________________________________
   // Private interface

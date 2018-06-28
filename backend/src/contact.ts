@@ -23,9 +23,9 @@ const testMessages: Message[] = [
 // GetContacts
 export async function GetContacts(getContactsRequest: GetContactsRequest) {
   const dbContacts = await db.getContactsByUserId(getContactsRequest.userId);
-  let getContactsResponse: GetContactsResponse = {
-    error: false, errorMessage: '', userId: getContactsRequest.userId, contacts: []
-  };
+  let getContactsResponse: GetContactsResponse = {} as any;
+  getContactsResponse.userId = getContactsRequest.userId;
+  getContactsResponse.contacts = [];
   dbContacts.map((contact) => {
     const user: User = {
       firstname: contact.firstname,
@@ -42,14 +42,12 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
 // GetConversation
 export async function GetConversation(getConversationsRequest: GetConversationRequest) {
   //const dbConversation = await db.getConversationByUserId(getConversationsRequest.userId);
-  let getConversationsResponse: GetConversationResponse = {
-    error: false,
-    apiError: null,
-    errorMessage: '',
-    userId: getConversationsRequest.userId,
-    contactEmail: getConversationsRequest.contactEmail,
-    conversation: testMessages
-  };
+  let getConversationsResponse: GetConversationResponse = {} as any;
+  getConversationsResponse.error = false;
+  getConversationsResponse.errorMessage = '';
+  getConversationsResponse.userId = getConversationsRequest.userId;
+  getConversationsResponse.contactEmail = getConversationsRequest.contactEmail;
+  getConversationsResponse.conversation = testMessages;
   /*
   dbConversations.map((dbconv) => {
     const conv: Conversation = {

@@ -1,3 +1,5 @@
+import { ApiError } from './apierror';
+
 export interface  LoginRequest {
     email: string;
     password: string;
@@ -6,6 +8,7 @@ export interface  LoginRequest {
 export interface  LoginResponse {
     error: boolean;
     errorMessage: string;
+    apiError: ApiError;
     userId: number;
     token: string;
 }
@@ -21,6 +24,7 @@ export interface  SignupRequest {
 export interface  SignupResponse {
     error: boolean;
     errorMessage: string;
+    apiError: ApiError;
     userId: number;
     token: string;
 }

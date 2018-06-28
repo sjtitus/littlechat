@@ -16,7 +16,7 @@ export interface GetConversationRequest {
 export interface GetConversationResponse {
   error: boolean;
   errorMessage: string;
-  apiError: ApiError | null;
+  apiError: ApiError;
   userId: number;
   contactEmail: string;
   conversation: Message[];
@@ -29,6 +29,7 @@ export interface GetContactsRequest {
 export interface GetContactsResponse {
   error: boolean;
   errorMessage: string;
+  apiError: ApiError;
   userId: number;
   contacts: User[];
 }
