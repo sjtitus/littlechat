@@ -12,11 +12,11 @@ import { userInfo } from "os";
 import { Conversation } from "../../app/src/app/models/conversation";
 
 const testMessages: Message[] = [
- { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
- { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
- { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
- { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''},
- { to: 2, from: 1, timeSent: 'now', content: 'this is a test message', hashCode: ''}
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'},
+ { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'}
 ];
 
 //_____________________________________________________________________________

@@ -1,5 +1,6 @@
 import WebSocketServer from './websocketserver';
 import { Message, MessageAck }  from '../../app/src/app/models/message';
+import {Md5} from 'ts-md5';
 
 export default class MessageHandler {
 
@@ -18,8 +19,9 @@ export default class MessageHandler {
     // Handle an incoming littlechat message
     public async OnMessage(socket: any, message: Message, ack: Function) {
       console.log(`MessageHandler:OnMessage: incoming message from ${message.from}:`,message);
+      const msgHash = Md5.hashStr(message.timeSent + message.content) as string;
       const messageAck: MessageAck = {
-        hashCode: message.hashCode,
+        hashCode: msgHash,
         timeReceived: new Date().toISOString()
       }
       // Acknowledge message receipt to client

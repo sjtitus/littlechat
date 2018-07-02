@@ -1,3 +1,6 @@
 <div class="msgentrycontainer">
-   <input (change)="SendMessage($event)" class="msgentry" type="input" name="message" id="message" placeholder="Message">
+  <div class="alert alert-danger" [hidden]="errorText==null">
+    {{ errorText }}
+  </div>
+  <input (change)="SendMessage($event)" class="msgentry" type="input" name="message" id="message" placeholder="Message">
 </div>

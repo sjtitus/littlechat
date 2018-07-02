@@ -15,7 +15,6 @@ export class ApiService {
 
   private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
-  private readonly msgsUrl = 'http://localhost:4200/api/messages';
   private readonly contactsUrl = 'http://localhost:4200/api/contacts';
   private readonly conversationUrl = 'http://localhost:4200/api/conversation';
   private readonly timeout = 20000;
@@ -115,17 +114,9 @@ export class ApiService {
       }
   }
 
-  /*
-  GetUserMessages(msgsRequest: UserMessagesRequest) {
-        console.log('ApiService: get user message request ', msgsRequest);
-        return this.http.post<UserMessagesResponse>(this.msgsUrl, msgsRequest, { observe: 'response' })
-            .timeout(this.timeout)
-            .pipe(catchError(this.HandleError));
-  }
-  */
-
   //___________________________________________________________________________
-  // Private interface
+  // Private
+
   private HandleError(httperr) {
         const er: ApiError = {
           response: httperr,
@@ -136,7 +127,7 @@ export class ApiService {
           error: httperr.error ? httperr.error : '',
           offline: ((httperr.status != null) && (+(httperr.status) <= 0))
         };
-        console.log('ApiService: caught error: ', er);
+        console.log('ApiService::HandleError: error: ', er);
         return new ErrorObservable(er);
   }
 

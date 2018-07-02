@@ -38,8 +38,8 @@ export class HomeComponent implements OnInit {
     console.log(`HomeComponent::Init: instantiating client web socket service`);
     const authToken: string = this.tokenService.Retrieve();
     this.webSocketService.Start(authToken);
-    this.webSocketService.onEvent('error').subscribe((err) => this.HandleWebSocketError(err));
-    this.webSocketService.onEvent('message').subscribe(
+    this.webSocketService.OnEvent('error').subscribe((err) => this.HandleWebSocketError(err));
+    this.webSocketService.OnEvent('message').subscribe(
       (msg) => {
           console.log('HomeComponent: received websocket message: ', msg);
       }

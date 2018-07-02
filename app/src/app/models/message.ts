@@ -3,7 +3,6 @@ export interface  Message {
   to: number;
   content: string;
   timeSent: string;
-  hashCode: string;
 }
 
 export interface MessageAck {

@@ -14,6 +14,7 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { AppRoutingModule } from './modules/routing/routing.module';
 import { WebSocketService } from './services/websocket.service';
+import { ErrorhandlerComponent } from './components/errorhandler/errorhandler.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { WebSocketService } from './services/websocket.service';
     MessagelistComponent,
     MessageentryComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    ErrorhandlerComponent
   ],
   imports: [
     BrowserModule,

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
-import { Message } from '../models/message';
+import { Message, MessageAck } from '../models/message';
+import { Md5 } from 'ts-md5';
 
 import * as socketIo from 'socket.io-client';
 
@@ -11,6 +11,10 @@ const SERVER_URL = 'http://localhost:4200';
 export class WebSocketService {
     private socket;
     private _authToken: string;
+    private pendingMessages: { [s: string]: Message; } = {};
+    private failedMessages: { [s: string]: Message; } = {};
+    private corruptMessages: { [s: string]: Message; } = {};
+    private readonly ackTimeout = 10;
 
     constructor() {}
 
@@ -29,28 +33,106 @@ export class WebSocketService {
               }
             }
         });
-        /*
-        console.log(`Client WebSocketService: installing error handler`);
-        this.socket.on('error', (err) => {
-            console.log('Client WebSocketService ERROR!: ', err);
-            console.log('err: socket: ', this.socket);
-        });
-        */
+        console.log('SocketIO object: ', this.socket);
+        this.socket.on('connect_error', () => { console.log('connect_error'); });
+        this.socket.on('connect_timeout', () => { console.log('connect_timeout'); });
+        this.socket.on('reconnect', () => { console.log('reconnect'); });
+        this.socket.on('reconnect_attempt', () => { console.log('reconnect_attempt'); });
+        this.socket.on('reconnecting', () => { console.log('reconnecting'); });
+        this.socket.on('reconnect_error', () => { console.log('reconnect_error'); });
+        this.socket.on('reconnect_failed', () => { console.log('reconnect_failed'); });
     }
 
     public get authToken(): string { return this._authToken; }
 
-    public send(event: string, message: Message, callback?: (returnmsg: any) => void): void {
-        console.log(`WebSocketService: sending message:`, message);
-        this.socket.emit(event, message, callback);
+    public get Connected(): boolean { return this.socket.connected; }
 
+
+    public OnEvent(event: string): Observable<any> {
+      console.log(`WebSocketService: Setting up event handler for '${event}'`);
+      return new Observable<Event>(observer => {
+          this.socket.on(event, (data) => observer.next(data));
+      });
     }
 
-    public onEvent(event: string): Observable<any> {
-        console.log(`WebSocketService: Setting up event handler for '${event}'`);
-        return new Observable<Event>(observer => {
-            this.socket.on(event, (data) => observer.next(data));
+    public async SendMessage(message: Message) {
+        console.log(`WebSocketService::SendMessage sending message '${message.content}' to user ${message.to}`);
+        console.log(`WebSocketService::SendMessage connected: ${this.socket.connected}`);
+        const msgId = Md5.hashStr(message.timeSent + message.content) as string;
+        return new Promise( (resolve, reject) => {
+          // Socket is disconnected, don't even try to send message
+          if (!this.socket.connected) {
+            reject(new Error('WebSocketService::SendMessage send failed: connection is down'));
+          }
+          else {
+            // keep track of pending messages
+            this.pendingMessages[msgId] = message;
+            // fail if message has not been acknowledged within timeout period
+            const failTrigger = setTimeout(() => this.FailSend(msgId, reject), this.ackTimeout * 1000);
+            // send the message, validate backend response
+            this.socket.emit('message', message,
+              (ack: MessageAck) => {
+                this.ValidateSend(ack, msgId, resolve, reject, failTrigger);
+              });
+          }
         });
     }
+
+
+    //=========================================
+    // Private
+    //=========================================
+
+    //_________________________________________________________________________
+    // ValidateSend
+    // Validate that a message was correctly received by the back end.
+    // Invoked when we receive a message ack from the backend for a specified
+    // local message.
+    private ValidateSend( ack: MessageAck, localMsgId, resolve, reject, failTrigger) {
+      // we got an ack: cancel the timeout that would fail this message
+      clearTimeout(failTrigger);
+      console.log(`WebSocketService::ValidateSend: validating message '${localMsgId}'`);
+      let err: string = null;
+      // corner case: we've already failed (timed out) and are getting a late response
+      // warn and throw the message back into the pending state
+      if (localMsgId in this.failedMessages) {
+        console.warn(`WebSocketService::ValidateSend: late response for failed message '${localMsgId}`);
+        this.pendingMessages[localMsgId] = this.failedMessages[localMsgId];
+        delete this.failedMessages[localMsgId];
+      }
+      // We expect the message to be pending
+      if (!(localMsgId in this.pendingMessages)) {
+        err = `WebSocketService::ValidateSend: unexpected ack for non-pending message '${localMsgId}'`;
+      }
+      else {
+        // integrity check: backend correctly received message we sent?
+        const msgValid = (ack.hashCode === localMsgId);
+        if (!msgValid) {
+          this.corruptMessages[localMsgId] = this.pendingMessages[localMsgId];
+          err = `WebSocketService::ValidateSend: message ${localMsgId} is corrupt`;
+        }
+        // valid or not, we delete it from pending
+        delete this.pendingMessages[localMsgId];
+      }
+      // resolve or reject based on error
+      if (err != null) {
+        console.log(`WebSocketService::ValidateSend: message ${localMsgId} validation failed`);
+        reject(new Error(err));
+      }
+      else {
+        console.log(`WebSocketService::ValidateSend: message ${localMsgId} validated`);
+        resolve(localMsgId);
+      }
+    }
+
+    private FailSend(pendingMsgId, reject) {
+      if (pendingMsgId in this.pendingMessages) {
+        console.log(`MessageEntry::SendFailed: send failed for message '${pendingMsgId}'`);
+        this.failedMessages[pendingMsgId] = this.pendingMessages[pendingMsgId];
+        delete this.pendingMessages[pendingMsgId];
+        reject(new Error(`MessageEntry: send failed for message '${pendingMsgId}': timeout`));
+      }
+    }
+
 
 }

@@ -1,6 +1,6 @@
 /*______________________________________________________________________________
   MessageEntryComponent
-  Accepts a message and sends it to the selected user (via MessageService).
+  Accepts a message and sends it to the selected contact.
 ________________________________________________________________________________
 */
 import { Component, OnInit, Input } from '@angular/core';
@@ -8,7 +8,7 @@ import { User } from '../../models/user';
 import { Message, MessageAck } from '../../models/message';
 import { TokenService } from '../../services/token.service';
 import { WebSocketService } from '../../services/websocket.service';
-//import {Md5} from 'ts-md5/dist/md5';
+import {Md5} from 'ts-md5';
 
 @Component({
   selector: 'app-messageentry',
@@ -18,12 +18,18 @@ import { WebSocketService } from '../../services/websocket.service';
 
 export class MessageentryComponent implements OnInit {
 
-  private currentUser: User;
+  // Contact we're chatting with
   private _chatContact: User;
 
+  private pendingMessages: { [s: string]: Message; } = {};
+
+  private readonly ackTimeout = 10;
+
+  public errorText: string;
+
   @Input() set chatContact(contact: User) {
-    this._chatContact = contact;
     console.log('MessageEntry: chat contact changed to ', contact);
+    this._chatContact = contact;
   }
 
   constructor(private tokenService: TokenService,
@@ -31,36 +37,36 @@ export class MessageentryComponent implements OnInit {
 
   ngOnInit() {
     //console.log('MessageEntry Init: WebSocketService token:', this.webSocketService.authToken);
-    this.currentUser = this.tokenService.CurrentUser;
-    console.log('MessageEntry Init: current user', this.currentUser);
-    this.webSocketService.onEvent('error').subscribe(
+    this.webSocketService.OnEvent('error').subscribe(
       (err) => {
           console.error('MessageEntry: caught websocketservice error: ', err);
       }
     );
   }
 
-  SendMessage(event: any) {
-    const content: string = event.target.value as string;
-    console.log(`MessageEntry: sending message '${content}' to user ${this._chatContact}`);
-    const timeSent: string = new Date().toISOString();
-    const hashCode = '';  //Md5.hashStr(timeSent + content) as string;
-    const message: Message = {
-      from: this.currentUser.id,
-      to: this._chatContact.id,
-      content: content,
-      timeSent: timeSent,
-      hashCode: hashCode
-    };
-    this.webSocketService.send('message', message, (ack: MessageAck) => { this.CheckAck(ack, hashCode); });
-    // clear the text entry
-    event.target.value = '';
-  }
-
-  private CheckAck(ack: MessageAck, hashCode: string) {
-    console.log(`MessageEntry: ack received for message ${hashCode}`);
-    if (ack.hashCode !== hashCode) {
-      throw new Error(`MessageEntry: message acknowledgement failed: sent (${hashCode}) != received (${ack.hashCode})`);
+  public async SendMessage(event: any) {
+    try {
+      this.errorText = null;
+      console.log(`MessageEntry::SendMessage: send message to ${this._chatContact.email}`);
+      // construct message
+      const content: string = event.target.value as string;
+      const timeSent: string = new Date().toISOString();
+      const message: Message = {
+        from: this.tokenService.CurrentUser.id,
+        to: this._chatContact.id,
+        content: content,
+        timeSent: timeSent,
+      };
+      // send message via websocket
+      const sendResp = await this.webSocketService.SendMessage(message);
+      console.log(`MessageEntry::SendMessage: send response: ${sendResp}`);
+    }
+    catch (err) {
+        console.error(`MessageEntry::SendMessage: error`, err);
+        this.errorText = err.message;
+    }
+    finally {
+      event.target.value = '';
     }
   }
 

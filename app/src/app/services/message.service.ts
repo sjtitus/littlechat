@@ -28,7 +28,7 @@ export class MessageService {
 
   //___________________________________________________________________________
   // GetConversation
-  // Retrieve a conversation from the back end (or cache)
+  // Retrieve a conversation from the back end using API (or cache)
   public async GetConversation(contactEmail: string) {
     let resp: GetConversationResponse = {} as any;
     // Already loaded: use cache
