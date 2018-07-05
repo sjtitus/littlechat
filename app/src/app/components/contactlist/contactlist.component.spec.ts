@@ -1,14 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { ContactListComponent } from './contactlist.component';
+import { ApiService, ApiServiceStub } from '../../services/api.service';
+import { TokenService, TokenServiceStub } from '../../services/token.service';
 
-describe('UserlistComponent', () => {
+describe('ContactListComponent', () => {
+
   let component: ContactListComponent;
   let fixture: ComponentFixture<ContactListComponent>;
+  let apiService: ApiService;
+  let tokenService: TokenService;
+  let contactElements: any;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContactListComponent ]
+      declarations: [ ContactListComponent ],
+      providers: [
+        {provide: ApiService, useValue: ApiServiceStub },
+        {provide: TokenService, useValue: TokenServiceStub }
+      ]
     })
     .compileComponents();
   }));
@@ -16,10 +26,17 @@ describe('UserlistComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ContactListComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    apiService = TestBed.get(ApiService);
+    tokenService = TestBed.get(TokenService);
   });
 
-  it('should create', () => {
+  it('should create', fakeAsync( () => {
+    component.ngOnInit();
+    tick();
+    fixture.detectChanges();
     expect(component).toBeTruthy();
-  });
+    contactElements = fixture.nativeElement.querySelectorAll('.contact');
+    expect(contactElements[1].textContent.trim()).toEqual('firstname2 lastname2');
+  }));
+
 });

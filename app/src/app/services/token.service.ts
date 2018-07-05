@@ -10,6 +10,18 @@ import { CanActivate, Router } from '@angular/router';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 
+// Stub for testing
+export const TokenServiceStub: Partial<TokenService> = {
+  get CurrentUser(): User {
+    return {
+      firstname: 'firstname1',
+      lastname: 'lastname1',
+      email: 'testuser1@test.com',
+      id: 999000
+    };
+  }
+};
+
 @Injectable()
 export class TokenService implements CanActivate {
 
@@ -26,7 +38,7 @@ export class TokenService implements CanActivate {
 
   //___________________________________________________________________________
   // Return the current authenticated user
-  public get CurrentUser(): User {
+  get CurrentUser(): User {
     return this.GetCurrentUser();
   }
 

@@ -10,6 +10,28 @@ import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessa
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 
 
+// Stub for testing
+export const ApiServiceStub: Partial<ApiService> = {
+  async GetContacts(req: GetContactsRequest) {
+      const resp: GetContactsResponse = {
+        error: false,
+        errorMessage: '',
+        apiError: undefined,
+        userId: 999000,
+        contacts: [
+            { firstname: 'firstname1', lastname: 'lastname1', email: 'testuser1@test.com', id: 999001 },
+            { firstname: 'firstname2', lastname: 'lastname2', email: 'testuser2@test.com', id: 999002 },
+            { firstname: 'firstname3', lastname: 'lastname3', email: 'testuser3@test.com', id: 999003 },
+            { firstname: 'firstname4', lastname: 'lastname4', email: 'testuser4@test.com', id: 999004 },
+            { firstname: 'firstname5', lastname: 'lastname5', email: 'testuser5@test.com', id: 999005 }
+        ]
+      };
+      console.log('ApiServiceStub: GetContacts returning', resp);
+      return resp;
+  }
+};
+
+
 @Injectable()
 export class ApiService {
 
@@ -132,3 +154,4 @@ export class ApiService {
   }
 
 }
+

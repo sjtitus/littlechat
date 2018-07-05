@@ -4,11 +4,9 @@
   chat.
 ________________________________________________________________________________
 */
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, ChangeDetectorRef } from '@angular/core';
 import { User, GetContactsRequest, GetContactsResponse, GetConversationRequest, GetConversationResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
-import { HttpResponse } from '@angular/common/http';
-import { ApiError } from '../../models/apierror';
 import { TokenService } from '../../services/token.service';
 
 @Component({
@@ -33,7 +31,7 @@ export class ContactListComponent implements OnInit {
   private currentUser: User;
 
   constructor( private apiService: ApiService,
-    private tokenService: TokenService) {}
+    private tokenService: TokenService, private ref: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.currentUser = this.tokenService.CurrentUser;
@@ -63,6 +61,7 @@ export class ContactListComponent implements OnInit {
     const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
     if (!resp.error) {
       this.contactList = resp.contacts;
+      console.log(`ContactList: got contact list for userId=${apiReq.userId}`, this.contactList);
     }
     else {
       // API call succeeded, but there was an error on the backend
