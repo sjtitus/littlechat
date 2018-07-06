@@ -140,12 +140,20 @@ export class ApiService {
   // Private
 
   private HandleError(httperr) {
+        const internalmessage = httperr.error ? httperr.error.message : undefined;
+        const httperrormessage = httperr.message ? httperr.message : undefined;
+        const statusmessage = httperr.statusText ? httperr.statusText : undefined;
+        const statuscodemessage = httperr.status ? `${httperr.status}` : '';
+        let message = '';
+        if (statusmessage)      { message = message.concat(`STATUS=[${statuscodemessage}: ${statusmessage}]`);   }
+        if (httperrormessage)   { message = message.concat(`;  HTTP ERROR=[${httperrormessage}]`);               }
+        if (internalmessage)    { message = message.concat(`;  INTERNAL ERROR=[${internalmessage}]`);            }
         const er: ApiError = {
           response: httperr,
           url: httperr.url ? httperr.url : '',
           status: httperr.status ? httperr.status : '',
-          statusText: httperr.statusText ? httperr.statusText : '',
-          message: httperr.message ? httperr.message : '',
+          statusText: statusmessage,
+          message: message,
           error: httperr.error ? httperr.error : '',
           offline: ((httperr.status != null) && (+(httperr.status) <= 0))
         };

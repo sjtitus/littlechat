@@ -39,4 +39,15 @@ describe('ContactListComponent', () => {
     expect(contactElements[1].textContent.trim()).toEqual('firstname2 lastname2');
   }));
 
+  it('should contain the list of test contacts', fakeAsync( () => {
+    component.ngOnInit();
+    tick();
+    fixture.detectChanges();
+    contactElements = fixture.nativeElement.querySelectorAll('.contact');
+    expect(contactElements[0].textContent.trim()).toEqual('firstname1 lastname1');
+    expect(contactElements[1].textContent.trim()).toEqual('firstname2 lastname2');
+    expect(contactElements[2].textContent.trim()).toEqual('firstname3 lastname3');
+    expect(contactElements[3].textContent.trim()).toEqual('firstname4 lastname4');
+  }));
+
 });

@@ -22,8 +22,8 @@ const testMessages: Message[] = [
 //_____________________________________________________________________________
 // GetContacts
 export async function GetContacts(getContactsRequest: GetContactsRequest) {
-  const dbContacts = await db.getContactsByUserId(getContactsRequest.userId);
   let getContactsResponse: GetContactsResponse = {} as any;
+  const dbContacts = await db.getContactsByUserId(getContactsRequest.userId);
   getContactsResponse.userId = getContactsRequest.userId;
   getContactsResponse.contacts = [];
   dbContacts.map((contact) => {

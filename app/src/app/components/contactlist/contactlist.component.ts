@@ -4,7 +4,7 @@
   chat.
 ________________________________________________________________________________
 */
-import { Component, OnInit, EventEmitter, Input, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { User, GetContactsRequest, GetContactsResponse, GetConversationRequest, GetConversationResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
@@ -28,14 +28,11 @@ export class ContactListComponent implements OnInit {
   networkError: string;
 
   private _selectedContact: User;
-  private currentUser: User;
 
-  constructor( private apiService: ApiService,
-    private tokenService: TokenService, private ref: ChangeDetectorRef) {}
+  constructor( private apiService: ApiService, private tokenService: TokenService ) {}
 
   ngOnInit() {
-    this.currentUser = this.tokenService.CurrentUser;
-    console.log(`ContactListComponent: OnInit: current user is `, this.currentUser);
+    console.log(`ContactListComponent: OnInit: current user is `, this.tokenService.CurrentUser.email);
     this.GetContacts();
   }
 
@@ -56,7 +53,7 @@ export class ContactListComponent implements OnInit {
   //___________________________________________________________________________
   // Load user contacts
   public async GetContacts() {
-    const apiReq: GetContactsRequest = { userId: this.currentUser.id };
+    const apiReq: GetContactsRequest = { userId: this.tokenService.CurrentUser.id };
     console.log(`ContactList: GetContacts for userId=${apiReq.userId}`);
     const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
     if (!resp.error) {
