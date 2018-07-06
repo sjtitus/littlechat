@@ -30,13 +30,8 @@ describe('ContactListComponent', () => {
     tokenService = TestBed.get(TokenService);
   });
 
-  it('should create', fakeAsync( () => {
-    component.ngOnInit();
-    tick();
-    fixture.detectChanges();
+  it('should properly construct', fakeAsync( () => {
     expect(component).toBeTruthy();
-    contactElements = fixture.nativeElement.querySelectorAll('.contact');
-    expect(contactElements[1].textContent.trim()).toEqual('firstname2 lastname2');
   }));
 
   it('should contain the list of test contacts', fakeAsync( () => {
@@ -48,6 +43,38 @@ describe('ContactListComponent', () => {
     expect(contactElements[1].textContent.trim()).toEqual('firstname2 lastname2');
     expect(contactElements[2].textContent.trim()).toEqual('firstname3 lastname3');
     expect(contactElements[3].textContent.trim()).toEqual('firstname4 lastname4');
+  }));
+
+  it('should change to contact1 when contact1 is clicked', fakeAsync( () => {
+    component.ngOnInit();
+    tick();
+    component.contactSelected.subscribe(user => {
+      expect(user).toEqual({firstname: 'firstname1', lastname: 'lastname1', email: 'testuser1@test.com', id: 999001});
+    });
+    fixture.detectChanges();
+    contactElements = fixture.nativeElement.querySelectorAll('.contact');
+    contactElements[0].click();
+    tick();
+  }));
+
+  it('should change to contact2 when contact2 is clicked', fakeAsync( () => {
+    component.ngOnInit();
+    tick();
+    component.contactSelected.subscribe(user => {
+      expect(user).toEqual({firstname: 'firstname2', lastname: 'lastname2', email: 'testuser2@test.com', id: 999002});
+    });
+    fixture.detectChanges();
+    contactElements = fixture.nativeElement.querySelectorAll('.contact');
+    contactElements[1].click();
+    tick();
+  }));
+
+  it('should fail properly on API error', fakeAsync( () => {
+    apiService.generateError = true;
+    component.ngOnInit();
+    tick();
+    fixture.detectChanges();
+    expect(component.applicationError).toContain('test error');
   }));
 
 });

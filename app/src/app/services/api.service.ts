@@ -12,21 +12,32 @@ import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../m
 
 // Stub for testing
 export const ApiServiceStub: Partial<ApiService> = {
+  generateError: false,
   async GetContacts(req: GetContactsRequest) {
-      const resp: GetContactsResponse = {
-        error: false,
-        errorMessage: '',
-        apiError: undefined,
-        userId: 999000,
-        contacts: [
-            { firstname: 'firstname1', lastname: 'lastname1', email: 'testuser1@test.com', id: 999001 },
-            { firstname: 'firstname2', lastname: 'lastname2', email: 'testuser2@test.com', id: 999002 },
-            { firstname: 'firstname3', lastname: 'lastname3', email: 'testuser3@test.com', id: 999003 },
-            { firstname: 'firstname4', lastname: 'lastname4', email: 'testuser4@test.com', id: 999004 },
-            { firstname: 'firstname5', lastname: 'lastname5', email: 'testuser5@test.com', id: 999005 }
-        ]
-      };
-      console.log('ApiServiceStub: GetContacts returning', resp);
+      let resp: GetContactsResponse;
+      if (this.generateError) {
+        resp = {
+            error: true,
+            errorMessage: 'ApiServiceStub: test error',
+            apiError: undefined,
+            userId: undefined,
+            contacts: undefined
+        };
+      } else {
+        resp = {
+            error: false,
+            errorMessage: '',
+            apiError: undefined,
+            userId: 999000,
+            contacts: [
+              { firstname: 'firstname1', lastname: 'lastname1', email: 'testuser1@test.com', id: 999001 },
+              { firstname: 'firstname2', lastname: 'lastname2', email: 'testuser2@test.com', id: 999002 },
+              { firstname: 'firstname3', lastname: 'lastname3', email: 'testuser3@test.com', id: 999003 },
+              { firstname: 'firstname4', lastname: 'lastname4', email: 'testuser4@test.com', id: 999004 },
+              { firstname: 'firstname5', lastname: 'lastname5', email: 'testuser5@test.com', id: 999005 }
+            ]
+        };
+      }
       return resp;
   }
 };
@@ -34,12 +45,13 @@ export const ApiServiceStub: Partial<ApiService> = {
 
 @Injectable()
 export class ApiService {
-
   private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly contactsUrl = 'http://localhost:4200/api/contacts';
   private readonly conversationUrl = 'http://localhost:4200/api/conversation';
   private readonly timeout = 20000;
+
+  generateError = false;    // used for testing
 
   constructor(private http: HttpClient) {}
 

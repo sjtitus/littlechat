@@ -58,7 +58,6 @@ export class ContactListComponent implements OnInit {
     const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
     if (!resp.error) {
       this.contactList = resp.contacts;
-      console.log(`ContactList: got contact list for userId=${apiReq.userId}`, this.contactList);
     }
     else {
       // API call succeeded, but there was an error on the backend
