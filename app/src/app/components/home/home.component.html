@@ -2,7 +2,13 @@
   <h2>Welcome, {{CurrentUser.firstname}}</h2>
   <h3>{{headerMessage}}</h3>
 </div>
+<app-accordion [title]="'accordion'">
+ <h1>This is accordion content</h1>
+</app-accordion>
+<!--
+<app-errorhandler></app-errorhandler>
 <div class="alert alert-danger" [hidden]="WebSocketErrorText.length === 0"> {{WebSocketErrorText}} </div>
+-->
 
 <div class="clearfix mainarea border">
   <app-contactlist (contactSelected)="SetChatContact($event)"></app-contactlist>

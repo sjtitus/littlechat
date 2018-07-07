@@ -15,6 +15,7 @@ import { HomeComponent } from './components/home/home.component';
 import { AppRoutingModule } from './modules/routing/routing.module';
 import { WebSocketService } from './services/websocket.service';
 import { ErrorhandlerComponent } from './components/errorhandler/errorhandler.component';
+import { AccordionComponent } from './components/accordion/accordion.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ErrorhandlerComponent } from './components/errorhandler/errorhandler.co
     MessageentryComponent,
     LoginComponent,
     HomeComponent,
-    ErrorhandlerComponent
+    ErrorhandlerComponent,
+    AccordionComponent
   ],
   imports: [
     BrowserModule,

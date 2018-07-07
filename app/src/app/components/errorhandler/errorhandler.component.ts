@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-errorhandler',
   templateUrl: './errorhandler.component.html',
-  styleUrls: ['./errorhandler.component.css']
+  styleUrls: ['../../app.component.css']
 })
 export class ErrorhandlerComponent implements OnInit {
 
