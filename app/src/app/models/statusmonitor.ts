@@ -12,6 +12,7 @@ export enum StatusMonitorStatus { Ok, Warning, Error, Unknown }
 export class StatusMonitor {
 
     private _status: StatusMonitorStatus;
+    private _prevStatus: StatusMonitorStatus;
     private _message: string;
     private _sinceTimestamp: number;
     private _lastConfirmedTimestamp: number;
@@ -22,25 +23,41 @@ export class StatusMonitor {
       const now = Date.now();
       this._message = '';
       this._status = StatusMonitorStatus.Unknown;
+      this._prevStatus = StatusMonitorStatus.Unknown;
       this._sinceTimestamp = now;
       this._lastConfirmedTimestamp = now;
       this.StatusChange$ = new Subject<StatusMonitor>();
+      console.log(`StatusMonitor: new monitor: ${this}`);
     }
 
-    public SetStatus(status: StatusMonitorStatus, message: string = '') {
-      const now = Date.now();
-      const changed = ((status !== this._status) || (message !== this._message));
-      this._lastConfirmedTimestamp = now;
-      if (changed) {
-        this._status = status;
-        this._message = message;
-        this._sinceTimestamp = now;
-        this.StatusChange$.next(this);    // notify listeners
-      }
+    get StatusChanged(): boolean {
+      return (this._status !== this._prevStatus);
+    }
+
+    get WentBad(): boolean {
+      return (
+        (this._prevStatus !== StatusMonitorStatus.Error && this._prevStatus !== StatusMonitorStatus.Warning) &&
+        (this._status === StatusMonitorStatus.Error || this._status === StatusMonitorStatus.Warning)
+      );
+    }
+
+    get WentGood(): boolean {
+      return (
+        (this._prevStatus === StatusMonitorStatus.Error || this._prevStatus === StatusMonitorStatus.Warning) &&
+        (this._status !== StatusMonitorStatus.Error && this._status !== StatusMonitorStatus.Warning)
+      );
+    }
+
+    get Message(): string {
+      return this._message;
     }
 
     get Status(): StatusMonitorStatus {
       return this._status;
+    }
+
+    get StatusName(): string {
+      return StatusMonitorStatus[this._status];
     }
 
     get Since(): Date {
@@ -56,7 +73,20 @@ export class StatusMonitor {
     }
 
     toString() {
-      return `${this.name}: ${StatusMonitorStatus[this._status]} since ${this.Since.toISOString}`;
+      return `${this.name}: ${StatusMonitorStatus[this._status]} since ${this.Since.toISOString()}`;
+    }
+
+    public SetStatus(status: StatusMonitorStatus, message: string = '') {
+      const now = Date.now();
+      this._prevStatus = this._status;
+      this._status = status;
+      const mchanged = (this._message !== message);
+      console.log(`MCHANGED: ${mchanged}`);
+      this._message = message;
+      this._lastConfirmedTimestamp = now;
+      if (mchanged || this.StatusChanged) {
+        this.StatusChange$.next(this);    // notify listeners
+      }
     }
 
 }

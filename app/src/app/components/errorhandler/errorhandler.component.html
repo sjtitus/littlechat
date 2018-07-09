@@ -1,14 +1,16 @@
 <!-- Error handler is an accordion -->
-<app-accordion>
+<app-accordion [hidden]="NumErrors==0">
  <div accordian-head class="errorhandler-head alert alert-danger">
     <i accordion-head class="fa fa-chevron-down errorhandler-open-icon"></i>
-    {{ Message }}
+    {{ Summary }}
  </div>
  <div accordian-body class="errorhandler-body">
    <ul>
-     <li *ngFor="let e of ErrorList">
-       {{ e }}
-      </li>
+     <div *ngFor="let m of ErrorMonitors; trackBy: trackByFn">
+        <li *ngIf="m !== null">
+          {{m.Message}}
+        </li> 
+     </div>
    </ul>
  </div>
 </app-accordion>

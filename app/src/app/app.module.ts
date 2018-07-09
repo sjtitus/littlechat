@@ -6,6 +6,7 @@ import { MessagelistComponent } from './components/messagelist/messagelist.compo
 import { MessageentryComponent } from './components/messageentry/messageentry.component';
 import { MessageService } from './services/message.service';
 import { ApiService } from './services/api.service';
+import { MonitorService } from './services/monitor.service';
 import { TokenService } from './services/token.service';
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -34,7 +35,7 @@ import { AccordionComponent } from './components/accordion/accordion.component';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [MessageService, ApiService, TokenService, WebSocketService],
+  providers: [MessageService, ApiService, TokenService, WebSocketService, MonitorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

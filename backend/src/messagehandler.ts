@@ -24,7 +24,7 @@ export default class MessageHandler {
         hashCode: msgHash,
         timeReceived: new Date().toISOString()
       }
-      // Acknowledge message receipt to client
+      // Acknowledge message receipt to client 
       ack(messageAck);
       // Log the message to the database
       // Broadcast the message to the audience

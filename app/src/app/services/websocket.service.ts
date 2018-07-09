@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Message, MessageAck } from '../models/message';
 import { Md5 } from 'ts-md5';
-
+import { MonitorService } from './monitor.service';
 import * as socketIo from 'socket.io-client';
+import { StatusMonitorStatus } from '../models/statusmonitor';
 
 const SERVER_URL = 'http://localhost:4200';
 
@@ -16,7 +17,7 @@ export class WebSocketService {
     private corruptMessages: { [s: string]: Message; } = {};
     private readonly ackTimeout = 10;
 
-    constructor() {}
+    constructor(private monitorService: MonitorService) {}
 
     public Start(token: string) {
         console.log(`WebSocketService: starting service (URL ${SERVER_URL})`);
@@ -34,14 +35,27 @@ export class WebSocketService {
             }
         });
         console.log('SocketIO object: ', this.socket);
-        this.socket.on('connect_error', () => { console.log('connect_error'); });
-        this.socket.on('connect_timeout', () => { console.log('connect_timeout'); });
-        this.socket.on('reconnect', () => { console.log('reconnect'); });
-        this.socket.on('reconnect_attempt', () => { console.log('reconnect_attempt'); });
-        this.socket.on('reconnecting', () => { console.log('reconnecting'); });
-        this.socket.on('reconnect_error', () => { console.log('reconnect_error'); });
-        this.socket.on('reconnect_failed', () => { console.log('reconnect_failed'); });
+        this.socket.on('connect', () => this.WebSocketStatus('connect', StatusMonitorStatus.Ok));
+        this.socket.on('reconnect_failed', (e) => this.WebSocketStatus('reconnect failed', StatusMonitorStatus.Error, e));
+        this.socket.on('reconnect_error', (e) => this.WebSocketStatus('reconnect', StatusMonitorStatus.Error, e));
+        this.socket.on('connect_error', (e) => this.WebSocketStatus('connect', StatusMonitorStatus.Error, e));
+        this.socket.on('connect_timeout', (e) => this.WebSocketStatus('connect timeout', StatusMonitorStatus.Error, e));
+        this.socket.on('reconnect', () =>  this.WebSocketStatus('reconnect', StatusMonitorStatus.Ok));
+        //this.socket.on('reconnect_attempt', () => { console.log('reconnect_attempt'); });
+        //this.socket.on('reconnecting', () => { console.log('reconnecting'); });
     }
+
+    public WebSocketStatus(eventName: string, s: StatusMonitorStatus, err?: any) {
+      let msg: string;
+      if (err !== undefined) {
+        msg = `Websocket error: ${eventName}: ${err.message} (${err.description})`;
+      } else {
+        msg = `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
+      }
+      console.log(`WebSocketService: status change to '${StatusMonitorStatus[s]}': ${msg} (${eventName})`);
+      this.monitorService.ChangeStatus('Websocket', s, msg);
+    }
+
 
     public get authToken(): string { return this._authToken; }
 
