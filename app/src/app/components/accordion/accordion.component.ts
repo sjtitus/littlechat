@@ -8,16 +8,15 @@ import { Component, OnInit, Input } from '@angular/core';
 export class AccordionComponent implements OnInit {
 
   @Input() title: string;
-  @Input() active = false;
+  @Input() open = false;
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
-  ShowHide(event) {
+  ToggleOpen(event) {
     event.preventDefault();
-    this.active = !this.active;
+    this.open = !this.open;
   }
 
 }

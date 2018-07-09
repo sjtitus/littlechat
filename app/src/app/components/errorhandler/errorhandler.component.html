@@ -1,2 +1,14 @@
-
-<div class="alert alert-danger"> === ErrorHandler === </div>
+<!-- Error handler is an accordion -->
+<app-accordion>
+ <div accordian-head class="errorhandler-head alert alert-danger">
+    <i accordion-head class="fa fa-chevron-down errorhandler-open-icon"></i>
+    {{ Message }}
+ </div>
+ <div accordian-body class="errorhandler-body">
+   <ul>
+     <li *ngFor="let e of ErrorList">
+       {{ e }}
+      </li>
+   </ul>
+ </div>
+</app-accordion>

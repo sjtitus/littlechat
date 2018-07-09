@@ -1,0 +1,17 @@
+
+.errorhandler-head {
+  width: 100%;
+  padding-left: 10px;
+  padding-top: 5px;
+  font-size: 14pt
+}
+
+.errorhandler-open-icon {
+  font-size:16px;
+  margin-right: 20px;
+  float: right;
+}
+
+.errorhandler-body {
+  width: 100%;
+}

@@ -1,4 +1,6 @@
-<button class="accordion-head" (click)="ShowHide($event)">{{ title }}</button>
-<div class="accordion-body" [class.active]="active">
-  <ng-content></ng-content>
+<div (click)="ToggleOpen($event)">
+  <ng-content select="[accordian-head]"></ng-content>
+</div>
+<div [hidden]="!open">
+  <ng-content select="[accordian-body]"></ng-content>
 </div>
