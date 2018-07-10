@@ -7,7 +7,6 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class AccordionComponent implements OnInit {
 
-  @Input() title: string;
   @Input() open = false;
 
   constructor() { }
