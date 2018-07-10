@@ -44,13 +44,16 @@ export class MonitorService {
     delete this.Monitors[monitorName];
   }
 
+  // Change the status of a specific monitor
   ChangeStatus( monitorName: string, status: StatusMonitorStatus, message: string) {
     console.log(`MonitorService: changing status of monitor '${monitorName}' to '${StatusMonitorStatus[status]}' ${message}`);
     this.Monitors[monitorName].SetStatus(status, message);
   }
 
-  Subscribe( monitorName: string, cb: any ) {
+  // Subscribe to a specific monitor
+  // Subscribers will receive a reference to the changed StatusMonitor
+  Subscribe( monitorName: string, statusChangeCallback: any ) {
     console.log(`MonitorService: subscriber to monitor '${monitorName}'`);
-    this.Monitors[monitorName].StatusChange$.subscribe(cb);
+    this.Monitors[monitorName].StatusChange$.subscribe(statusChangeCallback);
   }
 }

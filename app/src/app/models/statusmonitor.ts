@@ -81,7 +81,6 @@ export class StatusMonitor {
       this._prevStatus = this._status;
       this._status = status;
       const mchanged = (this._message !== message);
-      console.log(`MCHANGED: ${mchanged}`);
       this._message = message;
       this._lastConfirmedTimestamp = now;
       if (mchanged || this.StatusChanged) {
