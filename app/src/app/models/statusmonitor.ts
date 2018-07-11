@@ -73,7 +73,7 @@ export class StatusMonitor {
     }
 
     toString() {
-      return `${this.name}: ${StatusMonitorStatus[this._status]} since ${this.Since.toISOString()}`;
+      return `${this.name}: ${StatusMonitorStatus[this._status]}: ${this._message} [since ${this.Since.toISOString()}, confirmed at ${this.LastConfirmed.toISOString()}]`;
     }
 
     public SetStatus(status: StatusMonitorStatus, message: string = '') {
