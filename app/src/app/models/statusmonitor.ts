@@ -83,8 +83,9 @@ export class StatusMonitor {
       const mchanged = (this._message !== message);
       this._message = message;
       this._lastConfirmedTimestamp = now;
-      if (mchanged || this.StatusChanged) {
-        this.StatusChange$.next(this);    // notify listeners
+      // notify listeners if status changed OR if status stayed the same but message changed
+      if (this.StatusChanged || mchanged) {
+        this.StatusChange$.next(this);
       }
     }
 

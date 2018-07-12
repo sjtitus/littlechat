@@ -1,6 +1,7 @@
 /*_____________________________________________________________________________
     Monitor Service
-    Monitor application state via a set of named StatusMonitor objects.
+    Monitor application state via a set of named StatusMonitor objects
+    corresponding to application components.
   _____________________________________________________________________________
 */
 import { Injectable } from '@angular/core';
@@ -11,13 +12,13 @@ import { Observer } from 'rxjs/Observer';
 export class MonitorService {
 
   Monitors: { [name: string]: StatusMonitor; } = {};
+  private Components: Array<string> =
+    [ 'API', 'Websocket', 'Contacts', 'Messages', 'Auth' ];
 
   constructor() {
-    this.AddMonitor('API');
-    this.AddMonitor('Websocket');
-    this.AddMonitor('Contacts');
-    this.AddMonitor('Messages');
-    this.AddMonitor('Auth');
+    for (const component of this.Components) {
+      this.AddMonitor(component);
+    }
   }
 
   MonitorNames(): Array<string> {
