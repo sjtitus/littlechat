@@ -41,12 +41,8 @@ export class ErrorhandlerComponent implements OnInit {
   }
 
   trackByFn(index, item) {
-    if (item === null) {
-      return -1;
-    }
-    const h = Md5.hashStr(item.Message);
-    console.log(`TRACKBY: index: ${index} , msg: ${item.Message}, hash: ${h}`);
-    return h;
+    if (item === null) { return undefined; }
+    return item.toString();
   }
 
   // Observer implementation
@@ -59,7 +55,6 @@ export class ErrorhandlerComponent implements OnInit {
     if (monitor.WentGood) {
       this.NumErrors--;
     }
-    console.log(`ErrorHandler: OnChange: EM length: ${this.ErrorMonitors.length}`);
     this.UpdateSummary();
   }
 

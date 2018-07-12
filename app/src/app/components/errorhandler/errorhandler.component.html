@@ -5,11 +5,11 @@
     {{ Summary }}
  </div>
  <div accordian-body class="errorhandler-body">
-   <ul>
+   <ul class="errorhandler-errorlist">
      <div *ngFor="let m of ErrorMonitors; trackBy: trackByFn">
-        <li *ngIf="m !== null">
-          {{m.Message}}
-        </li> 
+        <li *ngIf="m !== null" class="errorhandler-error alert alert-danger">
+          {{ m.toString() }}
+        </li>
      </div>
    </ul>
  </div>
