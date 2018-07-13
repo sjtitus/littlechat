@@ -8,6 +8,8 @@ import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { User, GetContactsRequest, GetContactsResponse, GetConversationRequest, GetConversationResponse } from '../../models/user';
 import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
+import { StatusMonitor, StatusMonitorStatus } from '../../models/statusmonitor';
+import { MonitorService } from '../../services/monitor.service';
 
 @Component({
   selector: 'app-contactlist',
@@ -20,7 +22,7 @@ export class ContactListComponent implements OnInit {
   // Contact selected for chat
   @Output() contactSelected = new EventEmitter<User>();
 
-  // User contacts
+  // User's contacts
   contactList: User[];
 
   // Error messages
@@ -29,10 +31,11 @@ export class ContactListComponent implements OnInit {
 
   private _selectedContact: User;
 
-  constructor( private apiService: ApiService, private tokenService: TokenService ) {}
+  constructor( private apiService: ApiService, private tokenService: TokenService,
+      private monitorService: MonitorService ) {}
 
   ngOnInit() {
-    console.log(`ContactListComponent: OnInit: current user is `, this.tokenService.CurrentUser.email);
+    console.log(`ContactList::OnInit: current user is ${this.tokenService.CurrentUser.email}`);
     this.GetContacts();
   }
 
@@ -40,7 +43,7 @@ export class ContactListComponent implements OnInit {
   // Select contact to chat with
   SelectContact(contact: User) {
     this._selectedContact = contact;
-    console.log('ContactList: new chat target', contact);
+    console.log('ContactList::SelectContact: new chat target', contact);
     // Notify listeners
     this.contactSelected.emit(this._selectedContact);
   }
@@ -54,7 +57,7 @@ export class ContactListComponent implements OnInit {
   // Load user contacts
   public async GetContacts() {
     const apiReq: GetContactsRequest = { userId: this.tokenService.CurrentUser.id };
-    console.log(`ContactList: GetContacts for userId=${apiReq.userId}`);
+    console.log(`ContactList::GetContacts: getting contacts for ${this.tokenService.CurrentUser.id}`);
     const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
     if (!resp.error) {
       this.contactList = resp.contacts;
@@ -63,6 +66,8 @@ export class ContactListComponent implements OnInit {
       // API call succeeded, but there was an error on the backend
       console.error(`ContactList: GetContacts Error: ${resp.errorMessage}`);
       this.applicationError = `ContactList: GetContacts Error: ${resp.errorMessage}`;
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error,
+          this.applicationError);
     }
   }
 

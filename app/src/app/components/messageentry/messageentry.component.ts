@@ -8,7 +8,9 @@ import { User } from '../../models/user';
 import { Message, MessageAck } from '../../models/message';
 import { TokenService } from '../../services/token.service';
 import { WebSocketService } from '../../services/websocket.service';
-import {Md5} from 'ts-md5';
+//import {Md5} from 'ts-md5';
+import { StatusMonitorStatus } from '../../models/statusmonitor';
+import { MonitorService } from '../../services/monitor.service';
 
 @Component({
   selector: 'app-messageentry',
@@ -18,30 +20,29 @@ import {Md5} from 'ts-md5';
 
 export class MessageentryComponent implements OnInit {
 
-  // Contact we're chatting with
-  private _chatContact: User;
-
-  private pendingMessages: { [s: string]: Message; } = {};
-
-  private readonly ackTimeout = 10;
-
+  private _chatContact: User;   // Contact we're chatting with
   public errorText: string;
+
+  //private pendingMessages: { [s: string]: Message; } = {};
+  //private readonly ackTimeout = 10;
 
   @Input() set chatContact(contact: User) {
     console.log('MessageEntry: chat contact changed to ', contact);
     this._chatContact = contact;
   }
 
-  constructor(private tokenService: TokenService,
-    private webSocketService: WebSocketService) {}
+  constructor(private tokenService: TokenService, private webSocketService: WebSocketService,
+      private monitorService: MonitorService) {}
 
   ngOnInit() {
+    /*
     //console.log('MessageEntry Init: WebSocketService token:', this.webSocketService.authToken);
     this.webSocketService.OnEvent('error').subscribe(
       (err) => {
           console.error('MessageEntry: caught websocketservice error: ', err);
       }
     );
+    */
   }
 
   public async SendMessage(event: any) {
@@ -64,6 +65,7 @@ export class MessageentryComponent implements OnInit {
     catch (err) {
         console.error(`MessageEntry::SendMessage: error`, err);
         this.errorText = err.message;
+        this.monitorService.ChangeStatus('Websocket', StatusMonitorStatus.Error, this.errorText);
     }
     finally {
       event.target.value = '';

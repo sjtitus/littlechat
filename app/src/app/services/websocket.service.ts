@@ -70,16 +70,15 @@ export class WebSocketService {
     }
 
     public async SendMessage(message: Message) {
-        console.log(`WebSocketService::SendMessage sending message '${message.content}' to user ${message.to}`);
-        console.log(`WebSocketService::SendMessage connected: ${this.socket.connected}`);
+        console.log(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
         const msgId = Md5.hashStr(message.timeSent + message.content) as string;
         return new Promise( (resolve, reject) => {
           // Socket is disconnected, don't even try to send message
           if (!this.socket.connected) {
-            reject(new Error('WebSocketService::SendMessage send failed: connection is down'));
+            reject(new Error('WebSocketService::SendMessage: send failed: websocket connection is down'));
           }
           else {
-            // keep track of pending messages
+            // keep track of pending messages: sent but not acked
             this.pendingMessages[msgId] = message;
             // fail if message has not been acknowledged within timeout period
             const failTrigger = setTimeout(() => this.FailSend(msgId, reject), this.ackTimeout * 1000);
@@ -103,14 +102,14 @@ export class WebSocketService {
     // Invoked when we receive a message ack from the backend for a specified
     // local message.
     private ValidateSend( ack: MessageAck, localMsgId, resolve, reject, failTrigger) {
-      // we got an ack: cancel the timeout that would fail this message
+      // we got an ack: cancel the timeout that will fail this message
       clearTimeout(failTrigger);
       console.log(`WebSocketService::ValidateSend: validating message '${localMsgId}'`);
       let err: string = null;
-      // corner case: we've already failed (timed out) and are getting a late response
-      // warn and throw the message back into the pending state
+      // corner case: we've already failed (timed out) and are getting a late response.
+      // warn and throw the message back into the pending state so we can process it below.
       if (localMsgId in this.failedMessages) {
-        console.warn(`WebSocketService::ValidateSend: late response for failed message '${localMsgId}`);
+        console.warn(`WebSocketService::ValidateSend: warning: late response for failed message '${localMsgId}`);
         this.pendingMessages[localMsgId] = this.failedMessages[localMsgId];
         delete this.failedMessages[localMsgId];
       }
