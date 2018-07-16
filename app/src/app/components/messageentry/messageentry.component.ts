@@ -34,16 +34,7 @@ export class MessageentryComponent implements OnInit {
   constructor(private tokenService: TokenService, private webSocketService: WebSocketService,
       private monitorService: MonitorService) {}
 
-  ngOnInit() {
-    /*
-    //console.log('MessageEntry Init: WebSocketService token:', this.webSocketService.authToken);
-    this.webSocketService.OnEvent('error').subscribe(
-      (err) => {
-          console.error('MessageEntry: caught websocketservice error: ', err);
-      }
-    );
-    */
-  }
+  ngOnInit() {}
 
   public async SendMessage(event: any) {
     try {
