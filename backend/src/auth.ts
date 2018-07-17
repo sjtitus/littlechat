@@ -20,11 +20,13 @@ export async function Login(loginRequest:LoginRequest) {
   const dbuser = await db.getUserByEmail(loginRequest.email);
   if (dbuser == null) {
     console.log(`Auth::Login: User ${loginRequest.email} not found`);
+    loginResponse.error = true;
     loginResponse.errorMessage = `User ${loginRequest.email} not found`;
     return loginResponse;
   }
   if (!dbuser.active) {
     console.log(`Auth::Login: User ${loginRequest.email} is inactive`);
+    loginResponse.error = true;
     loginResponse.errorMessage = `User ${loginRequest.email} is inactive`;
     return loginResponse;
   }
@@ -35,6 +37,7 @@ export async function Login(loginRequest:LoginRequest) {
   const authOk = await mycrypto.CheckPassword(loginRequest.password, dbpw.passwd, dbpw.salt, dbpw.iter);
   if (!authOk) {
     console.log(`Auth::Login: Auth failed for user ${loginRequest.email} (id = ${dbuser.id})`);
+    loginResponse.error = true;
     loginResponse.userId = dbuser.id;
     loginResponse.errorMessage = `Authentication failed for user ${loginRequest.email}`;
     return loginResponse;
@@ -68,12 +71,14 @@ export async function SignUp(signupRequest:SignupRequest) {
   const user = await db.getUserByEmail(signupRequest.email);
   if (user != null) {
     signupResponse.errorMessage = `Account for ${signupRequest.email} already exists, login instead`;
+    signupResponse.error = true;
     return signupResponse;
   }
   //______________________________________________
   // Passwords must match
   if (signupRequest.password !== signupRequest.password2) {
     signupResponse.errorMessage = `Passwords do not match`;
+    signupResponse.error = true;
     return signupResponse;
   }
   //______________________________________________

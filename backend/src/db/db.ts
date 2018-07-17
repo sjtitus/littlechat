@@ -4,6 +4,7 @@
  *_____________________________________________________________________________
 */
 import { Pool } from 'pg';
+import { Message }  from '../../../app/src/app/models/message';
 
 // Database connection pool
 console.log('db: creating new connection pool');
@@ -67,6 +68,12 @@ export async function createUser( firstname: string, lastname: string, email: st
 export async function getUserByEmail( emailaddress: string ) {
   const { rows:users } = await query(sql.getUserByEmail, [emailaddress]);
   return (users.length === 0) ? null:users[0];
+}
+
+//______________________________________________________________________________
+// saveMessage
+// Save a received message to the database
+export async function saveMessage( message: Message ) {
 }
 
 //______________________________________________________________________________
