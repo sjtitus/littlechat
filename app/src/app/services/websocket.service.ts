@@ -12,9 +12,9 @@ const SERVER_URL = 'http://localhost:4200';
 export class WebSocketService {
     private socket;
     private _authToken: string;
-    private pendingMessages: { [s: string]: Message; } = {};
-    private failedMessages: { [s: string]: Message; } = {};
-    private corruptMessages: { [s: string]: Message; } = {};
+    private pendingMessages:  { [s: string]: Message; } = {};
+    private failedMessages:   { [s: string]: Message; } = {};
+    private corruptMessages:  { [s: string]: Message; } = {};
     private readonly ackTimeout = 10;
 
     constructor(private monitorService: MonitorService) {}
@@ -56,11 +56,8 @@ export class WebSocketService {
       this.monitorService.ChangeStatus('Websocket', s, msg);
     }
 
-
     public get authToken(): string { return this._authToken; }
-
     public get Connected(): boolean { return this.socket.connected; }
-
 
     public OnEvent(event: string): Observable<any> {
       console.log(`WebSocketService: Setting up event handler for '${event}'`);
@@ -69,6 +66,9 @@ export class WebSocketService {
       });
     }
 
+    //_________________________________________________________________________
+    // SendMessage
+    // Send a message on websocket 'message' channel
     public async SendMessage(message: Message) {
         console.log(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
         const msgId = Md5.hashStr(message.timeSent + message.content) as string;
@@ -84,9 +84,7 @@ export class WebSocketService {
             const failTrigger = setTimeout(() => this.FailSend(msgId, reject), this.ackTimeout * 1000);
             // send the message, validate backend response
             this.socket.emit('message', message,
-              (ack: MessageAck) => {
-                this.ValidateSend(ack, msgId, resolve, reject, failTrigger);
-              });
+              (ack: MessageAck) => { this.ValidateSend(ack, msgId, resolve, reject, failTrigger); });
           }
         });
     }

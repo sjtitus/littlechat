@@ -40,24 +40,13 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
 
 //_____________________________________________________________________________
 // GetConversation
-export async function GetConversation(getConversationsRequest: GetConversationRequest) {
-  //const dbConversation = await db.getConversationByUserId(getConversationsRequest.userId);
+export async function GetConversation(getConversationRequest: GetConversationRequest) {
+  const dbConversation = await db.getConversation(getConversationRequest);
   let getConversationsResponse: GetConversationResponse = {} as any;
   getConversationsResponse.error = false;
   getConversationsResponse.errorMessage = '';
-  getConversationsResponse.userId = getConversationsRequest.userId;
-  getConversationsResponse.contactEmail = getConversationsRequest.contactEmail;
+  getConversationsResponse.userId = getConversationRequest.userId;
+  getConversationsResponse.contactEmail = getConversationRequest.contact.email;
   getConversationsResponse.conversation = testMessages;
-  /*
-  dbConversations.map((dbconv) => {
-    const conv: Conversation = {
-      owner: {firstname: '', lastname: '', id: 1, email:''},
-      audience: [],
-      totalMessages: 0,
-      lastMessageTime: '2018-05-20 20:49:45.301064-04'
-    }
-    getConversationsResponse.conversations.push(conv);
-  });
-  */
   return getConversationsResponse;
 }

@@ -5,6 +5,8 @@
 */
 import { Pool } from 'pg';
 import { Message }  from '../../../app/src/app/models/message';
+import { User, GetContactsRequest, GetContactsResponse,
+  GetConversationRequest, GetConversationResponse } from "../../../app/src/app/models/user";
 
 // Database connection pool
 console.log('db: creating new connection pool');
@@ -17,7 +19,7 @@ const sql = {
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
   getPasswordByUserId: 'SELECT * FROM passwd WHERE id_usr = $1',
   getContactsByUserId: 'SELECT * FROM usr',
-  getConversationsByUserId: 'SELECT * FROM usr'
+  getConversationMessages: 'SELECT * from message where id_conversation = $1'
 }
 
 //=========================================================
@@ -30,10 +32,10 @@ export async function query(text, params) { return pool.query(text, params) }
 
 
 //______________________________________________________________________________
-// getConversationsByUserId
-// Returns: db conversation list for user with specified user id
-export async function getConversationsByUserId( uid: number ) {
-  const { rows:conversations } = await query(sql.getConversationsByUserId, []);
+// getConversation
+// Returns: db conversation
+export async function getConversation( contact: User ) {
+  const { rows:conversations } = await query(sql.getConversationMessages, );
   return conversations;
 }
 

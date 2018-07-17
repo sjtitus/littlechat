@@ -9,6 +9,8 @@ import { MessageService } from '../../services/message.service';
 import { Message } from '../../models/message';
 import { Subscription } from 'rxjs/Subscription';
 import { TokenService } from '../../services/token.service';
+import { MonitorService } from '../../services/monitor.service';
+import { StatusMonitorStatus } from '../../models/statusmonitor';
 
 @Component({
   selector: 'app-messagelist',
@@ -28,7 +30,8 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   // current chat contact
   private _chatContact: User;
 
-  constructor(private messageService: MessageService, private tokenService: TokenService) {}
+  constructor(private messageService: MessageService, private tokenService: TokenService,
+      private monitorService: MonitorService ) {}
 
   // targetUser: setter hook (prop is bound from parent)
   @Input() set chatContact(contact: User) {
@@ -41,17 +44,16 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   private async GetConversation(contact: User) {
     console.log(`MessageList::GetConversation: getting conversation with ${contact.email}`);
     this.errorText = null;
-    const resp: GetConversationResponse = await this.messageService.GetConversation(contact.email);
+    const resp: GetConversationResponse = await this.messageService.GetConversation(contact);
     if (resp.error) {
       console.error(`MessageList::GetConversation: error: ${resp.errorMessage}`);
       this.errorText = resp.errorMessage;
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, this.errorText);
     }
-    console.log(`MessageList::GetConversation: conversation:`, resp.conversation);
     return resp.conversation;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   // Lifecycle hook to keep msgs scrolled to the bottom when view changes (i.e. messages added)
   ngAfterViewChecked() {

@@ -29,33 +29,32 @@ export class MessageService {
   //___________________________________________________________________________
   // GetConversation
   // Retrieve a conversation from the back end using API (or cache)
-  public async GetConversation(contactEmail: string) {
+  public async GetConversation(contact: User) {
     let resp: GetConversationResponse = {} as any;
     // Already loaded: use cache
-    if (contactEmail in this.conversations) {
-      console.log(`MessageService: returning cached conversation with ${contactEmail}`);
+    if (contact.email in this.conversations) {
+      console.log(`MessageService: returning cached conversation with ${contact.email}`);
       resp.error = false;
-      resp.contactEmail = contactEmail;
-      resp.conversation = this.conversations[contactEmail];
+      resp.contactEmail = contact.email;
+      resp.conversation = this.conversations[contact.email];
       resp.userId = this.tokenService.CurrentUser.id;
       return resp;
     }
     // Call API to get the conversation
-    console.log(`MessageService: calling API for conversation with ${contactEmail}`);
+    console.log(`MessageService: calling API for conversation with ${contact.email}`);
     const req: GetConversationRequest = {
       userId: this.tokenService.CurrentUser.id,
-      contactEmail: contactEmail
+      contact: contact
     };
     resp = await this.apiService.GetConversation(req);
     // cache only on success
     if (!resp.error) {
-      console.log(`MessageService: caching conversation with ${contactEmail}`);
-      this.conversations[contactEmail] = resp.conversation;
+      console.log(`MessageService: caching conversation with ${contact.email}`);
+      this.conversations[contact.email] = resp.conversation;
     }
     else {
-      console.error(`MessageService: error calling API for conversation with ${contactEmail}: ${resp.errorMessage}`, resp);
+      console.error(`MessageService: error calling API for conversation with ${contact.email}: ${resp.errorMessage}`, resp);
     }
-    console.log('MessageService: get conversation success', resp);
     return resp;
   }
 

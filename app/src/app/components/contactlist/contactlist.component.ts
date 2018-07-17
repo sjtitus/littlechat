@@ -66,8 +66,7 @@ export class ContactListComponent implements OnInit {
       // API call succeeded, but there was an error on the backend
       console.error(`ContactList: GetContacts Error: ${resp.errorMessage}`);
       this.applicationError = `ContactList: GetContacts Error: ${resp.errorMessage}`;
-      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error,
-          this.applicationError);
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, this.applicationError);
     }
   }
 
