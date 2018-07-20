@@ -5,8 +5,9 @@
 */
 import { Pool } from 'pg';
 import { Message }  from '../../../app/src/app/models/message';
-import { User, GetContactsRequest, GetContactsResponse,
-  GetConversationRequest, GetConversationResponse } from "../../../app/src/app/models/user";
+import { User, GetContactsRequest, GetContactsResponse } from "../../../app/src/app/models/user";
+import { Conversation, GetConversationsRequest, GetConversationsResponse,
+  GetConversationMessagesRequest, GetConversationMessagesResponse } from '../../../app/src/app/models/conversation';
 
 // Database connection pool
 console.log('db: creating new connection pool');
@@ -15,10 +16,28 @@ const pool = new Pool();
 //_____________________________________________________________________________
 // SQL queries
 const sql = {
+  
   createUser: 'SELECT * from createUser($1,$2,$3,$4,$5,$6)',
+  
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
+  
   getPasswordByUserId: 'SELECT * FROM passwd WHERE id_usr = $1',
+  
   getContactsByUserId: 'SELECT * FROM usr',
+
+  getConversations: `SELECT 
+        cu.id_usr as user_id,
+        cu.id_conversation as conversation_id,
+        c.name as conversation_name,
+        c.timestampcreated as created_timestamp, 
+        c.timestampmodified as modified_timestamp, 
+        c.timestamplastmessage as lastmessage_timestamp 
+    from
+        conversation_usr as cu
+        left join conversation as c on cu.id_conversation = c.id
+    where
+        cu.id_user = $1;`,
+
   getConversationMessages: 'SELECT * from message where id_conversation = $1'
 }
 
@@ -34,9 +53,18 @@ export async function query(text, params) { return pool.query(text, params) }
 //______________________________________________________________________________
 // getConversation
 // Returns: db conversation
-export async function getConversation( contact: User ) {
-  const { rows:conversations } = await query(sql.getConversationMessages, );
+export async function getConversations( req: GetConversationsRequest ) {
+  const { rows:conversations } = await query(sql.getConversations, req.userId);
   return conversations;
+}
+
+
+//______________________________________________________________________________
+// getConversationMessages
+// Returns: db conversation messages
+export async function getConversationMessages( req: GetConversationMessagesRequest ) {
+  const { rows:conversationMessages } = await query(sql.getConversationMessages, req.conversationId);
+  return conversationMessages;
 }
 
 

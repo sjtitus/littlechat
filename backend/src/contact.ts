@@ -3,13 +3,11 @@
  * Contact handling
  *_____________________________________________________________________________
 */
-import { User, GetContactsRequest, GetContactsResponse,
-  GetConversationRequest, GetConversationResponse } from "../../app/src/app/models/user";
+import { User, GetContactsRequest, GetContactsResponse } from "../../app/src/app/models/user";
+import { Conversation, GetConversationsRequest, GetConversationsResponse,
+  GetConversationMessagesRequest, GetConversationMessagesResponse } from '../../app/src/app/models/conversation';
 import { Message } from "../../app/src/app/models/message";
 import * as db from './db/db';
-import { contacts } from "./api";
-import { userInfo } from "os";
-import { Conversation } from "../../app/src/app/models/conversation";
 
 const testMessages: Message[] = [
  { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'},
@@ -39,14 +37,21 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
 }
 
 //_____________________________________________________________________________
+// GetConversations
+export async function GetConversations(getConversationsRequest: GetConversationsRequest) {
+  const dbConversation = await db.getConversations(getConversationsRequest);
+  const getConversationsResponse: GetConversationsResponse = {} as any;
+
+  return getConversationsResponse;
+}
+
+//_____________________________________________________________________________
 // GetConversation
-export async function GetConversation(getConversationRequest: GetConversationRequest) {
-  const dbConversation = await db.getConversation(getConversationRequest);
-  let getConversationsResponse: GetConversationResponse = {} as any;
+export async function GetConversationMessages(getConversationMessagesRequest: GetConversationMessagesRequest) {
+  const dbConversation = await db.getConversationMessages(getConversationMessagesRequest);
+  let getConversationsResponse: GetConversationMessagesResponse = {} as any;
   getConversationsResponse.error = false;
-  getConversationsResponse.errorMessage = '';
-  getConversationsResponse.userId = getConversationRequest.userId;
-  getConversationsResponse.contactEmail = getConversationRequest.contact.email;
-  getConversationsResponse.conversation = testMessages;
+  getConversationsResponse.conversationId = getConversationMessagesRequest.conversationId;
+  getConversationsResponse.messages = [];
   return getConversationsResponse;
 }

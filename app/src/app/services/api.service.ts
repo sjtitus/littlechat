@@ -5,8 +5,9 @@ import 'rxjs/add/operator/catch';
 import { catchError} from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { ApiError } from '../models/apierror';
-import { GetContactsRequest, GetContactsResponse, UserMessagesRequest, UserMessagesResponse,
-         GetConversationRequest, GetConversationResponse } from '../models/user';
+import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
+import { Conversation, GetConversationsRequest, GetConversationsResponse,
+  GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 
 
@@ -45,16 +46,19 @@ export const ApiServiceStub: Partial<ApiService> = {
 
 @Injectable()
 export class ApiService {
+
   private readonly loginUrl = 'http://localhost:4200/api/login';
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly contactsUrl = 'http://localhost:4200/api/contacts';
-  private readonly conversationUrl = 'http://localhost:4200/api/conversation';
+  private readonly conversationsUrl = 'http://localhost:4200/api/conversations';
+  private readonly messagesUrl = 'http://localhost:4200/api/messages';
   private readonly timeout = 20000;
 
   generateError = false;    // used for testing
 
   constructor(private http: HttpClient) {}
 
+  // Login
   async LoginUser(loginRequest: LoginRequest) {
       console.log('ApiService::LoginUser: login request ', loginRequest);
       let resp: LoginResponse = {} as any;
@@ -78,6 +82,7 @@ export class ApiService {
   }
 
 
+  // Signup 
   async SignupUser(signupRequest: SignupRequest) {
       console.log('ApiService::SignupUser: signup request ', signupRequest);
       let resp: SignupResponse = {} as any;
@@ -101,12 +106,12 @@ export class ApiService {
   }
 
 
-  async GetConversation(req: GetConversationRequest) {
-      console.log('ApiService::GetConversation: request', req);
-      let resp: GetConversationResponse = {} as any;
+  // Get user conversations 
+  async GetConversations(req: GetConversationsRequest) {
+      console.log(`ApiService::GetConversations: request for ${req.userId}`);
+      let resp: GetConversationsResponse;
       try {
-        resp.conversation = [];
-        const apiResp = await this.http.post<GetConversationResponse>(this.conversationUrl, req, { observe: 'response' })
+        const apiResp = await this.http.post<GetConversationsResponse>(this.conversationsUrl, req, { observe: 'response' })
             .timeout(this.timeout)
             .pipe(catchError(this.HandleError))
             .toPromise();
@@ -114,7 +119,7 @@ export class ApiService {
       }
       catch (e) {
         const err = e as ApiError;
-        console.error(`ApiService::GetConversation: API error`, err);
+        console.error(`ApiService::GetConversations: API error`, err);
         resp.error = true;
         resp.apiError = err;
         resp.errorMessage = err.message;
@@ -124,7 +129,7 @@ export class ApiService {
       }
   }
 
-
+  // Get user contacts 
   async GetContacts(req: GetContactsRequest) {
       console.log('ApiService::GetContacts: request', req);
       let resp: GetContactsResponse = {} as any;
@@ -147,6 +152,32 @@ export class ApiService {
         return resp;
       }
   }
+
+
+  // Get conversation messages 
+  async GetConversationMessages(req: GetConversationMessagesRequest) {
+      console.log('ApiService::GetConversationMessages: request', req);
+      let resp: GetConversationMessagesResponse = {} as any;
+      try {
+        const apiResp = await this.http.post<GetConversationMessagesResponse>(this.messagesUrl, req, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError))
+            .toPromise();
+        resp = apiResp.body;
+        console.log('ApiService::GetConversationMessages: response', resp);
+      }
+      catch (e) {
+        const err = e as ApiError;
+        console.error(`ApiService::GetConversationMessages: API error`, err);
+        resp.error = true;
+        resp.apiError = err;
+        resp.errorMessage = err.message;
+      }
+      finally {
+        return resp;
+      }
+  }
+
 
   //___________________________________________________________________________
   // Private

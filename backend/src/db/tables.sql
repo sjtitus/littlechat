@@ -83,6 +83,19 @@ END
 $$
 LANGUAGE 'plpgsql';
 
+-- Get a user's conversations
+select
+  cu.id_usr as user_id,
+  cu.id_conversation as conversation_id,
+  c.name as conversation_name,
+  c.timestampcreated as created_timestamp,
+  c.timestampmodified as modified_timestamp,
+  c.timestamplastmessage as lastmessage_timestamp
+from
+  conversation_usr as cu
+    left join conversation as c on cu.id_conversation = c.id
+where
+  cu.id_usr = 2;
 
 -- Get a user's audiences with members listed
 select
@@ -121,6 +134,27 @@ where
    			inner join audience_usr as au ON a.id = au.id_audience
    			where au.id_usr = 1
 	)
+
+
+-- synthetic conversations  
+INSERT INTO conversation( name, membershash, timestampcreated, timestampmodified, timestamplastmessage )
+VALUES 
+  ('test_conversation1','', current_timestamp, current_timestamp, current_timestamp),
+  ('test_conversation2','', current_timestamp, current_timestamp, current_timestamp),
+  ('test_conversation3','', current_timestamp, current_timestamp, current_timestamp);
+
+
+INSERT INTO conversation_usr( id_conversation, id_usr, timestamplastmessage, timestamplastread, numunreadmessages)
+VALUES  
+  (1, 2, current_timestamp, current_timestamp, 0),
+  (1, 3, current_timestamp, current_timestamp, 0),
+  (2, 4, current_timestamp, current_timestamp, 0),
+  (2, 5, current_timestamp, current_timestamp, 0),
+  (3, 2, current_timestamp, current_timestamp, 0),
+  (3, 3, current_timestamp, current_timestamp, 0),
+  (3, 4, current_timestamp, current_timestamp, 0),
+  (3, 5, current_timestamp, current_timestamp, 0);
+
 
 
 -- select * from usr;
