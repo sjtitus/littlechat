@@ -40,9 +40,22 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
 // GetConversations
 export async function GetConversations(getConversationsRequest: GetConversationsRequest) {
   const dbConversation = await db.getConversations(getConversationsRequest);
-  const getConversationsResponse: GetConversationsResponse = {} as any;
-
-  return getConversationsResponse;
+  const resp: GetConversationsResponse = {} as any;
+  resp.error = false;
+  resp.conversations = [];
+  for (let dc of dbConversation) {
+    const respConv: Conversation = {
+      id: dc.conversation_id, 
+      name: '', 
+      audience: [],
+      numMessages: 0,
+      timestampCreated: dc.created_timestamp, 
+      timestampModified: dc.modified_timestamp, 
+      timestampLastMessage: dc.lastmessage_timestamp
+    }; 
+    resp.conversations.push(respConv);
+  } 
+  return resp;
 }
 
 //_____________________________________________________________________________
