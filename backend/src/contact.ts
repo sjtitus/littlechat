@@ -44,15 +44,16 @@ export async function GetConversations(getConversationsRequest: GetConversations
   resp.error = false;
   resp.conversations = [];
   for (let dc of dbConversation) {
-    const respConv: Conversation = {
-      id: dc.conversation_id, 
-      name: '', 
-      audience: [],
-      numMessages: 0,
-      timestampCreated: dc.created_timestamp, 
-      timestampModified: dc.modified_timestamp, 
-      timestampLastMessage: dc.lastmessage_timestamp
-    }; 
+    console.log(`db conversation: ${JSON.stringify(dc)}`);
+    /*
+    dc.conversation_id
+    dc.usr_id
+    dc.conversation_name
+    dc.created_timestamp
+    dc.modified_timestamp
+    dc.lastmessasge_timestamp
+    */
+    const respConv: Conversation = {} as any; 
     resp.conversations.push(respConv);
   } 
   return resp;

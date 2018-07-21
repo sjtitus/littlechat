@@ -52,11 +52,54 @@ CREATE TABLE conversation_usr (
   numUnreadMessages integer default 0
 );
 
-
-
 --
 -- Stored Procedures (Functions)
 --
+
+-- Returns all conversations for user, with duplicate entries for 
+-- all conversation participants 
+CREATE OR REPLACE FUNCTION getConversations(
+  user_id integer
+)
+RETURNS TABLE (
+  conversation_id bigint,
+  usr_id integer,
+  conversation_name varchar,
+  created_timestamp timestamptz,
+  modified_timestamp timestamptz,
+  lastmessasge_timestamp timestamptz
+)
+AS $$
+BEGIN
+  RETURN QUERY
+  select
+      cu.id_conversation        as conversation_id,        -- | bigint
+      cu.id_usr                 as usr_id,                 -- | integer
+      c.name                    as conversation_name,      -- | character varying(128)
+      c.timestampcreated        as created_timestamp,      -- | timestamp with time zone
+      c.timestampmodified       as modified_timestamp,     -- | timestamp with time zone
+      c.timestamplastmessage    as lastmessage_timestamp   -- | timestamp with time zone
+  from
+      conversation_usr as cu
+          left join conversation as c on cu.id_conversation = c.id
+  where
+      c.id in (
+          select
+            cu.id_conversation
+          from
+            conversation_usr as cu
+              left join conversation as c on cu.id_conversation = c.id
+          where
+            cu.id_usr = user_id 
+      )
+  order by
+      cu.id_conversation desc;
+
+END
+$$
+LANGUAGE 'plpgsql';
+
+
 CREATE OR REPLACE FUNCTION createUser(
 	firstname varchar,
 	lastname varchar,

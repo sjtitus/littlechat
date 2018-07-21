@@ -16,28 +16,11 @@ const pool = new Pool();
 //_____________________________________________________________________________
 // SQL queries
 const sql = {
-  
   createUser: 'SELECT * from createUser($1,$2,$3,$4,$5,$6)',
-  
   getUserByEmail: 'SELECT * FROM usr WHERE email = $1',
-  
   getPasswordByUserId: 'SELECT * FROM passwd WHERE id_usr = $1',
-  
   getContactsByUserId: 'SELECT * FROM usr',
-
-  getConversations: `SELECT 
-        cu.id_usr as user_id,
-        cu.id_conversation as conversation_id,
-        c.name as conversation_name,
-        c.timestampcreated as created_timestamp, 
-        c.timestampmodified as modified_timestamp, 
-        c.timestamplastmessage as lastmessage_timestamp 
-    from
-        conversation_usr as cu
-        left join conversation as c on cu.id_conversation = c.id
-    where
-        cu.id_usr = $1;`,
-
+  getConversations: `SELECT * from getConversations($1)`, 
   getConversationMessages: 'SELECT * from message where id_conversation = $1'
 }
 
