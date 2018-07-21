@@ -43,21 +43,33 @@ export async function GetConversations(getConversationsRequest: GetConversations
   const resp: GetConversationsResponse = {} as any;
   resp.error = false;
   resp.conversations = [];
+  let current_cid = -1;
+  let current_cindex = -1;
   for (let dc of dbConversation) {
-    console.log(`db conversation: ${JSON.stringify(dc)}`);
-    /*
-    dc.conversation_id
-    dc.usr_id
-    dc.conversation_name
-    dc.created_timestamp
-    dc.modified_timestamp
-    dc.lastmessasge_timestamp
-    */
-    const respConv: Conversation = {} as any; 
-    resp.conversations.push(respConv);
+    // new conversation
+    //console.log(`GetConversations: comparing ${dc.conversation_id} to ${current_cid}`);
+    if (dc.conversation_id !== current_cid) {
+      const respConv: Conversation = {
+        id: dc.conversation_id, 
+        name: dc.conversation_name, 
+        audience: [],
+        numMessages: 0,
+        timestampCreated: dc.created_timestamp, 
+        timestampModified: dc.modifed_timestamp, 
+        timestampLastMessage: dc.lastmessasge_timestamp 
+      }
+      resp.conversations.push(respConv);
+      current_cid = dc.conversation_id;
+      current_cindex++;
+    }
+    const conv = resp.conversations[current_cindex];
+    if (dc.usr_id !== getConversationsRequest.userId) {
+      conv.audience.push(dc.usr_id);
+    }
   } 
   return resp;
 }
+
 
 //_____________________________________________________________________________
 // GetConversation

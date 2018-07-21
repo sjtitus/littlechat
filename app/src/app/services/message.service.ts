@@ -26,7 +26,7 @@ export class MessageService {
   newMessageSource$ = this.newMessageSource.asObservable();
 
   constructor(private monitorService: MonitorService, private apiService: ApiService, private tokenService: TokenService) {
-    this.GetConversations().then( (resp) => { console.log(`MessageService: conversations retrieved`); });
+    this.GetConversations().then( (resp) => { console.log(`MessageService: ====> conversations retrieved`, resp); });
   }
 
 
@@ -48,7 +48,6 @@ export class MessageService {
       }
       // save conversations (managed by this module)
       this.conversations = resp.conversations;
-      resp.conversations = undefined;
     }
     else {
       console.error(`MessageService::GetConversations: error getting conversations for ${user.email}: ${resp.errorMessage}`);
