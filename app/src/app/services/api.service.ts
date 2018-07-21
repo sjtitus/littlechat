@@ -109,7 +109,7 @@ export class ApiService {
   // Get user conversations 
   async GetConversations(req: GetConversationsRequest) {
       console.log(`ApiService::GetConversations: request for ${req.userId}`);
-      let resp: GetConversationsResponse;
+      let resp: GetConversationsResponse = {} as any;
       try {
         const apiResp = await this.http.post<GetConversationsResponse>(this.conversationsUrl, req, { observe: 'response' })
             .timeout(this.timeout)

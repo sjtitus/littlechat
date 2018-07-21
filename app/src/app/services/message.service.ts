@@ -5,32 +5,34 @@ ________________________________________________________________________________
 */
 
 import { Injectable } from '@angular/core';
-import { User } from '../models/user';
 import { Conversation, GetConversationsRequest, GetConversationsResponse,
   GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
 import { Message } from '../models/message';
 import { Subject } from 'rxjs/Subject';
 import { ApiService } from '../services/api.service';
 import { TokenService } from '../services/token.service';
+import { MonitorService } from '../services/monitor.service';
+import { StatusMonitorStatus } from '../models/statusmonitor';
 
 @Injectable()
 export class MessageService {
 
   // Ongoing conversations
-  private conversations: Conversation[];
-  private messages: { [conversationId: number]: Message[] };
+  private conversations: Conversation[] = [];
+  private messages: { [conversationId: number]: Message[] } = {};
 
   // we will "post" newly-created messages as observable for front end
   private newMessageSource = new Subject<Message>();
   newMessageSource$ = this.newMessageSource.asObservable();
 
-  constructor(private apiService: ApiService, private tokenService: TokenService) {
-    this.conversations = [];
+  constructor(private monitorService: MonitorService, private apiService: ApiService, private tokenService: TokenService) {
+    this.GetConversations().then( (resp) => { console.log(`MessageService: conversations retrieved`); });
   }
+
 
   //___________________________________________________________________________
   // GetConversations
-  // Retreive ongoing conversations 
+  // Retreive and store ongoing conversations 
   public async GetConversations(maxAgeInHours?: number) {
     const user = this.tokenService.CurrentUser;
     console.log(`MessageService::GetConversations: getting conversations for ${user.email}`);
@@ -50,13 +52,14 @@ export class MessageService {
     }
     else {
       console.error(`MessageService::GetConversations: error getting conversations for ${user.email}: ${resp.errorMessage}`);
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, resp.errorMessage);
     }
     return resp;
   }
 
   //___________________________________________________________________________
   // GetConversationMessages
-  // Retrieve messages for a specific coversation (cached) 
+  // Retrieve and store messages for a specific coversation
   public async GetConversationMessages(conversation: Conversation) {
     console.log(`MessageService::GetConversationMessages: getting conversation ${conversation.id}`);
     let resp: GetConversationMessagesResponse = {} as any;
@@ -82,20 +85,6 @@ export class MessageService {
       console.error(`MessageService::GetConversationMessages: error getting conversation ${conversation.id}: ${resp.errorMessage}`);
     }
     return resp;
-  }
-
-
-  //___________________________________________________________________________
-  // SendMessage
-  SendMessage(msg: Message) {
-    console.log(`MessageService::SendMessage: from ${msg.from} to ${msg.to}`);
-    this.PostMessageToUI(msg);
-  }
-
-  //___________________________________________________________________________
-  // PostMessageToUI
-  private PostMessageToUI(msg: Message) {
-    this.newMessageSource.next(msg);
   }
 
 }

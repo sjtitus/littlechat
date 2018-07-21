@@ -22,7 +22,7 @@ export class Routes {
     router.post('/api/login', api.login);
     router.post('/api/signup', api.signup);
     router.post('/api/contacts', api.contacts);
-    router.post('/api/conversation', api.conversation);
+    router.post('/api/conversations', api.conversations);
     this._express.use('/', router);
 
     //______________________________________________________
@@ -39,7 +39,7 @@ export class Routes {
     this._express.use(function(req, res, next){
       console.log(`Routes: unhandled URL: ${req.originalUrl}, sending 404`);
       res.status(404).json({ error: 'URL Not found' });
-    });
+    }); 
 
   }
 }

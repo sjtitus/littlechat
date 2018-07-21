@@ -9,6 +9,7 @@ import { User } from '../../models/user';
 import { TokenService } from '../../services/token.service';
 import { WebSocketService } from '../../services/websocket.service';
 import { MonitorService } from '../../services/monitor.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +26,8 @@ export class HomeComponent implements OnInit {
   constructor(
       private tokenService: TokenService,
       private webSocketService: WebSocketService,
-      private monitorService: MonitorService
+      private monitorService: MonitorService,
+      private messageService: MessageService
     ) {}
 
   public SetChatContact(contact: User) {
@@ -49,9 +51,11 @@ export class HomeComponent implements OnInit {
     );
   }
 
+  /*
   private HandleWebSocketError(err: string) {
     console.error(`HomeComponent::HandleWebSocketError: client web socket service error: ${err}`);
     this.WebSocketErrorText = err;
   }
+  */
 
 }

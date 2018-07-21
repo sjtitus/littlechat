@@ -36,7 +36,7 @@ const sql = {
         conversation_usr as cu
         left join conversation as c on cu.id_conversation = c.id
     where
-        cu.id_user = $1;`,
+        cu.id_usr = $1;`,
 
   getConversationMessages: 'SELECT * from message where id_conversation = $1'
 }
@@ -54,16 +54,16 @@ export async function query(text, params) { return pool.query(text, params) }
 // getConversation
 // Returns: db conversation
 export async function getConversations( req: GetConversationsRequest ) {
-  const { rows:conversations } = await query(sql.getConversations, req.userId);
+  const { rows:conversations } = await query(sql.getConversations, [req.userId]);
   return conversations;
-}
+} 
 
 
 //______________________________________________________________________________
 // getConversationMessages
 // Returns: db conversation messages
 export async function getConversationMessages( req: GetConversationMessagesRequest ) {
-  const { rows:conversationMessages } = await query(sql.getConversationMessages, req.conversationId);
+  const { rows:conversationMessages } = await query(sql.getConversationMessages, [req.conversationId]);
   return conversationMessages;
 }
 
@@ -82,8 +82,7 @@ export async function getContactsByUserId( uid: number ) {
 // Returns: the new user's id or null if user creation fails
 export async function createUser( firstname: string, lastname: string, email: string,
   salt: string, encryptedPassword: string, cryptIters: number ) {
-    const { rows } = await query(
-        sql.createUser,
+    const { rows } = await query( sql.createUser,
         [firstname, lastname, email, salt, encryptedPassword, cryptIters]
     );
     if (rows.length === 0) {

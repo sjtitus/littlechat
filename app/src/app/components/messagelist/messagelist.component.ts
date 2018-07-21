@@ -4,7 +4,7 @@
 ________________________________________________________________________________
 */
 import { Component, Input, OnInit, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
-import { User, GetConversationResponse } from '../../models/user';
+import { User } from '../../models/user';
 import { MessageService } from '../../services/message.service';
 import { Message } from '../../models/message';
 import { Subscription } from 'rxjs/Subscription';
@@ -38,9 +38,10 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
     this._chatContact = contact;
     console.log('MessageList: chat contact changed to ', contact);
     // trick to do an await in a non async function
-    (async () => this.conversation = await this.GetConversation(this._chatContact))();
+    // (async () => this.conversation = await this.GetConversation(this._chatContact))();
   }
 
+  /*
   private async GetConversation(contact: User) {
     console.log(`MessageList::GetConversation: getting conversation with ${contact.email}`);
     this.errorText = null;
@@ -52,6 +53,7 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
     }
     return resp.conversation;
   }
+  */
 
   ngOnInit() {}
 
