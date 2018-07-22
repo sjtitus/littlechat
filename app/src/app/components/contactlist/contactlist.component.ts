@@ -27,7 +27,6 @@ export class ContactListComponent implements OnInit {
 
   // Error messages
   applicationError: string;
-  networkError: string;
 
   private _selectedContact: User;
 
