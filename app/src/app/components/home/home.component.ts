@@ -4,7 +4,7 @@
   Uses 3 child components: UserList, MessageList, MessageEntry.
 ________________________________________________________________________________
 */
-import { Component, Output, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { User } from '../../models/user';
 import { TokenService } from '../../services/token.service';
 import { WebSocketService } from '../../services/websocket.service';
@@ -23,10 +23,8 @@ export class HomeComponent implements OnInit {
   headerMessage = 'Select Chat Partner';
   WebSocketErrorText = '';
 
-  constructor(
-      private tokenService: TokenService,
+  constructor(private tokenService: TokenService,
       private webSocketService: WebSocketService,
-      private monitorService: MonitorService,
       private messageService: MessageService
     ) {}
 
@@ -41,21 +39,19 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(`HomeComponent::Init: current user is ${this.CurrentUser.email}`);
-    console.log(`HomeComponent::Init: instantiating client web socket service`);
+    console.log(`HomeComponent::Init: user is ${this.CurrentUser.email}`);
+
+    // Start web socket service
+    console.log(`HomeComponent::Init: starting client web socket service`);
     const authToken: string = this.tokenService.Retrieve();
     this.webSocketService.Start(authToken);
-    //this.webSocketService.OnEvent('error').subscribe((err) => this.HandleWebSocketError(err));
-    this.webSocketService.OnEvent('message').subscribe(
-      (msg) => { console.log(`HomeComponent: received websocket message: ${JSON.stringify(msg)}`); }
-    );
-  }
 
-  /*
-  private HandleWebSocketError(err: string) {
-    console.error(`HomeComponent::HandleWebSocketError: client web socket service error: ${err}`);
-    this.WebSocketErrorText = err;
+    // Start message service
+    console.log(`HomeComponent::Init: client message service start`);
+    this.messageService.Start()
+    .then(  () => { console.log(`HomeComponent::Init: client message service start: ok`); })
+    .catch( (err) => { console.error(`HomeComponent::Init: client message service start: ERROR: ${err.message}`); });
+
   }
-  */
 
 }

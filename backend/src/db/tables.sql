@@ -56,8 +56,8 @@ CREATE TABLE conversation_usr (
 -- Stored Procedures (Functions)
 --
 
--- Returns all conversations for user, with duplicate entries for 
--- all conversation participants 
+-- Returns all conversations for user, with duplicate entries for
+-- all conversation participants
 CREATE OR REPLACE FUNCTION getConversations(
   user_id integer
 )
@@ -90,7 +90,7 @@ BEGIN
             conversation_usr as cu
               left join conversation as c on cu.id_conversation = c.id
           where
-            cu.id_usr = user_id 
+            cu.id_usr = user_id
       )
   order by
       cu.id_conversation desc;
@@ -179,24 +179,24 @@ where
 	)
 
 
--- synthetic conversations  
+-- synthetic conversations
 INSERT INTO conversation( name, membershash, timestampcreated, timestampmodified, timestamplastmessage )
-VALUES 
+VALUES
   ('test_conversation1','', current_timestamp, current_timestamp, current_timestamp),
   ('test_conversation2','', current_timestamp, current_timestamp, current_timestamp),
   ('test_conversation3','', current_timestamp, current_timestamp, current_timestamp);
 
 
 INSERT INTO conversation_usr( id_conversation, id_usr, timestamplastmessage, timestamplastread, numunreadmessages)
-VALUES  
+VALUES
+  (1, 1, current_timestamp, current_timestamp, 0),
   (1, 2, current_timestamp, current_timestamp, 0),
-  (1, 3, current_timestamp, current_timestamp, 0),
+  (2, 3, current_timestamp, current_timestamp, 0),
   (2, 4, current_timestamp, current_timestamp, 0),
-  (2, 5, current_timestamp, current_timestamp, 0),
+  (3, 1, current_timestamp, current_timestamp, 0),
   (3, 2, current_timestamp, current_timestamp, 0),
   (3, 3, current_timestamp, current_timestamp, 0),
-  (3, 4, current_timestamp, current_timestamp, 0),
-  (3, 5, current_timestamp, current_timestamp, 0);
+  (3, 4, current_timestamp, current_timestamp, 0);
 
 
 

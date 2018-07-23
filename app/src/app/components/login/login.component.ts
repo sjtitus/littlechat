@@ -1,13 +1,9 @@
-import { Component, OnInit, Injectable, ApplicationRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-
 import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
-
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../../models/login';
-import { ApiError } from '../../models/apierror';
 
 @Component({
   selector: 'app-login',
@@ -86,10 +82,6 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  private ClearErrors() {
-    this.backendLoginErrorText = '';
-    this.backendSignupErrorText = '';
-  }
 
   //___________________________________________________________________________
   // Login disabled unless all login fields present
@@ -154,6 +146,13 @@ export class LoginComponent implements OnInit {
       password2: this.supassword2.value
     };
     return signup;
+  }
+
+  //___________________________________________________________________________
+  // Clear error text
+  private ClearErrors() {
+    this.backendLoginErrorText = '';
+    this.backendSignupErrorText = '';
   }
 
 }

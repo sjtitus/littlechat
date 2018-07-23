@@ -48,7 +48,8 @@ export async function Login(loginRequest:LoginRequest) {
       firstname: dbuser.firstname,
       lastname: dbuser.lastname,
       id: dbuser.id,
-      email: dbuser.email
+      email: dbuser.email,
+      conversation: null
   }
   const tok = Token.Generate(user);
   console.log(`Auth::Login: Auth user: `,user);

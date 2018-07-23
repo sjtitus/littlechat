@@ -31,11 +31,11 @@ export const ApiServiceStub: Partial<ApiService> = {
             apiError: undefined,
             userId: 999000,
             contacts: [
-              { firstname: 'firstname1', lastname: 'lastname1', email: 'testuser1@test.com', id: 999001 },
-              { firstname: 'firstname2', lastname: 'lastname2', email: 'testuser2@test.com', id: 999002 },
-              { firstname: 'firstname3', lastname: 'lastname3', email: 'testuser3@test.com', id: 999003 },
-              { firstname: 'firstname4', lastname: 'lastname4', email: 'testuser4@test.com', id: 999004 },
-              { firstname: 'firstname5', lastname: 'lastname5', email: 'testuser5@test.com', id: 999005 }
+              { firstname: 'firstname1', lastname: 'lastname1', email: 'testuser1@test.com', id: 999001, conversation: null },
+              { firstname: 'firstname2', lastname: 'lastname2', email: 'testuser2@test.com', id: 999002, conversation: null },
+              { firstname: 'firstname3', lastname: 'lastname3', email: 'testuser3@test.com', id: 999003, conversation: null },
+              { firstname: 'firstname4', lastname: 'lastname4', email: 'testuser4@test.com', id: 999004, conversation: null },
+              { firstname: 'firstname5', lastname: 'lastname5', email: 'testuser5@test.com', id: 999005, conversation: null }
             ]
         };
       }
@@ -82,7 +82,7 @@ export class ApiService {
   }
 
 
-  // Signup 
+  // Signup
   async SignupUser(signupRequest: SignupRequest) {
       console.log('ApiService::SignupUser: signup request ', signupRequest);
       let resp: SignupResponse = {} as any;
@@ -106,7 +106,7 @@ export class ApiService {
   }
 
 
-  // Get user conversations 
+  // Get user conversations
   async GetConversations(req: GetConversationsRequest) {
       console.log(`ApiService::GetConversations: request for ${req.userId}`);
       let resp: GetConversationsResponse = {} as any;
@@ -129,9 +129,9 @@ export class ApiService {
       }
   }
 
-  // Get user contacts 
+  // Get user contacts
   async GetContacts(req: GetContactsRequest) {
-      console.log('ApiService::GetContacts: request', req);
+      console.log(`ApiService::GetContacts: getting contacts for ${req.userId}`);
       let resp: GetContactsResponse = {} as any;
       try {
         const apiResp = await this.http.post<GetContactsResponse>(this.contactsUrl, req, { observe: 'response' })
@@ -154,7 +154,7 @@ export class ApiService {
   }
 
 
-  // Get conversation messages 
+  // Get conversation messages
   async GetConversationMessages(req: GetConversationMessagesRequest) {
       console.log('ApiService::GetConversationMessages: request', req);
       let resp: GetConversationMessagesResponse = {} as any;

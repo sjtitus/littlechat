@@ -1,15 +1,11 @@
 /*______________________________________________________________________________
   ContactList
-  Lists the user's contacts, allows user to select a contact with which to
-  chat.
+  Lists the user's contacts, allows user to select a chat contact.
 ________________________________________________________________________________
 */
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-import { User, GetContactsRequest, GetContactsResponse } from '../../models/user';
-import { ApiService } from '../../services/api.service';
-import { TokenService } from '../../services/token.service';
-import { StatusMonitorStatus } from '../../models/statusmonitor';
-import { MonitorService } from '../../services/monitor.service';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { User } from '../../models/user';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-contactlist',
@@ -19,55 +15,52 @@ import { MonitorService } from '../../services/monitor.service';
 
 export class ContactListComponent implements OnInit {
 
-  // Contact selected for chat
+  // User contacts (managed by MessageService)
+  Contacts: {[id: number]: User};
+  SortedContactIds: string[];
+
+  // Emit an event when a contact is selected
   @Output() contactSelected = new EventEmitter<User>();
-
-  // User's contacts
-  contactList: User[];
-
-  // Error messages
-  applicationError: string;
-
   private _selectedContact: User;
 
-  constructor( private apiService: ApiService, private tokenService: TokenService,
-      private monitorService: MonitorService ) {}
-
-  ngOnInit() {
-    console.log(`ContactList::OnInit: current user is ${this.tokenService.CurrentUser.email}`);
-    this.GetContacts();
+  constructor( private messageService: MessageService ) {
+      // Subscribe to contact updates from MessageService
+      this.messageService.ContactsObservable().subscribe(
+        (contacts: {[id: number]: User}) => { this.UpdateContacts(contacts); }
+      );
   }
 
+  ngOnInit() {}
+
   //___________________________________________________________________________
-  // Select contact to chat with
+  // Select chat contact
   SelectContact(contact: User) {
+    console.log(`ContactList::SelectContact: new chat target ${contact.email}`);
     this._selectedContact = contact;
-    console.log('ContactList::SelectContact: new chat target', contact);
-    // Notify listeners
-    this.contactSelected.emit(this._selectedContact);
+    this.contactSelected.emit(this._selectedContact);   // Notify listeners
   }
 
-
-  //=======================================================
-  // Backend Access Methods
-  //=======================================================
 
   //___________________________________________________________________________
-  // Load user contacts
-  public async GetContacts() {
-    const apiReq: GetContactsRequest = { userId: this.tokenService.CurrentUser.id };
-    console.log(`ContactList::GetContacts: getting contacts for ${this.tokenService.CurrentUser.id}`);
-    const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
-    if (!resp.error) {
-      this.contactList = resp.contacts;
-    }
-    else {
-      // API call succeeded, but there was an error on the backend
-      console.error(`ContactList: GetContacts Error: ${resp.errorMessage}`);
-      this.applicationError = `ContactList: GetContacts Error: ${resp.errorMessage}`;
-      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, this.applicationError);
-    }
+  //_______________________________ Private ___________________________________
+
+  //___________________________________________________________________________
+  // UpdateContacts
+  // Update the user contact list
+  private UpdateContacts(contacts: {[id: number]: User}) {
+    this.Contacts = contacts;
+    this.SortContacts();
   }
+
+  private SortContacts() {
+    this.SortedContactIds = Object.keys(this.Contacts).sort(
+      function(p, q) {
+        if (this.Contacts[p].lastname < this.Contacts[q].lastname) { return -1; }
+        if (this.Contacts[p].lastname > this.Contacts[q].lastname) { return 1;  }
+        return 0;
+      });
+  }
+
 
 }
 

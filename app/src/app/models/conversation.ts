@@ -1,4 +1,3 @@
-import { User } from './user';
 import { ApiError } from './apierror';
 import { Message } from './message';
 
@@ -6,10 +5,11 @@ export interface Conversation {
   id: number;
   name: string;
   audience: number[];
-  numMessages: number;
+  totalMessages: number;
   timestampCreated: string;
   timestampModified: string;
   timestampLastMessage: string;
+  messages: Message[] | null;
 }
 
 export interface GetConversationsRequest {
@@ -21,7 +21,7 @@ export interface GetConversationsResponse {
   error: boolean;
   errorMessage: string;
   apiError: ApiError;
-  conversations: Conversation[];
+  conversations: { [id: number]: Conversation };
 }
 
 export interface GetConversationMessagesRequest {

@@ -23,15 +23,16 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
   let getContactsResponse: GetContactsResponse = {} as any;
   const dbContacts = await db.getContactsByUserId(getContactsRequest.userId);
   getContactsResponse.userId = getContactsRequest.userId;
-  getContactsResponse.contacts = [];
+  getContactsResponse.contacts = {};
   dbContacts.map((contact) => {
     const user: User = {
       firstname: contact.firstname,
       lastname: contact.lastname,
       email: contact.email,
       id: contact.id,
+      conversation: null
     };
-    getContactsResponse.contacts.push(user);
+    getContactsResponse.contacts[contact.id] = user;
   });
   return getContactsResponse;
 }
@@ -42,7 +43,7 @@ export async function GetConversations(getConversationsRequest: GetConversations
   const dbConversation = await db.getConversations(getConversationsRequest);
   const resp: GetConversationsResponse = {} as any;
   resp.error = false;
-  resp.conversations = [];
+  resp.conversations = {};
   let current_cid = -1;
   let current_cindex = -1;
   for (let dc of dbConversation) {
@@ -50,15 +51,16 @@ export async function GetConversations(getConversationsRequest: GetConversations
     //console.log(`GetConversations: comparing ${dc.conversation_id} to ${current_cid}`);
     if (dc.conversation_id !== current_cid) {
       const respConv: Conversation = {
-        id: dc.conversation_id, 
-        name: dc.conversation_name, 
+        id: dc.conversation_id,
+        name: dc.conversation_name,
         audience: [],
-        numMessages: 0,
-        timestampCreated: dc.created_timestamp, 
-        timestampModified: dc.modifed_timestamp, 
-        timestampLastMessage: dc.lastmessasge_timestamp 
+        totalMessages: 0,
+        timestampCreated: dc.created_timestamp,
+        timestampModified: dc.modifed_timestamp,
+        timestampLastMessage: dc.lastmessasge_timestamp,
+        messages: []
       }
-      resp.conversations.push(respConv);
+      resp.conversations[respConv.id] = respConv;
       current_cid = dc.conversation_id;
       current_cindex++;
     }
@@ -66,7 +68,7 @@ export async function GetConversations(getConversationsRequest: GetConversations
     if (dc.usr_id !== getConversationsRequest.userId) {
       conv.audience.push(dc.usr_id);
     }
-  } 
+  }
   return resp;
 }
 

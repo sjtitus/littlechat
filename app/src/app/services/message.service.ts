@@ -1,6 +1,6 @@
 /*______________________________________________________________________________
   MessageService
-  Service that handles all conversations/messages and message storage.
+  Service that manages contacts/conversations/messages.
 ________________________________________________________________________________
 */
 
@@ -9,31 +9,89 @@ import { Conversation, GetConversationsRequest, GetConversationsResponse,
   GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
 import { Message } from '../models/message';
 import { Subject } from 'rxjs/Subject';
-import { ApiService } from '../services/api.service';
-import { TokenService } from '../services/token.service';
-import { MonitorService } from '../services/monitor.service';
+import { ApiService } from './api.service';
+import { TokenService } from './token.service';
+import { MonitorService } from './monitor.service';
 import { StatusMonitorStatus } from '../models/statusmonitor';
+import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
+import { Observable } from '../../../node_modules/rxjs/Observable';
 
 @Injectable()
 export class MessageService {
 
-  // Ongoing conversations
-  private conversations: Conversation[] = [];
+  // User contacts
+  private contacts: { [id: number]: User };
+
+  // User conversations
+  private conversations: { [id: number]: Conversation };
+
+  // Conversation message threads
   private messages: { [conversationId: number]: Message[] } = {};
 
-  // we will "post" newly-created messages as observable for front end
-  private newMessageSource = new Subject<Message>();
-  newMessageSource$ = this.newMessageSource.asObservable();
+  // we will publish when we fill contacts
+  private contactsSource$: Subject<{[id: number]: User}>;
 
-  constructor(private monitorService: MonitorService, private apiService: ApiService, private tokenService: TokenService) {
-    this.GetConversations().then( (resp) => { console.log(`MessageService: ====> conversations retrieved`, resp); });
+  constructor(private tokenService: TokenService, private apiService: ApiService,
+                private monitorService: MonitorService) {
+      this.contactsSource$ = new Subject<{[id: number]: User}>();
+  }
+
+  public ContactsObservable(): Observable<{[id: number]: User}> {
+    return this.contactsSource$.asObservable();
   }
 
 
   //___________________________________________________________________________
+  // Start
+  // Get contacts and conversations from backend, then associate
+  // contacts with conversations.
+  public async Start() {
+    console.log(`MessageService::Start: getting contacts`);
+    const contactsResponse: GetContactsResponse = await this.GetContacts();
+    if (contactsResponse.error) {
+      console.error(`MessageService::Start: ERROR getting contacts: ${contactsResponse.errorMessage}`);
+      throw new Error(`MessageService::Start: ERROR: ${contactsResponse.errorMessage}`);
+    }
+    console.log(`MessageService::Start: getting conversations`);
+    const conversationsResponse: GetConversationsResponse = await this.GetConversations();
+    if (conversationsResponse.error) {
+      console.error(`MessageService::Start: ERROR getting conversations: ${conversationsResponse.errorMessage}`);
+      throw new Error(`MessageService::Start: ERROR: ${conversationsResponse.errorMessage}`);
+    }
+    console.log(`MessageService::Start: mapping conversations to contacts`);
+    this.MapConversations();
+    this.contactsSource$.next(this.contacts);
+  }
+
+  //___________________________________________________________________________
+  // Map conversations to contacts
+  private MapConversations() {
+    console.log(`MessageService::MapConversations: mapping conversations to contacts`);
+  }
+
+  //___________________________________________________________________________
+  // Load contacts
+  private async GetContacts() {
+    this.contacts = [];
+    const apiReq: GetContactsRequest = { userId: this.tokenService.CurrentUser.id };
+    console.log(`MessageService::GetContacts: getting contacts for ${this.tokenService.CurrentUser.id}`);
+    const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
+    if (!resp.error) {
+      this.contacts = resp.contacts;
+    }
+    else {
+      // API call succeeded, but there was an error on the backend
+      const errmsg = `MessageService::GetContacts Error: ${resp.errorMessage}`;
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, errmsg);
+      console.error(errmsg);
+    }
+    return resp;
+  }
+
+  //___________________________________________________________________________
   // GetConversations
-  // Retreive and store ongoing conversations 
-  public async GetConversations(maxAgeInHours?: number) {
+  // Retreive and store ongoing conversations
+  private async GetConversations(maxAgeInHours?: number) {
     const user = this.tokenService.CurrentUser;
     console.log(`MessageService::GetConversations: getting conversations for ${user.email}`);
     const req: GetConversationsRequest = {} as any;
@@ -42,8 +100,8 @@ export class MessageService {
     const resp: GetConversationsResponse = await this.apiService.GetConversations(req);
     // cache only on success
     if (!resp.error) {
-      console.log(`MessageService::GetConversations: caching ${resp.conversations.length} conversations for ${user.email}`);
-      if (this.conversations.length > 0) {
+      console.log(`MessageService::GetConversations: caching ${Object.keys(resp.conversations).length} conversations for ${user.email}`);
+      if (Object.keys(this.conversations).length > 0) {
         console.warn(`MessageService::GetConversations: overwriting cached conversations for ${user.email}`);
       }
       // save conversations (managed by this module)
@@ -59,7 +117,7 @@ export class MessageService {
   //___________________________________________________________________________
   // GetConversationMessages
   // Retrieve and store messages for a specific coversation
-  public async GetConversationMessages(conversation: Conversation) {
+  private async GetConversationMessages(conversation: Conversation) {
     console.log(`MessageService::GetConversationMessages: getting conversation ${conversation.id}`);
     let resp: GetConversationMessagesResponse = {} as any;
     // Already loaded: use cache

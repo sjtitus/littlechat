@@ -34,7 +34,6 @@ export class WebSocketService {
               }
             }
         });
-        console.log('SocketIO object: ', this.socket);
         this.socket.on('connect', () => this.WebSocketStatus('connect', StatusMonitorStatus.Ok));
         this.socket.on('reconnect_failed', (e) => this.WebSocketStatus('reconnect failed', StatusMonitorStatus.Error, e));
         this.socket.on('reconnect_error', (e) => this.WebSocketStatus('reconnect', StatusMonitorStatus.Error, e));

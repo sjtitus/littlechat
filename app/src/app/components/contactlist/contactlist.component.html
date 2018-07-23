@@ -4,11 +4,10 @@
     {{ applicationError }}
   </div>
   -->
-  <div class="alert alert-danger" [hidden]="networkError==null">
-    {{ networkError }}
-  </div>
   <div class="menulabel"> Contacts </div>
   <ul>
-    <li class="contact" *ngFor="let contact of contactList" (click) = "SelectContact(contact)"> {{contact.firstname}} {{contact.lastname}} </li>
+    <li class="contact" *ngFor="let id of SortedContactIds" (click) = "SelectContact(Contacts[id])">
+      {{Contacts[id].firstname}} {{Contacts[id].lastname}}
+    </li>
   </ul>
 </div>

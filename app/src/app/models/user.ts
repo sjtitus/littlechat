@@ -1,11 +1,13 @@
 import { Message } from './message';
 import { ApiError } from './apierror';
+import { Conversation } from './conversation';
 
 export interface User {
   firstname: string;
   lastname: string;
   email: string;
   id: number;
+  conversation: Conversation | null;
 }
 
 export interface GetContactsRequest {
@@ -17,7 +19,7 @@ export interface GetContactsResponse {
   errorMessage: string;
   apiError: ApiError;
   userId: number;
-  contacts: User[];
+  contacts: { [id: number]: User };
 }
 
 /*

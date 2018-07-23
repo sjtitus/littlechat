@@ -8,7 +8,6 @@ import { MessageService } from './services/message.service';
 import { ApiService } from './services/api.service';
 import { MonitorService } from './services/monitor.service';
 import { TokenService } from './services/token.service';
-import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './components/login/login.component';
