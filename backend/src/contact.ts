@@ -28,7 +28,7 @@ export async function GetContacts(getContactsRequest: GetContactsRequest) {
     const user: User = {
       firstname: contact.firstname,
       lastname: contact.lastname,
-      email: contact.email,
+      email: contact.email, 
       id: contact.id,
       conversation: null
     };

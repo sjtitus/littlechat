@@ -90,11 +90,18 @@ export async function SignUp(signupRequest:SignupRequest) {
   console.log(`Auth::Signup: new user id = ${newUserId}`);
   //______________________________________________
   // Generate auth token
-  const tok = Token.Generate({ userId: newUserId, email: signupRequest.email });
-  console.log(`Auth::Signup: new user auth token = ${tok}`);
+  const newuser: User = {
+    firstname: signupRequest.firstname, 
+    lastname: signupRequest.lastname, 
+    id: newUserId, 
+    email: signupRequest.email, 
+    conversation: null
+  };
+  const tok = Token.Generate(newuser);
+  console.log(`Auth::Signup: new user auth token = ${tok}`); 
+  signupResponse.error = false;
   signupResponse.userId = newUserId;
   signupResponse.token = tok;
-  signupResponse.error = false;
   return signupResponse;
 }
 

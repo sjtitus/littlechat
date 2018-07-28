@@ -29,7 +29,7 @@ export class MessageService {
   private conversations: { [id: number]: Conversation };
 
   // Conversation message threads
-  private messages: { [conversationId: number]: Message[] } = {};
+  private messages: { [conversationId: number]: Message[] };
 
   // we will publish when we fill contacts
   private contactsSource$: Subject<{[id: number]: User}>;
@@ -75,7 +75,7 @@ export class MessageService {
   //___________________________________________________________________________
   // Load contacts
   private async GetContacts() {
-    this.contacts = [];
+    this.contacts = {};
     const apiReq: GetContactsRequest = { userId: this.tokenService.CurrentUser.id };
     debug(`MessageService::GetContacts: getting contacts for ${this.tokenService.CurrentUser.id}`);
     const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);

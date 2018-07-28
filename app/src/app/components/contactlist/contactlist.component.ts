@@ -54,7 +54,7 @@ export class ContactListComponent implements OnInit {
 
   private SortContacts() {
     this.SortedContactIds = Object.keys(this.Contacts).sort(
-      function(p, q) {
+      (p, q) => {
         if (this.Contacts[p].lastname < this.Contacts[q].lastname) { return -1; }
         if (this.Contacts[p].lastname > this.Contacts[q].lastname) { return 1;  }
         return 0;
