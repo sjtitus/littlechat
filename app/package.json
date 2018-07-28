@@ -1,4 +1,4 @@
-{ 
+{
   "name": "littlechat",
   "version": "0.0.0",
   "license": "MIT",
@@ -25,6 +25,7 @@
     "font-awesome": "^4.7.0",
     "node-sass": "^4.8.3",
     "rxjs": "^5.5.7",
+    "supports-color": "^5.4.0",
     "ts-md5": "^1.2.4",
     "zone.js": "^0.8.20"
   },

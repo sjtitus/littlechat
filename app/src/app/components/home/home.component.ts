@@ -11,6 +11,8 @@ import { WebSocketService } from '../../services/websocket.service';
 import { MonitorService } from '../../services/monitor.service';
 import { MessageService } from '../../services/message.service';
 
+const debug = require('debug')('HomeComponent');
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -29,7 +31,7 @@ export class HomeComponent implements OnInit {
     ) {}
 
   public SetChatContact(contact: User) {
-    console.log(`HomeComponent::SetChatContact: chat contact set to ${contact.email}`);
+    debug(`HomeComponent::SetChatContact: chat contact set to ${contact.email}`);
     this.chatContact = contact;
     this.headerMessage = `${this.chatContact.firstname} ${this.chatContact.lastname}`;
   }
@@ -39,17 +41,17 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(`HomeComponent::Init: user is ${this.CurrentUser.email}`);
+    debug(`HomeComponent::Init: user is ${this.CurrentUser.email}`);
 
     // Start web socket service
-    console.log(`HomeComponent::Init: starting client web socket service`);
+    debug(`HomeComponent::Init: starting client web socket service`);
     const authToken: string = this.tokenService.Retrieve();
     this.webSocketService.Start(authToken);
 
     // Start message service
-    console.log(`HomeComponent::Init: client message service start`);
+    debug(`HomeComponent::Init: client message service start`);
     this.messageService.Start()
-    .then(  () => { console.log(`HomeComponent::Init: client message service start: ok`); })
+    .then(  () => { debug(`HomeComponent::Init: client message service start: ok`); })
     .catch( (err) => { console.error(`HomeComponent::Init: client message service start: ERROR: ${err.message}`); });
 
   }

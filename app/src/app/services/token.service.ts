@@ -17,7 +17,8 @@ export const TokenServiceStub: Partial<TokenService> = {
       firstname: 'firstname1',
       lastname: 'lastname1',
       email: 'testuser1@test.com',
-      id: 999000
+      id: 999000,
+      conversation: null
     };
   }
 };
@@ -122,7 +123,8 @@ export class TokenService implements CanActivate {
       firstname: jwtoken.firstname,
       lastname: jwtoken.lastname,
       email: jwtoken.email,
-      id: jwtoken.id
+      id: jwtoken.id,
+      conversation: null
     };
     return u;
   }

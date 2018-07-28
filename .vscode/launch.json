@@ -36,7 +36,8 @@
                 "--disable-infobars"
             ],
             "userDataDir": "${workspaceRoot}/.vscode/chrome",
-            "preLaunchTask": "Client Start"
+            "preLaunchTask": "Client Start",
+            "env": { "DEBUG": "*" }
         }
     ]
 }

@@ -16,6 +16,9 @@ import { StatusMonitorStatus } from '../models/statusmonitor';
 import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
 import { Observable } from '../../../node_modules/rxjs/Observable';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('MessageService');
+
 @Injectable()
 export class MessageService {
 
@@ -46,19 +49,19 @@ export class MessageService {
   // Get contacts and conversations from backend, then associate
   // contacts with conversations.
   public async Start() {
-    console.log(`MessageService::Start: getting contacts`);
+    debug(`MessageService::Start: getting contacts`);
     const contactsResponse: GetContactsResponse = await this.GetContacts();
     if (contactsResponse.error) {
       console.error(`MessageService::Start: ERROR getting contacts: ${contactsResponse.errorMessage}`);
       throw new Error(`MessageService::Start: ERROR: ${contactsResponse.errorMessage}`);
     }
-    console.log(`MessageService::Start: getting conversations`);
+    debug(`MessageService::Start: getting conversations`);
     const conversationsResponse: GetConversationsResponse = await this.GetConversations();
     if (conversationsResponse.error) {
       console.error(`MessageService::Start: ERROR getting conversations: ${conversationsResponse.errorMessage}`);
       throw new Error(`MessageService::Start: ERROR: ${conversationsResponse.errorMessage}`);
     }
-    console.log(`MessageService::Start: mapping conversations to contacts`);
+    debug(`MessageService::Start: mapping conversations to contacts`);
     this.MapConversations();
     this.contactsSource$.next(this.contacts);
   }
@@ -66,7 +69,7 @@ export class MessageService {
   //___________________________________________________________________________
   // Map conversations to contacts
   private MapConversations() {
-    console.log(`MessageService::MapConversations: mapping conversations to contacts`);
+    debug(`MessageService::MapConversations: mapping conversations to contacts`);
   }
 
   //___________________________________________________________________________
@@ -74,7 +77,7 @@ export class MessageService {
   private async GetContacts() {
     this.contacts = [];
     const apiReq: GetContactsRequest = { userId: this.tokenService.CurrentUser.id };
-    console.log(`MessageService::GetContacts: getting contacts for ${this.tokenService.CurrentUser.id}`);
+    debug(`MessageService::GetContacts: getting contacts for ${this.tokenService.CurrentUser.id}`);
     const resp: GetContactsResponse = await this.apiService.GetContacts(apiReq);
     if (!resp.error) {
       this.contacts = resp.contacts;
@@ -93,15 +96,15 @@ export class MessageService {
   // Retreive and store ongoing conversations
   private async GetConversations(maxAgeInHours?: number) {
     const user = this.tokenService.CurrentUser;
-    console.log(`MessageService::GetConversations: getting conversations for ${user.email}`);
+    debug(`MessageService::GetConversations: getting conversations for ${user.email}`);
     const req: GetConversationsRequest = {} as any;
     req.userId = this.tokenService.CurrentUser.id;
     req.maxAgeInHours = (maxAgeInHours ? -1 : maxAgeInHours);
     const resp: GetConversationsResponse = await this.apiService.GetConversations(req);
     // cache only on success
     if (!resp.error) {
-      console.log(`MessageService::GetConversations: caching ${Object.keys(resp.conversations).length} conversations for ${user.email}`);
-      if (Object.keys(this.conversations).length > 0) {
+      debug(`MessageService::GetConversations: caching ${Object.keys(resp.conversations).length} conversations for ${user.email}`);
+      if ((this.conversations) && Object.keys(this.conversations).length > 0) {
         console.warn(`MessageService::GetConversations: overwriting cached conversations for ${user.email}`);
       }
       // save conversations (managed by this module)
@@ -118,11 +121,11 @@ export class MessageService {
   // GetConversationMessages
   // Retrieve and store messages for a specific coversation
   private async GetConversationMessages(conversation: Conversation) {
-    console.log(`MessageService::GetConversationMessages: getting conversation ${conversation.id}`);
+    debug(`MessageService::GetConversationMessages: getting conversation ${conversation.id}`);
     let resp: GetConversationMessagesResponse = {} as any;
     // Already loaded: use cache
     if (conversation.id in this.messages) {
-      console.log(`MessageService::GetConversationMessages: returning cached conversation ${conversation.id}`);
+      debug(`MessageService::GetConversationMessages: returning cached conversation ${conversation.id}`);
       resp.error = false;
       resp.conversationId = conversation.id;
       resp.messages = this.messages[conversation.id];
@@ -131,11 +134,11 @@ export class MessageService {
     // Not yet loaded: retrieve from back end
     const req: GetConversationMessagesRequest = { conversationId: conversation.id };
     // Call API to get the conversation
-    console.log(`MessageService::GetConversationMessages: calling API for conversation ${conversation.id}`);
+    debug(`MessageService::GetConversationMessages: calling API for conversation ${conversation.id}`);
     resp = await this.apiService.GetConversationMessages(req);
     // cache only on success
     if (!resp.error) {
-      console.log(`MessageService::GetConversationMessages: caching conversation ${conversation.id}`);
+      debug(`MessageService::GetConversationMessages: caching conversation ${conversation.id}`);
       this.messages[conversation.id] = resp.messages;
     }
     else {
