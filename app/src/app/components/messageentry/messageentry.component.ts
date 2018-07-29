@@ -12,6 +12,8 @@ import { WebSocketService } from '../../services/websocket.service';
 import { StatusMonitorStatus } from '../../models/statusmonitor';
 import { MonitorService } from '../../services/monitor.service';
 
+const debug = require('debug')('MessageEntry');
+
 @Component({
   selector: 'app-messageentry',
   templateUrl: './messageentry.component.html',
@@ -27,7 +29,7 @@ export class MessageentryComponent implements OnInit {
   //private readonly ackTimeout = 10;
 
   @Input() set chatContact(contact: User) {
-    console.log('MessageEntry: chat contact changed to ', contact);
+    debug('MessageEntry: chat contact changed to ', contact);
     this._chatContact = contact;
   }
 
@@ -39,7 +41,7 @@ export class MessageentryComponent implements OnInit {
   public async SendMessage(event: any) {
     try {
       this.errorText = null;
-      console.log(`MessageEntry::SendMessage: send message to ${this._chatContact.email}`);
+      debug(`MessageEntry::SendMessage: send message to ${this._chatContact.email}`);
       // construct message
       const content: string = event.target.value as string;
       const timeSent: string = new Date().toISOString();
@@ -51,7 +53,7 @@ export class MessageentryComponent implements OnInit {
       };
       // send message via websocket
       const sendResp = await this.webSocketService.SendMessage(message);
-      console.log(`MessageEntry::SendMessage: send response: ${sendResp}`);
+      debug(`MessageEntry::SendMessage: send response: ${sendResp}`);
     }
     catch (err) {
         console.error(`MessageEntry::SendMessage: error`, err);

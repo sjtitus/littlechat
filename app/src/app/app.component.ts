@@ -19,6 +19,6 @@ dbgpackage.colors =  [
 export class AppComponent implements OnInit {
   constructor() {}
   ngOnInit() {
-    localStorage.debug = 'MessageService,HomeComponent';
+    localStorage.debug = 'MessageService,Home,MessageEntry,ContactList';
   }
 }

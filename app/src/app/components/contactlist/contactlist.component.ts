@@ -7,6 +7,8 @@ import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { User } from '../../models/user';
 import { MessageService } from '../../services/message.service';
 
+const debug = require('debug')('ContactList');
+
 @Component({
   selector: 'app-contactlist',
   templateUrl: './contactlist.component.html',
@@ -35,7 +37,7 @@ export class ContactListComponent implements OnInit {
   //___________________________________________________________________________
   // Select chat contact
   SelectContact(contact: User) {
-    console.log(`ContactList::SelectContact: new chat target ${contact.email}`);
+    debug(`ContactList::SelectContact: new chat target ${contact.email}`);
     this._selectedContact = contact;
     this.contactSelected.emit(this._selectedContact);   // Notify listeners
   }

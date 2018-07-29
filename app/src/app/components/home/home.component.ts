@@ -11,7 +11,7 @@ import { WebSocketService } from '../../services/websocket.service';
 import { MonitorService } from '../../services/monitor.service';
 import { MessageService } from '../../services/message.service';
 
-const debug = require('debug')('HomeComponent');
+const debug = require('debug')('Home');
 
 @Component({
   selector: 'app-home',
