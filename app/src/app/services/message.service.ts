@@ -70,6 +70,21 @@ export class MessageService {
   // Map conversations to contacts
   private MapConversations() {
     debug(`MessageService::MapConversations: mapping conversations to contacts`);
+
+    // Assign converstations to contacts
+    for (const cid in this.conversations) {
+      if (this.conversations.hasOwnProperty(cid)) {
+          const conv: Conversation = this.conversations[cid];
+          // person-to-person
+          if (conv.audience.length === 1) {
+              const chatPartnerId = conv.audience[0];
+              if (chatPartnerId in this.contacts && (this.contacts.hasOwnProperty(chatPartnerId))) {
+                  debug(`MessageService::MapConversations: found conversation with ${this.contacts[chatPartnerId].email}`);
+                  this.contacts[chatPartnerId].conversation = conv;
+              }
+          }
+      }
+    }
   }
 
   //___________________________________________________________________________

@@ -189,14 +189,13 @@ VALUES
 
 INSERT INTO conversation_usr( id_conversation, id_usr, timestamplastmessage, timestamplastread, numunreadmessages)
 VALUES
-  (1, 1, current_timestamp, current_timestamp, 0),
-  (1, 2, current_timestamp, current_timestamp, 0),
-  (2, 3, current_timestamp, current_timestamp, 0),
-  (2, 4, current_timestamp, current_timestamp, 0),
-  (3, 1, current_timestamp, current_timestamp, 0),
-  (3, 2, current_timestamp, current_timestamp, 0),
-  (3, 3, current_timestamp, current_timestamp, 0),
-  (3, 4, current_timestamp, current_timestamp, 0);
+  (1, 5, current_timestamp, current_timestamp, 0),
+  (1, 6, current_timestamp, current_timestamp, 0),
+  (2, 6, current_timestamp, current_timestamp, 0),
+  (2, 7, current_timestamp, current_timestamp, 0),
+  (3, 5, current_timestamp, current_timestamp, 0),
+  (3, 6, current_timestamp, current_timestamp, 0),
+  (3, 7, current_timestamp, current_timestamp, 0);
 
 
 

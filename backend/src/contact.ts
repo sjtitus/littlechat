@@ -8,6 +8,7 @@ import { Conversation, GetConversationsRequest, GetConversationsResponse,
   GetConversationMessagesRequest, GetConversationMessagesResponse } from '../../app/src/app/models/conversation';
 import { Message } from "../../app/src/app/models/message";
 import * as db from './db/db';
+import { isUndefined, isNullOrUndefined } from "util";
 
 const testMessages: Message[] = [
  { to: 2, from: 1, timeSent: 'now', content: 'this is a test message'},
@@ -44,12 +45,11 @@ export async function GetConversations(getConversationsRequest: GetConversations
   const resp: GetConversationsResponse = {} as any;
   resp.error = false;
   resp.conversations = {};
-  let current_cid = -1;
-  let current_cindex = -1;
+  let currentConversation: Conversation = {} as any; 
   for (let dc of dbConversation) {
     // new conversation
     //console.log(`GetConversations: comparing ${dc.conversation_id} to ${current_cid}`);
-    if (dc.conversation_id !== current_cid) {
+    if (isNullOrUndefined(currentConversation.id) || (dc.conversation_id !== currentConversation.id)) {
       const respConv: Conversation = {
         id: dc.conversation_id,
         name: dc.conversation_name,
@@ -61,12 +61,10 @@ export async function GetConversations(getConversationsRequest: GetConversations
         messages: []
       }
       resp.conversations[respConv.id] = respConv;
-      current_cid = dc.conversation_id;
-      current_cindex++;
+      currentConversation = respConv; 
     }
-    const conv = resp.conversations[current_cindex];
     if (dc.usr_id !== getConversationsRequest.userId) {
-      conv.audience.push(dc.usr_id);
+      currentConversation.audience.push(dc.usr_id);
     }
   }
   return resp;
