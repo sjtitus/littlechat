@@ -2,7 +2,9 @@
   <div class="alert alert-danger" [hidden]="errorText==null">
     {{ errorText }}
   </div>
-  <p *ngFor="let msg of conversation">
-    {{msg.content}}
-  </p>
+  <div *ngIf="(conversation != null) && (conversation.messages != null)">
+    <p *ngFor="let msg of conversation.messages">
+      {{msg.content}}
+    </p>
+  </div>
 </div>

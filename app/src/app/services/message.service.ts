@@ -15,6 +15,7 @@ import { MonitorService } from './monitor.service';
 import { StatusMonitorStatus } from '../models/statusmonitor';
 import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
 import { Observable } from '../../../node_modules/rxjs/Observable';
+import { isNull } from 'util';
 
 const dbgpackage = require('debug');
 const debug = dbgpackage('MessageService');
@@ -27,9 +28,6 @@ export class MessageService {
 
   // User conversations
   private conversations: { [id: number]: Conversation };
-
-  // Conversation message threads
-  private messages: { [conversationId: number]: Message[] };
 
   // we will publish when we fill contacts
   private contactsSource$: Subject<{[id: number]: User}>;
@@ -63,6 +61,7 @@ export class MessageService {
     }
     debug(`MessageService::Start: mapping conversations to contacts`);
     this.MapConversations();
+    // Notify listeners
     this.contactsSource$.next(this.contacts);
   }
 
@@ -83,6 +82,7 @@ export class MessageService {
                   this.contacts[chatPartnerId].conversation = conv;
               }
           }
+          // TODO: Group
       }
     }
   }
@@ -135,31 +135,31 @@ export class MessageService {
   //___________________________________________________________________________
   // GetConversationMessages
   // Retrieve and store messages for a specific coversation
-  private async GetConversationMessages(conversation: Conversation) {
+  async GetConversationMessages(conversation: Conversation) {
     debug(`MessageService::GetConversationMessages: getting conversation ${conversation.id}`);
-    let resp: GetConversationMessagesResponse = {} as any;
     // Already loaded: use cache
-    if (conversation.id in this.messages) {
-      debug(`MessageService::GetConversationMessages: returning cached conversation ${conversation.id}`);
-      resp.error = false;
-      resp.conversationId = conversation.id;
-      resp.messages = this.messages[conversation.id];
-      return resp;
+    /*
+    if (!isNull(conversation.messages)) {
+      debug(`MessageService::GetConversationMessages: conversation ${conversation.id} messages already loaded`);
+      return 0;
     }
-    // Not yet loaded: retrieve from back end
+    */
     const req: GetConversationMessagesRequest = { conversationId: conversation.id };
+    let resp: GetConversationMessagesResponse = {} as any;
     // Call API to get the conversation
     debug(`MessageService::GetConversationMessages: calling API for conversation ${conversation.id}`);
     resp = await this.apiService.GetConversationMessages(req);
     // cache only on success
     if (!resp.error) {
-      debug(`MessageService::GetConversationMessages: caching conversation ${conversation.id}`);
-      this.messages[conversation.id] = resp.messages;
+      debug(`MessageService::GetConversationMessages: retrieved ${resp.messages.length} msgs from conversation ${conversation.id}`);
+      conversation.messages = resp.messages;
+      return conversation.messages.length;
     }
     else {
       console.error(`MessageService::GetConversationMessages: error getting conversation ${conversation.id}: ${resp.errorMessage}`);
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, resp.errorMessage);
+      return 0;
     }
-    return resp;
   }
 
 }

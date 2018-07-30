@@ -197,7 +197,19 @@ VALUES
   (3, 6, current_timestamp, current_timestamp, 0),
   (3, 7, current_timestamp, current_timestamp, 0);
 
+INSERT INTO message( id_conversation, id_sender, timestampcreated, content)
+VALUES
+  (1, 5, current_timestamp, 'message 1 on conversation 1'),
+  (1, 5, current_timestamp, 'message 2 on conversation 1'),
+  (1, 5, current_timestamp, 'message 3 on conversation 1');
 
+/*
+id
+id_conversation
+id_sender
+timestampcreated
+content
+*/
 
 -- select * from usr;
 --drop table passwd;

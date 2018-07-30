@@ -7,10 +7,12 @@ import { Component, Input, OnInit, ViewChild, AfterViewChecked, ElementRef } fro
 import { User } from '../../models/user';
 import { MessageService } from '../../services/message.service';
 import { Message } from '../../models/message';
+import { Conversation } from '../../models/conversation';
 import { Subscription } from 'rxjs/Subscription';
 import { TokenService } from '../../services/token.service';
 import { MonitorService } from '../../services/monitor.service';
 import { StatusMonitorStatus } from '../../models/statusmonitor';
+import { isNull } from 'util';
 
 @Component({
   selector: 'app-messagelist',
@@ -20,7 +22,7 @@ import { StatusMonitorStatus } from '../../models/statusmonitor';
 
 export class MessagelistComponent implements OnInit, AfterViewChecked {
 
-  conversation: Message[];
+  conversation: Conversation | null;
   errorText: string;
 
   @ViewChild('msgarea') msgarea: ElementRef;  // #msgarea DOM element
@@ -30,30 +32,26 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   // current chat contact
   private _chatContact: User;
 
-  constructor(private messageService: MessageService, private tokenService: TokenService,
-      private monitorService: MonitorService ) {}
+  constructor(
+      private messageService: MessageService,
+      private tokenService: TokenService,
+      private monitorService: MonitorService
+  ) {
+    this.conversation = {} as any;
+    this.conversation.messages = [];
+  }
 
   // targetUser: setter hook (prop is bound from parent)
   @Input() set chatContact(contact: User) {
     this._chatContact = contact;
     console.log('MessageList: chat contact changed to ', contact);
-    // trick to do an await in a non async function
-    // (async () => this.conversation = await this.GetConversation(this._chatContact))();
-  }
-
-  /*
-  private async GetConversation(contact: User) {
-    console.log(`MessageList::GetConversation: getting conversation with ${contact.email}`);
-    this.errorText = null;
-    const resp: GetConversationResponse = await this.messageService.GetConversation(contact);
-    if (resp.error) {
-      console.error(`MessageList::GetConversation: error: ${resp.errorMessage}`);
-      this.errorText = resp.errorMessage;
-      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, this.errorText);
+    this.conversation = contact.conversation;
+    if (!isNull(this.conversation)) {
+      this.messageService.GetConversationMessages(this.conversation).then(
+        (n) => { console.log(`MessageList::ChatContact: got ${n} conversation messages`); }
+      );
     }
-    return resp.conversation;
   }
-  */
 
   ngOnInit() {}
 
