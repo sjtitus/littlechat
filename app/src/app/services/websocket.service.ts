@@ -40,6 +40,7 @@ export class WebSocketService {
         this.socket.on('connect_error', (e) => this.WebSocketStatus('connect', StatusMonitorStatus.Error, e));
         this.socket.on('connect_timeout', (e) => this.WebSocketStatus('connect timeout', StatusMonitorStatus.Error, e));
         this.socket.on('reconnect', () =>  this.WebSocketStatus('reconnect', StatusMonitorStatus.Ok));
+        this.socket.on('message', (msg) =>  console.log('==> Got a cool message: ', msg) );
         //this.socket.on('reconnect_attempt', () => { console.log('reconnect_attempt'); });
         //this.socket.on('reconnecting', () => { console.log('reconnecting'); });
     }
