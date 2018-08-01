@@ -23,6 +23,7 @@ export class Routes {
     router.post('/api/signup', api.signup);
     router.post('/api/contacts', api.contacts);
     router.post('/api/conversations', api.conversations);
+    router.post('/api/messages', api.messages);
     this._express.use('/', router);
 
     //______________________________________________________

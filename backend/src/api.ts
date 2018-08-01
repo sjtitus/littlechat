@@ -51,5 +51,15 @@ export const conversations:RequestHandler = async function(req: Request, res:Res
   const getConversationsResponse: GetConversationsResponse = await Contact.GetConversations(getConversationsRequest);
   res.status(200).json(getConversationsResponse);
 }
+ 
+//___________________________________________________________________________
+// Messages
+// Return messages for a specified conversation 
+export const messages:RequestHandler = async function(req: Request, res:Response, next:NextFunction) {
+  const getConversationMessagesRequest: GetConversationMessagesRequest = req.body;
+  console.debug(`Api::Messages: request for conv id ${getConversationMessagesRequest.conversationId}`);
+  const getConversationMessagesResponse: GetConversationMessagesResponse = await Contact.GetConversationMessages(getConversationMessagesRequest);
+  res.status(200).json(getConversationMessagesResponse);
+}
 
 

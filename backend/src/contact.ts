@@ -74,10 +74,20 @@ export async function GetConversations(getConversationsRequest: GetConversations
 //_____________________________________________________________________________
 // GetConversation
 export async function GetConversationMessages(getConversationMessagesRequest: GetConversationMessagesRequest) {
-  const dbConversation = await db.getConversationMessages(getConversationMessagesRequest);
-  let getConversationsResponse: GetConversationMessagesResponse = {} as any;
-  getConversationsResponse.error = false;
-  getConversationsResponse.conversationId = getConversationMessagesRequest.conversationId;
-  getConversationsResponse.messages = [];
-  return getConversationsResponse;
+  const dbMessages = await db.getConversationMessages(getConversationMessagesRequest);
+  // id | id_conversation | id_sender |       timestampcreated        |           content
+  let getConversationMessagesResponse: GetConversationMessagesResponse = {} as any;
+  getConversationMessagesResponse.error = false;
+  getConversationMessagesResponse.conversationId = getConversationMessagesRequest.conversationId;
+  getConversationMessagesResponse.messages = [];
+  for (let dbm of dbMessages) {
+    const msg: Message = {
+      from: dbm.id_sender,
+      to: getConversationMessagesRequest.conversationId,
+      content: dbm.content,
+      timeSent: dbm.timestampCreated 
+    }
+    getConversationMessagesResponse.messages.push(msg);
+  }
+  return getConversationMessagesResponse;
 }
