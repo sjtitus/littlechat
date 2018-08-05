@@ -10,6 +10,9 @@ import { StatusMonitorStatus, StatusMonitor } from '../../models/statusmonitor';
 import { Observer } from 'rxjs/Observer';
 import { Md5 } from 'ts-md5';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('ErrorHandler');
+
 @Component({
   selector: 'app-errorhandler',
   templateUrl: './errorhandler.component.html',
@@ -28,7 +31,7 @@ export class ErrorhandlerComponent implements OnInit {
     let i = 0;
     for (const n of this.monitorService.MonitorNames()) {
       const j = i;
-      console.log(`ErrorHandler: subscribing to MonitorService channel '${n}'`);
+      debug(`ErrorHandler: subscribing to MonitorService channel '${n}'`);
       this.monitorService.Subscribe(n, (monitor) => this.OnChange(j, monitor) );
       this.ErrorMonitors[i++] = null;
     }
@@ -37,7 +40,7 @@ export class ErrorhandlerComponent implements OnInit {
 
   private UpdateSummary() {
     this.Summary = `${this.NumErrors} errors/warnings in ${this.ErrorMonitors.length} components`;
-    console.log(`ErrorHandler: new summary: ${this.Summary}`);
+    debug(`ErrorHandler: new summary: ${this.Summary}`);
   }
 
   trackByFn(index, item) {
@@ -47,7 +50,7 @@ export class ErrorhandlerComponent implements OnInit {
 
   // Observer implementation
   OnChange(i: number, monitor: StatusMonitor): void {
-    console.log(`ErrorHandler: OnChange: monitor ${monitor.name} state ${monitor.StatusName}, index ${i}, message ${monitor.Message}`);
+    debug(`ErrorHandler: OnChange: monitor ${monitor.name} state ${monitor.StatusName}, index ${i}, message ${monitor.Message}`);
     this.ErrorMonitors[i] = monitor;
     if (monitor.WentBad) {
       this.NumErrors++;

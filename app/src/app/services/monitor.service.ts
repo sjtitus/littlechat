@@ -8,6 +8,9 @@ import { Injectable } from '@angular/core';
 import { StatusMonitorStatus, StatusMonitor } from '../models/statusmonitor';
 import { Observer } from 'rxjs/Observer';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('MonitorService');
+
 @Injectable()
 export class MonitorService {
 
@@ -36,25 +39,25 @@ export class MonitorService {
       console.error(`MonitorService: add of already-existent monitor '${monitorName}'`);
       throw new Error(`MonitorService: add of already-existent monitor '${monitorName}'`);
     }
-    console.log(`MonitorService: adding monitor '${monitorName}'`);
+    debug(`MonitorService: adding monitor '${monitorName}'`);
     this.Monitors[monitorName] = new StatusMonitor(monitorName);
   }
 
   RemoveMonitor( monitorName: string ) {
-    console.log(`MonitorService: removing monitor '${monitorName}'`);
+    debug(`MonitorService: removing monitor '${monitorName}'`);
     delete this.Monitors[monitorName];
   }
 
   // Change the status of a specific monitor
   ChangeStatus( monitorName: string, status: StatusMonitorStatus, message: string) {
-    console.log(`MonitorService: changing status of monitor '${monitorName}' to '${StatusMonitorStatus[status]}' ${message}`);
+    debug(`MonitorService: changing status of monitor '${monitorName}' to '${StatusMonitorStatus[status]}' ${message}`);
     this.Monitors[monitorName].SetStatus(status, message);
   }
 
   // Subscribe to a specific monitor
   // Subscribers will receive a reference to the changed StatusMonitor
   Subscribe( monitorName: string, statusChangeCallback: any ) {
-    console.log(`MonitorService: subscriber to monitor '${monitorName}'`);
+    debug(`MonitorService: subscriber to monitor '${monitorName}'`);
     this.Monitors[monitorName].StatusChange$.subscribe(statusChangeCallback);
   }
 }

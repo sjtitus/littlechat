@@ -10,6 +10,8 @@ import { Conversation, GetConversationsRequest, GetConversationsResponse,
   GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('ApiService');
 
 // Stub for testing
 export const ApiServiceStub: Partial<ApiService> = {
@@ -60,7 +62,7 @@ export class ApiService {
 
   // Login
   async LoginUser(loginRequest: LoginRequest) {
-      console.log('ApiService::LoginUser: login request ', loginRequest);
+      debug('ApiService::LoginUser: login request ', loginRequest);
       let resp: LoginResponse = {} as any;
       try {
         const apiResp = await this.http.post<LoginResponse>(this.loginUrl, loginRequest, { observe: 'response' })
@@ -84,7 +86,7 @@ export class ApiService {
 
   // Signup
   async SignupUser(signupRequest: SignupRequest) {
-      console.log('ApiService::SignupUser: signup request ', signupRequest);
+      debug('ApiService::SignupUser: signup request ', signupRequest);
       let resp: SignupResponse = {} as any;
       try {
         const apiResp = await this.http.post<SignupResponse>(this.signupUrl, signupRequest, { observe: 'response' })
@@ -108,7 +110,7 @@ export class ApiService {
 
   // Get user conversations
   async GetConversations(req: GetConversationsRequest) {
-      console.log(`ApiService::GetConversations: request for ${req.userId}`);
+      debug(`ApiService::GetConversations: request for ${req.userId}`);
       let resp: GetConversationsResponse = {} as any;
       try {
         const apiResp = await this.http.post<GetConversationsResponse>(this.conversationsUrl, req, { observe: 'response' })
@@ -131,7 +133,7 @@ export class ApiService {
 
   // Get user contacts
   async GetContacts(req: GetContactsRequest) {
-      console.log(`ApiService::GetContacts: getting contacts for ${req.userId}`);
+      debug(`ApiService::GetContacts: getting contacts for ${req.userId}`);
       let resp: GetContactsResponse = {} as any;
       try {
         const apiResp = await this.http.post<GetContactsResponse>(this.contactsUrl, req, { observe: 'response' })
@@ -139,7 +141,7 @@ export class ApiService {
             .pipe(catchError(this.HandleError))
             .toPromise();
         resp = apiResp.body;
-        console.log('ApiService::GetContacts: response', resp);
+        debug('ApiService::GetContacts: response', resp);
       }
       catch (e) {
         const err = e as ApiError;
@@ -156,7 +158,7 @@ export class ApiService {
 
   // Get conversation messages
   async GetConversationMessages(req: GetConversationMessagesRequest) {
-      console.log('ApiService::GetConversationMessages: request', req);
+      debug('ApiService::GetConversationMessages: request', req);
       let resp: GetConversationMessagesResponse = {} as any;
       try {
         const apiResp = await this.http.post<GetConversationMessagesResponse>(this.messagesUrl, req, { observe: 'response' })
@@ -164,7 +166,7 @@ export class ApiService {
             .pipe(catchError(this.HandleError))
             .toPromise();
         resp = apiResp.body;
-        console.log('ApiService::GetConversationMessages: response', resp);
+        debug('ApiService::GetConversationMessages: response', resp);
       }
       catch (e) {
         const err = e as ApiError;
@@ -200,7 +202,7 @@ export class ApiService {
           error: httperr.error ? httperr.error : '',
           offline: ((httperr.status != null) && (+(httperr.status) <= 0))
         };
-        console.log('ApiService::HandleError: error: ', er);
+        debug('ApiService::HandleError: error: ', er);
         return new ErrorObservable(er);
   }
 

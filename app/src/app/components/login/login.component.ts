@@ -5,6 +5,9 @@ import { ApiService } from '../../services/api.service';
 import { TokenService } from '../../services/token.service';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../../models/login';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('Login');
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -61,7 +64,7 @@ export class LoginComponent implements OnInit {
   public async Login() {
     this.ClearErrors();
     const loginRequest = this.ExtractLoginRequest();
-    console.log('LoginComponent: login request', loginRequest);
+    debug('LoginComponent: login request', loginRequest);
     const resp: LoginResponse = await this.apiService.LoginUser(loginRequest);
     if (this.LoginSuccess(resp)) {
       this.tokenService.Store(resp.token);
@@ -74,7 +77,7 @@ export class LoginComponent implements OnInit {
   public async Signup() {
     this.ClearErrors();
     const signupRequest = this.ExtractSignupRequest();
-    console.log('LoginComponent: signup request ', signupRequest);
+    debug('LoginComponent: signup request ', signupRequest);
     const resp: SignupResponse = await this.apiService.SignupUser(signupRequest);
     if (this.SignupSuccess(resp)) {
       this.tokenService.Store(resp.token);

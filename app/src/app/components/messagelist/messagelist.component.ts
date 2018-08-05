@@ -14,6 +14,9 @@ import { MonitorService } from '../../services/monitor.service';
 import { StatusMonitorStatus } from '../../models/statusmonitor';
 import { isNull } from 'util';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('MessageList');
+
 @Component({
   selector: 'app-messagelist',
   templateUrl: './messagelist.component.html',
@@ -44,11 +47,11 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
   // targetUser: setter hook (prop is bound from parent)
   @Input() set chatContact(contact: User) {
     this._chatContact = contact;
-    console.log('MessageList: chat contact changed to ', contact);
+    debug('MessageList: chat contact changed to ', contact);
     this.conversation = contact.conversation;
     if (!isNull(this.conversation)) {
       this.messageService.GetConversationMessages(this.conversation).then(
-        (n) => { console.log(`MessageList::ChatContact: got ${n} conversation messages`); }
+        (n) => { debug(`MessageList::ChatContact: got ${n} conversation messages`); }
       );
     }
   }

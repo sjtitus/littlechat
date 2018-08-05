@@ -7,6 +7,9 @@
 
 import { Subject } from 'rxjs/Subject';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('StatusMonitor');
+
 export enum StatusMonitorStatus { Ok, Warning, Error, Unknown }
 
 export class StatusMonitor {
@@ -27,7 +30,7 @@ export class StatusMonitor {
       this._sinceTimestamp = now;
       this._lastConfirmedTimestamp = now;
       this.StatusChange$ = new Subject<StatusMonitor>();
-      console.log(`StatusMonitor: new monitor: ${this}`);
+      debug(`StatusMonitor: new monitor: ${this}`);
     }
 
     get StatusChanged(): boolean {

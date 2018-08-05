@@ -10,6 +10,9 @@ import { CanActivate, Router } from '@angular/router';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('TokenService');
+
 // Stub for testing
 export const TokenServiceStub: Partial<TokenService> = {
   get CurrentUser(): User {
@@ -32,9 +35,9 @@ export class TokenService implements CanActivate {
   //___________________________________________________________________________
   // Constructor
   constructor(private router: Router) {
-    console.log(`TokenService::Construct: token key '${TokenService.TokenKey}'`);
+    debug(`TokenService::Construct: token key '${TokenService.TokenKey}'`);
     this.storageAvailable = this.StorageAvailable();
-    console.log('TokenService::Construct: storage available: ', this.storageAvailable);
+    debug('TokenService::Construct: storage available: ', this.storageAvailable);
   }
 
   //___________________________________________________________________________
@@ -46,7 +49,7 @@ export class TokenService implements CanActivate {
   //___________________________________________________________________________
   // Store auth token
   public Store(token: string) {
-    console.log(`TokenService::Store: storing token for key '${TokenService.TokenKey}'`);
+    debug(`TokenService::Store: storing token for key '${TokenService.TokenKey}'`);
     try {
       window.localStorage.setItem(TokenService.TokenKey, token);
     } catch (e) {
@@ -59,10 +62,10 @@ export class TokenService implements CanActivate {
   // Retrieve auth token
   // Returns null if no token is stored for the key.
   public Retrieve(): string | null {
-    //console.log(`TokenService::Retrieve: retrieving token for key '${TokenService.TokenKey}'`);
+    //debug(`TokenService::Retrieve: retrieving token for key '${TokenService.TokenKey}'`);
     try {
       const tok = window.localStorage.getItem(TokenService.TokenKey);
-      //console.log(`TokenService::Retrieve: token is ${tok}`);
+      //debug(`TokenService::Retrieve: token is ${tok}`);
       return tok;
     } catch (e) {
       throw new Error(`TokenService::Retrieve: failed to retrieve token with key '${TokenService.TokenKey}': ${e.message}`);
@@ -72,7 +75,7 @@ export class TokenService implements CanActivate {
   //___________________________________________________________________________
   // Delete auth token
   public Delete() {
-    console.log(`TokenService::Delete: retrieving token for key '${TokenService.TokenKey}': %s`);
+    debug(`TokenService::Delete: retrieving token for key '${TokenService.TokenKey}': %s`);
     try {
       window.localStorage.removeItem(TokenService.TokenKey);
     } catch (e) {
@@ -95,22 +98,22 @@ export class TokenService implements CanActivate {
   // CanActivate implementation
   // Returns true if the auth token is valid.
   canActivate(): boolean {
-    console.log('TokenService::CanActivate: checking auth');
+    debug('TokenService::CanActivate: checking auth');
     const jwtoken: any = this.Decode();
-    console.log('TokenService::CanActivate: token: ', jwtoken);
+    debug('TokenService::CanActivate: token: ', jwtoken);
     if (jwtoken == null) {
-      console.log('TokenService::CanActivate: auth failed: empty token, redirecting to login');
+      debug('TokenService::CanActivate: auth failed: empty token, redirecting to login');
       this.router.navigate(['login']);
       return false;
     }
     const current_time = new Date().getTime() / 1000;
     if (current_time > jwtoken.exp) {
-      console.log('TokenService::CanActivate: auth failed: token expired %d seconds ago, redirecting to login',
+      debug('TokenService::CanActivate: auth failed: token expired %d seconds ago, redirecting to login',
         current_time - jwtoken.exp);
       this.router.navigate(['login']);
       return false;
     }
-    console.log(`TokenService::CanActivate: auth success: token: '${JSON.stringify(jwtoken)}'`);
+    debug(`TokenService::CanActivate: auth success: token: '${JSON.stringify(jwtoken)}'`);
     return true;
   }
 
@@ -132,7 +135,7 @@ export class TokenService implements CanActivate {
   //___________________________________________________________________________
   // Detect if localstorage is available on the browser
   private StorageAvailable(): boolean {
-    console.log('TokenService::StorageAvailable: determining if localstorage is available');
+    debug('TokenService::StorageAvailable: determining if localstorage is available');
     let storage;
     try {
         storage = window['localStorage'];

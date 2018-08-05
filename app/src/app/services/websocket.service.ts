@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { Message, MessageAck } from '../models/message';
 import { Md5 } from 'ts-md5';
 import { MonitorService } from './monitor.service';
@@ -8,20 +8,46 @@ import { StatusMonitorStatus } from '../models/statusmonitor';
 
 const SERVER_URL = 'http://localhost:4200';
 
+const dbgpackage = require('debug');
+const debug = dbgpackage('WebSocketService');
+
 @Injectable()
 export class WebSocketService {
+
+    // socket used to send/receive msgs to/from backend
     private socket;
+
+    // token for backend auth 
     private _authToken: string;
+
+    // messages sent but not yet acknowledged
     private pendingMessages:  { [s: string]: Message; } = {};
+
+    // messages that failed to send
     private failedMessages:   { [s: string]: Message; } = {};
+
+    // messages corrupted in transit
     private corruptMessages:  { [s: string]: Message; } = {};
+
+    // time to wait for backend 
     private readonly ackTimeout = 10;
 
-    constructor(private monitorService: MonitorService) {}
+    // publish/subscribe for incoming messages
+    public OnIncomingMessage$: Subject<Message>;
 
+
+
+    constructor(private monitorService: MonitorService) {
+      this.OnIncomingMessage$ = new Subject<Message>();
+    }
+
+    //_________________________________________________________________________
+    // Start 
+    // Start the service: creates a socket connection to the backend and
+    // connects the socket, sets up monitoring to make socket status and
+    // errors available, and sets up publishing of incoming messages. 
     public Start(token: string) {
-        console.log(`WebSocketService: starting service (URL ${SERVER_URL})`);
-        console.log(`WebSocketService: authToken: ${token})`);
+        debug(`WebSocketService: starting service (URL ${SERVER_URL})`);
         this._authToken = token;
         this.socket = socketIo(SERVER_URL, {
             path: '/mysock',
@@ -34,43 +60,29 @@ export class WebSocketService {
               }
             }
         });
-        this.socket.on('connect', () => this.WebSocketStatus('connect', StatusMonitorStatus.Ok));
-        this.socket.on('reconnect_failed', (e) => this.WebSocketStatus('reconnect failed', StatusMonitorStatus.Error, e));
-        this.socket.on('reconnect_error', (e) => this.WebSocketStatus('reconnect', StatusMonitorStatus.Error, e));
-        this.socket.on('connect_error', (e) => this.WebSocketStatus('connect', StatusMonitorStatus.Error, e));
-        this.socket.on('connect_timeout', (e) => this.WebSocketStatus('connect timeout', StatusMonitorStatus.Error, e));
-        this.socket.on('reconnect', () =>  this.WebSocketStatus('reconnect', StatusMonitorStatus.Ok));
-        this.socket.on('message', (msg) =>  console.log('==> Got a cool message: ', msg) );
-        //this.socket.on('reconnect_attempt', () => { console.log('reconnect_attempt'); });
-        //this.socket.on('reconnecting', () => { console.log('reconnecting'); });
+        this.SetupMonitoring();
+        // publish incoming messages 
+        this.socket.on('message',
+            (msg) =>  {
+              debug(`WebSocketService: incoming message:`, msg);
+              this.OnIncomingMessage$.next(msg);
+            }
+          );
     }
 
-    public WebSocketStatus(eventName: string, s: StatusMonitorStatus, err?: any) {
-      let msg: string;
-      if (err !== undefined) {
-        msg = `Websocket error: ${eventName}: ${err.message} (${err.description})`;
-      } else {
-        msg = `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
-      }
-      console.log(`WebSocketService: status change to '${StatusMonitorStatus[s]}': ${msg} (${eventName})`);
-      this.monitorService.ChangeStatus('Websocket', s, msg);
+
+    //_________________________________________________________________________
+    // Current connected to back end? 
+    public get Connected(): boolean {
+      return this.socket.connected;
     }
 
-    public get authToken(): string { return this._authToken; }
-    public get Connected(): boolean { return this.socket.connected; }
-
-    public OnEvent(event: string): Observable<any> {
-      console.log(`WebSocketService: Setting up event handler for '${event}'`);
-      return new Observable<Event>(observer => {
-          this.socket.on(event, (data) => observer.next(data));
-      });
-    }
 
     //_________________________________________________________________________
     // SendMessage
     // Send a message on websocket 'message' channel
     public async SendMessage(message: Message) {
-        console.log(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
+        debug(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
         const msgId = Md5.hashStr(message.timeSent + message.content) as string;
         return new Promise( (resolve, reject) => {
           // Socket is disconnected, don't even try to send message
@@ -90,9 +102,39 @@ export class WebSocketService {
     }
 
 
-    //=========================================
+
+    //
     // Private
-    //=========================================
+    //
+
+    //_________________________________________________________________________
+    // SetupMonitoring 
+    // Setup service monitoring: change the websocket service status based
+    // on the state of the connection with the websocket back end. 
+    private SetupMonitoring() {
+        this.socket.on('connect', () => this.SetWebSocketStatus('connect', StatusMonitorStatus.Ok));
+        this.socket.on('reconnect', () =>  this.SetWebSocketStatus('reconnect', StatusMonitorStatus.Ok));
+        this.socket.on('reconnect_failed', (e) => this.SetWebSocketStatus('reconnect failed', StatusMonitorStatus.Error, e));
+        this.socket.on('reconnect_error', (e) => this.SetWebSocketStatus('reconnect', StatusMonitorStatus.Error, e));
+        this.socket.on('connect_error', (e) => this.SetWebSocketStatus('connect', StatusMonitorStatus.Error, e));
+        this.socket.on('connect_timeout', (e) => this.SetWebSocketStatus('connect timeout', StatusMonitorStatus.Error, e));
+        //this.socket.on('reconnect_attempt', () => { debug('reconnect_attempt'); });
+        //this.socket.on('reconnecting', () => { debug('reconnecting'); });
+    }
+
+    //_________________________________________________________________________
+    // WebSocketStatus
+    // Set the monitorservice status of the Websocket service 
+    private SetWebSocketStatus(eventName: string, s: StatusMonitorStatus, err?: any) {
+      let msg: string;
+      if (err !== undefined) {
+        msg = `Websocket error: ${eventName}: ${err.message} (${err.description})`;
+      } else {
+        msg = `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
+      }
+      debug(`WebSocketService: status change to '${StatusMonitorStatus[s]}': ${msg} (${eventName})`);
+      this.monitorService.ChangeStatus('Websocket', s, msg);
+    }
 
     //_________________________________________________________________________
     // ValidateSend
@@ -102,7 +144,7 @@ export class WebSocketService {
     private ValidateSend( ack: MessageAck, localMsgId, resolve, reject, failTrigger) {
       // we got an ack: cancel the timeout that will fail this message
       clearTimeout(failTrigger);
-      console.log(`WebSocketService::ValidateSend: validating message '${localMsgId}'`);
+      debug(`WebSocketService::ValidateSend: validating message '${localMsgId}'`);
       let err: string = null;
       // corner case: we've already failed (timed out) and are getting a late response.
       // warn and throw the message back into the pending state so we can process it below.
@@ -127,23 +169,26 @@ export class WebSocketService {
       }
       // resolve or reject based on error
       if (err != null) {
-        console.log(`WebSocketService::ValidateSend: message ${localMsgId} validation failed`);
+        debug(`WebSocketService::ValidateSend: message ${localMsgId} validation failed`);
         reject(new Error(err));
       }
       else {
-        console.log(`WebSocketService::ValidateSend: message ${localMsgId} validated`);
+        debug(`WebSocketService::ValidateSend: message ${localMsgId} validated`);
         resolve(localMsgId);
       }
     }
 
+    //_________________________________________________________________________
+    // FailSend
+    // Log a message send failure. Happens when back end has not acknowledged
+    // message receipt in ackTimeout seconds. 
     private FailSend(pendingMsgId, reject) {
       if (pendingMsgId in this.pendingMessages) {
-        console.log(`MessageEntry::SendFailed: send failed for message '${pendingMsgId}'`);
+        debug(`MessageEntry::SendFailed: send failed for message '${pendingMsgId}'`);
         this.failedMessages[pendingMsgId] = this.pendingMessages[pendingMsgId];
         delete this.pendingMessages[pendingMsgId];
         reject(new Error(`MessageEntry: send failed for message '${pendingMsgId}': timeout`));
       }
     }
-
 
 }
