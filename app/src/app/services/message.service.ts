@@ -12,6 +12,7 @@ import { Subject } from 'rxjs/Subject';
 import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { MonitorService } from './monitor.service';
+import { WebSocketService } from './websocket.service';
 import { StatusMonitorStatus } from '../models/statusmonitor';
 import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
 import { Observable } from '../../../node_modules/rxjs/Observable';
@@ -32,13 +33,47 @@ export class MessageService {
   // we will publish when we fill contacts
   private contactsSource$: Subject<{[id: number]: User}>;
 
-  constructor(private tokenService: TokenService, private apiService: ApiService,
-                private monitorService: MonitorService) {
+  constructor(private tokenService: TokenService,
+              private apiService: ApiService,
+              private monitorService: MonitorService,
+              private webSocketService: WebSocketService) {
+
       this.contactsSource$ = new Subject<{[id: number]: User}>();
-  }
+      this.webSocketService.OnIncomingMessage$.subscribe( (msg: Message) => this.OnIncomingMessage(msg))
+ }
 
   public ContactsObservable(): Observable<{[id: number]: User}> {
     return this.contactsSource$.asObservable();
+  }
+
+
+  //___________________________________________________________________________
+  // OnIncomingMessage
+  // Handle messages arriving from the back end 
+  private OnIncomingMessage(msg: Message) {
+    debug(`MessageService::OnIncomingMessage: receiving message from user id ${msg.from}`);
+
+    // is it from an existing contact? 
+    if (msg.from in this.contacts) {
+      const contact: User = this.contacts[msg.from];
+      if (!isNull(contact.conversation)) {
+        const conversation: Conversation = contact.conversation;
+        // add the message to the conversation
+        if (isNull(conversation.messages)) {
+          conversation.messages = new Array<Message>();
+        }
+        debug(`MessageService:OnIncomingMessage: adding message to existing conversation with ${contact.email}`);
+        conversation.messages.push(msg);
+      }
+      else {
+        // contact known, but we don't yet have a conversation with them yet...
+      }
+    }
+    // message is from a previously unknown contact...need to add them to contacts
+    // then do the exercise above...
+    else {
+      debug(`MessageService:OnIncomingMessage: sender is unknown, adding a contact`);
+    }
   }
 
 
@@ -135,15 +170,13 @@ export class MessageService {
   //___________________________________________________________________________
   // GetConversationMessages
   // Retrieve and store messages for a specific coversation
-  async GetConversationMessages(conversation: Conversation) {
+  async GetConversationMessages(conversation: Conversation, reload: boolean = false) {
     debug(`MessageService::GetConversationMessages: getting conversation ${conversation.id}`);
     // Already loaded: use cache
-    /*
-    if (!isNull(conversation.messages)) {
+    if (!isNull(conversation.messages) && !reload) {
       debug(`MessageService::GetConversationMessages: conversation ${conversation.id} messages already loaded`);
       return 0;
     }
-    */
     const req: GetConversationMessagesRequest = { conversationId: conversation.id };
     let resp: GetConversationMessagesResponse = {} as any;
     // Call API to get the conversation

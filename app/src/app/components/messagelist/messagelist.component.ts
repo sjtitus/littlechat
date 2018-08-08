@@ -50,7 +50,7 @@ export class MessagelistComponent implements OnInit, AfterViewChecked {
     debug('MessageList: chat contact changed to ', contact);
     this.conversation = contact.conversation;
     if (!isNull(this.conversation)) {
-      this.messageService.GetConversationMessages(this.conversation).then(
+      this.messageService.GetConversationMessages(this.conversation, true).then(
         (n) => { debug(`MessageList::ChatContact: got ${n} conversation messages`); }
       );
     }
