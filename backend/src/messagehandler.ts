@@ -30,6 +30,6 @@ export default class MessageHandler {
       // TODO: Log the message to the database
       // Broadcast to the recipient(s) (if they are logged in?)
       console.log(`MessageHandler::OnMessage: broadcasting message`);
-      socket.broadcast.to(`room-${message.to}`).send(message.content);
+      socket.broadcast.to(`room-${message.to}`).send(message);
     }
 }

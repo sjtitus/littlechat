@@ -39,7 +39,7 @@ export class MessageService {
               private webSocketService: WebSocketService) {
 
       this.contactsSource$ = new Subject<{[id: number]: User}>();
-      this.webSocketService.OnIncomingMessage$.subscribe( (msg: Message) => this.OnIncomingMessage(msg))
+      this.webSocketService.OnIncomingMessage$.subscribe((msg: Message) => this.OnIncomingMessage(msg));
  }
 
   public ContactsObservable(): Observable<{[id: number]: User}> {
