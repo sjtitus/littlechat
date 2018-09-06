@@ -1,0 +1,33 @@
+
+Current Design Effort
+    Message delivery, notification, storage/retrieval 
+
+Principles
+    Every message is part of a conversation
+    Conversation takes place between an audience of 1+ contacts (1 to start)
+    
+Design
+    Conversations managed server side, stored in db
+        Messages are associated with conversations in the db
+    Startup Time (before you start listening for new contacts or conversations)
+        Conversations downloaded (including # unread msgs)
+        Contacts downloaded (currently everyone in platform)
+        Start listening for new contacts/conversations after initial downloads
+        Order matters (conversations first so contacts sure to include everyone)
+    New Contacts / Conversations
+        New contact process
+            New user logged in database
+            New contact broadcast to all online users ("New Contact" channel)
+            Offline users will pick up the new contact when they log in
+            It's possible new contact/conversation gets missed between startup load and listening
+    New conversations
+        Initiated when a message needs to be sent and there's no existing client side conversation
+            Ask server to create conversation (to prevent races), response is new or existing conversation
+            Creator then sends message to the conversation
+        When a conversation gets created server-side
+            Response to creator is the new conversation
+            New conversation also gets sent to other participant if they're online
+        When a message gets sent to the conversation
+            It gets logged to the database as belonging to the conversation
+            It gets broadcast to the other user if they are online
+            It's marked as unread for offline users (back end stores # unread in conversation by user)

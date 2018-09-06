@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Message, MessageAck } from '../models/message';
+import { User } from '../models/user';
 import { Md5 } from 'ts-md5';
 import { MonitorService } from './monitor.service';
 import * as socketIo from 'socket.io-client';
@@ -34,7 +35,7 @@ export class WebSocketService {
 
     // publish/subscribe for incoming messages
     public OnIncomingMessage$: Subject<Message>;
-
+    public OnIncomingContact$: Subject<User>;
 
 
     constructor(private monitorService: MonitorService) {
@@ -67,7 +68,13 @@ export class WebSocketService {
               debug(`WebSocketService: incoming message:`, msg);
               this.OnIncomingMessage$.next(msg);
             }
-          );
+        );
+        this.socket.on('newcontact', 
+            (contact) =>  {
+              debug(`WebSocketService: incoming new contact:`, contact);
+              this.OnIncomingContact$.next(contact);
+            }
+        );
     }
 
 

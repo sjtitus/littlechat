@@ -9,7 +9,16 @@ export default class WebSocketServer {
     private messageHandler: MessageHandler;
     private port: number = 8080;
 
-    constructor(server: http.Server) {
+    private static instance: WebSocketServer;
+
+    public static GetInstance(): WebSocketServer {
+      if (!WebSocketServer.instance) {
+        WebSocketServer.instance = new WebSocketServer();
+      }
+      return WebSocketServer.instance;
+    }
+
+    private constructor() {
         this.server = http.createServer();
         this.io = socketIo(this.server,{
           serveClient: false,
@@ -19,6 +28,11 @@ export default class WebSocketServer {
         });
         this.io.use((socket, next) => { return this.CheckSocketAuth(socket, next); });
         this.messageHandler = new MessageHandler(this);
+    }
+
+    public Broadcast(eventName: string, arg: any) {
+      console.log(`WebSocketServer::Broadcast: broadcasting ${arg}`);
+      this.io.sockets.emit(eventName, arg);
     }
 
     private CheckSocketAuth(socket, next) {

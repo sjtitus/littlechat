@@ -47,9 +47,10 @@ export class HomeComponent implements OnInit {
     debug(`HomeComponent::Init: starting client web socket service`);
     const authToken: string = this.tokenService.Retrieve();
     this.webSocketService.Start(authToken);
+    debug(`HomeComponent::Init: client web socket service...ok`);
 
     // Start message service
-    debug(`HomeComponent::Init: client message service start`);
+    debug(`HomeComponent::Init: starting client message service`);
     this.messageService.Start()
     .then(  () => { debug(`HomeComponent::Init: client message service start: ok`); })
     .catch( (err) => { console.error(`HomeComponent::Init: client message service start: ERROR: ${err.message}`); });

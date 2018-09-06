@@ -1,7 +1,6 @@
 import * as http from 'http';
 import ExpressApp from './expressApp';
 import WebSocketServer from './websocketserver';
-import * as socketIo from 'socket.io';
 
 const port = 3000;   // port to serve the API
 
@@ -24,7 +23,7 @@ ExpressApp.set('view engine', 'html');
 const server = http.createServer(ExpressApp); 
 
 // Create the websocketserver that will use same server/port
-const webSocketServer = new WebSocketServer(server);
+const webSocketServer = WebSocketServer.GetInstance();
 console.log(`Server: Starting WebSocketServer`);
 webSocketServer.Start();
 
