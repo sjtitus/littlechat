@@ -52,7 +52,7 @@ export class WebSocketService {
         this._authToken = token;
         this.socket = socketIo(SERVER_URL, {
             path: '/mysock',
-            autoConnect: true,
+            autoConnect: false,
             transportOptions: {
               polling: {
                 extraHeaders: {
@@ -69,12 +69,17 @@ export class WebSocketService {
               this.OnIncomingMessage$.next(msg);
             }
         );
-        this.socket.on('newcontact', 
+        this.socket.on('newcontact',
             (contact) =>  {
               debug(`WebSocketService: incoming new contact:`, contact);
               this.OnIncomingContact$.next(contact);
             }
         );
+    }
+
+    public Connect() {
+      debug(`WebSocketService::Connect: connecting to the back end`);
+      this.socket.connect(() => { debug(`WebSocketService::Connect: connection attempt done`); });
     }
 
 
@@ -116,8 +121,8 @@ export class WebSocketService {
 
     //_________________________________________________________________________
     // SetupMonitoring 
-    // Setup service monitoring: change the websocket service status based
-    // on the state of the connection with the websocket back end. 
+    // Monitoring: set the websocket service status based on connectivity
+    // to back end.
     private SetupMonitoring() {
         this.socket.on('connect', () => this.SetWebSocketStatus('connect', StatusMonitorStatus.Ok));
         this.socket.on('reconnect', () =>  this.SetWebSocketStatus('reconnect', StatusMonitorStatus.Ok));
@@ -184,6 +189,7 @@ export class WebSocketService {
         resolve(localMsgId);
       }
     }
+
 
     //_________________________________________________________________________
     // FailSend
