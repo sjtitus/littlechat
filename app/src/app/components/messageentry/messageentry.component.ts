@@ -6,11 +6,8 @@ ________________________________________________________________________________
 import { Component, OnInit, Input } from '@angular/core';
 import { User } from '../../models/user';
 import { Message, MessageAck } from '../../models/message';
+import { MessageService } from '../../services/message.service';
 import { TokenService } from '../../services/token.service';
-import { WebSocketService } from '../../services/websocket.service';
-//import {Md5} from 'ts-md5';
-import { StatusMonitorStatus } from '../../models/statusmonitor';
-import { MonitorService } from '../../services/monitor.service';
 
 const debug = require('debug')('MessageEntry');
 
@@ -23,7 +20,6 @@ const debug = require('debug')('MessageEntry');
 export class MessageentryComponent implements OnInit {
 
   private _chatContact: User;   // Contact we're chatting with
-  public errorText: string;
 
   //private pendingMessages: { [s: string]: Message; } = {};
   //private readonly ackTimeout = 10;
@@ -33,14 +29,15 @@ export class MessageentryComponent implements OnInit {
     this._chatContact = contact;
   }
 
-  constructor(private tokenService: TokenService, private webSocketService: WebSocketService,
-      private monitorService: MonitorService) {}
+  constructor(
+    private tokenService: TokenService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit() {}
 
   public async SendMessage(event: any) {
     try {
-      this.errorText = null;
       debug(`MessageEntry::SendMessage: send message to ${this._chatContact.email}`);
       // construct message
       const content: string = event.target.value as string;
@@ -51,14 +48,13 @@ export class MessageentryComponent implements OnInit {
         content: content,
         timeSent: timeSent,
       };
-      // send message via websocket
-      const sendResp = await this.webSocketService.SendMessage(message);
-      debug(`MessageEntry::SendMessage: send response: ${sendResp}`);
+      // send message 
+      await this.messageService.SendMessage(message);
+      //debug(`MessageEntry::SendMessage: send response: ${sendResp}`);
     }
     catch (err) {
         console.error(`MessageEntry::SendMessage: error`, err);
-        this.errorText = err.message;
-        this.monitorService.ChangeStatus('Websocket', StatusMonitorStatus.Error, this.errorText);
+        //this.monitorService.ChangeStatus('Websocket', StatusMonitorStatus.Error, this.errorText);
     }
     finally {
       event.target.value = '';

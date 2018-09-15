@@ -56,7 +56,7 @@ export class WebSocketService {
         this._authToken = token;
         this.socket = socketIo(SERVER_URL, {
             path: '/mysock',
-            autoConnect: true,
+            autoConnect: false,
             transportOptions: {
               polling: {
                 extraHeaders: {
@@ -81,6 +81,11 @@ export class WebSocketService {
         );
     }
 
+    public Connect() {
+      debug(`WebSocketService::Connect: connecting to the back end`);
+      this.socket.connect(() => { debug(`WebSocketService::Connect: connection attempt done`); });
+    }
+
 
     //_________________________________________________________________________
     // Current connected to back end? 
@@ -95,7 +100,7 @@ export class WebSocketService {
     public async SendMessage(message: Message) {
         debug(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
         const msgId = Md5.hashStr(message.timeSent + message.content) as string;
-        return new Promise( (resolve, reject) => {
+        return new Promise<number>( (resolve, reject) => {
           // Socket is disconnected, don't even try to send message
           if (!this.socket.connected) {
             reject(new Error('WebSocketService::SendMessage: send failed: websocket connection is down'));
@@ -120,8 +125,8 @@ export class WebSocketService {
 
     //_________________________________________________________________________
     // SetupMonitoring 
-    // Setup service monitoring: change the websocket service status based
-    // on the state of the connection with the websocket back end. 
+    // Monitoring: set the websocket service status based on connectivity
+    // to back end.
     private SetupMonitoring() {
         this.socket.on('connect', () => this.SetWebSocketStatus('connect', StatusMonitorStatus.Ok));
         this.socket.on('reconnect', () =>  this.SetWebSocketStatus('reconnect', StatusMonitorStatus.Ok));
@@ -186,6 +191,7 @@ export class WebSocketService {
         resolve(localMsgId);
       }
     }
+
 
     //_________________________________________________________________________
     // FailSend
