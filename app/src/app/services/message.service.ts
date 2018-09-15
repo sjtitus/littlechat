@@ -17,6 +17,7 @@ import { StatusMonitorStatus } from '../models/statusmonitor';
 import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
 import { Observable } from '../../../node_modules/rxjs/Observable';
 import { isNull } from 'util';
+import { sendRequest } from 'selenium-webdriver/http';
 
 const dbgpackage = require('debug');
 const debug = dbgpackage('MessageService');
@@ -66,17 +67,17 @@ export class MessageService {
   // Send an outgoing message 
   public async SendMessage(message: Message) {
     debug(`MessageService::SendMessage: send message to ${message.to}`);
+    let msgId = -1;
     try {
-      const sendResp = await this.webSocketService.SendMessage(message);
-      debug(`MessageService::SendMessage: send response: ${sendResp}`);
+      msgId = await this.webSocketService.SendMessage(message);
+      debug(`MessageService::SendMessage: sent msg id: ${msgId}`);
     }
     catch (err) {
       console.error(`MessageService::SendMessage: error`, err);
-      this.monitorService.ChangeStatus('Websocket', StatusMonitorStatus.Error, this.errorText);
+      this.monitorService.ChangeStatus('Websocket', StatusMonitorStatus.Error, err.message);
+      throw(err);
     }
-    finally {
-      event.target.value = '';
-    }
+    return msgId;
   }
 
 

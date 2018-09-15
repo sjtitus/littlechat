@@ -96,7 +96,7 @@ export class WebSocketService {
     public async SendMessage(message: Message) {
         debug(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
         const msgId = Md5.hashStr(message.timeSent + message.content) as string;
-        return new Promise( (resolve, reject) => {
+        return new Promise<number>( (resolve, reject) => {
           // Socket is disconnected, don't even try to send message
           if (!this.socket.connected) {
             reject(new Error('WebSocketService::SendMessage: send failed: websocket connection is down'));
