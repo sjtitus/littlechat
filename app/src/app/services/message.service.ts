@@ -1,6 +1,7 @@
 /*______________________________________________________________________________
   MessageService
-  Service that manages contacts/conversations/messages.
+  Service that manages all client-side messages, outgoing and incoming.
+  Also stores/manages contacts and conversations. 
 ________________________________________________________________________________
 */
 
@@ -24,9 +25,10 @@ const debug = dbgpackage('MessageService');
 @Injectable()
 export class MessageService {
 
-  private contacts: { [id: number]: User };                 // User contacts by Id 
-  private contactsSource$: Subject<{[id: number]: User}>;   // Contacts are published to components 
-  private conversations: { [id: number]: Conversation };    // User conversations by Id 
+  private contacts: { [id: number]: User };                   // User contacts by Id 
+  private conversations: { [id: number]: Conversation };      // User conversations by Id 
+
+  private contactsSource$: Subject< {[id: number]: User} >;   // Contacts published to components 
 
 
   constructor(private tokenService: TokenService,
@@ -36,24 +38,36 @@ export class MessageService {
       this.contacts = {};
       this.conversations = {};
       this.contactsSource$ = new Subject<{[id: number]: User}>();
-      this.webSocketService.OnIncomingMessage$.subscribe((msg: Message) => this.OnIncomingMessage(msg));
+      this.HandleIncomingMessages();
   }
 
 
-  public ContactsObservable(): Observable<{[id: number]: User}> {
-    return this.contactsSource$.asObservable();
-  }
- 
 
   //___________________________________________________________________________
   // Start
-  // Get contacts and conversations from backend, then associate
-  // contacts with conversations.
+  // Start the service:
+  //    - Get contacts and conversations from backend
+  //    - Link each conversation to its associated contact
+  //    - Publish contacts to listeners
   public async Start() {
-    await this.GetContacts();
-    await this.GetConversations();
-    this.MapConversationsToContacts();
-    this.contactsSource$.next(this.contacts);   // publish contacts
+    try {
+      await this.GetConversations();
+      await this.GetContacts();
+      this.AssignConversationsToContacts();
+      // publish contacts to listeners 
+      this.contactsSource$.next(this.contacts);
+    }
+    catch (e) {
+      console.error(`MessageService::Start: ERROR starting message service: ${e.message}`);
+    }
+  }
+
+
+  //___________________________________________________________________________
+  // ContactsObservable
+  // Expose contacts as an observable
+  public ContactsObservable(): Observable<{[id: number]: User}> {
+    return this.contactsSource$.asObservable();
   }
 
 
@@ -106,7 +120,7 @@ export class MessageService {
     }
     else {
       const errmsg = `MessageService::GetConversations: ERROR: ${resp.errorMessage}`;
-      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, errmsg); 
+      this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, errmsg);
       throw new Error(errmsg);
     }
   }
@@ -114,7 +128,7 @@ export class MessageService {
   //___________________________________________________________________________
   // GetConversationMessages 
   // Retrieve messages for a specific coversation from back end
-  async GetConversationMessages(conversation: Conversation, reload: boolean = false) {
+  public async GetConversationMessages(conversation: Conversation, reload: boolean = false) {
     debug(`MessageService::GetConversationMessages: getting msgs for conversation ${conversation.id}`);
     // Already loaded 
     if (!isNull(conversation.messages) && !reload) {
@@ -135,6 +149,15 @@ export class MessageService {
       this.monitorService.ChangeStatus('API', StatusMonitorStatus.Error, resp.errorMessage);
       throw new Error(errmsg);
     }
+  }
+
+
+  //___________________________________________________________________________
+  // HandleIncomingMessages
+  // Subscribe to inbound messages (from WebSocketService) and handle 
+  // them appropriately. 
+  private HandleIncomingMessages(): void {
+      this.webSocketService.OnIncomingMessage$.subscribe((msg: Message) => this.OnIncomingMessage(msg));
   }
 
 
@@ -168,14 +191,10 @@ export class MessageService {
   }
 
 
-
-
-
-
-
   //___________________________________________________________________________
-  // Map conversations to contacts
-  private MapConversationsToContacts() {
+  // Assign conversations to contacts
+  // Q: Should this be done on back-end?
+  private AssignConversationsToContacts() {
     debug(`MessageService::MapConversations: mapping conversations to contacts`);
     // Assign converstations to contacts
     for (const cid in this.conversations) {

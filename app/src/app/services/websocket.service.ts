@@ -6,6 +6,7 @@ import { Md5 } from 'ts-md5';
 import { MonitorService } from './monitor.service';
 import * as socketIo from 'socket.io-client';
 import { StatusMonitorStatus } from '../models/statusmonitor';
+import { Conversation } from '../models/conversation';
 
 const SERVER_URL = 'http://localhost:4200';
 
@@ -36,10 +37,13 @@ export class WebSocketService {
     // publish/subscribe for incoming messages
     public OnIncomingMessage$: Subject<Message>;
     public OnIncomingContact$: Subject<User>;
+    public OnIncomingConversation$: Subject<Conversation>;
 
 
     constructor(private monitorService: MonitorService) {
       this.OnIncomingMessage$ = new Subject<Message>();
+      this.OnIncomingContact$ = new Subject<User>();
+      this.OnIncomingConversation$ = new Subject<Conversation>();
     }
 
     //_________________________________________________________________________
@@ -69,7 +73,7 @@ export class WebSocketService {
               this.OnIncomingMessage$.next(msg);
             }
         );
-        this.socket.on('newcontact', 
+        this.socket.on('newcontact',
             (contact) =>  {
               debug(`WebSocketService: incoming new contact:`, contact);
               this.OnIncomingContact$.next(contact);
@@ -134,11 +138,9 @@ export class WebSocketService {
     // Set the monitorservice status of the Websocket service 
     private SetWebSocketStatus(eventName: string, s: StatusMonitorStatus, err?: any) {
       let msg: string;
-      if (err !== undefined) {
-        msg = `Websocket error: ${eventName}: ${err.message} (${err.description})`;
-      } else {
-        msg = `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
-      }
+      msg = (err !== undefined) ?
+        `Websocket error: ${eventName}: ${err.message} (${err.description})` :
+        `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
       debug(`WebSocketService: status change to '${StatusMonitorStatus[s]}': ${msg} (${eventName})`);
       this.monitorService.ChangeStatus('Websocket', s, msg);
     }

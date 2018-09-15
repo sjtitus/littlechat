@@ -9,6 +9,7 @@ import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
 import { Conversation, GetConversationsRequest, GetConversationsResponse,
   GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
+import { isDefined } from '@angular/compiler/src/util';
 
 const dbgpackage = require('debug');
 const debug = dbgpackage('ApiService');
@@ -96,6 +97,7 @@ export class ApiService {
         resp = apiResp.body;
       }
       catch (e) {
+        // the HTTP (api) call threw an error
         const err = e as ApiError;
         console.error(`ApiService::SignupUser: API error`, err);
         resp.error = true;
@@ -103,6 +105,7 @@ export class ApiService {
         resp.errorMessage = err.message;
       }
       finally {
+        // API call succeeded (note: backend error still could have occurred) 
         return resp;
       }
   }
