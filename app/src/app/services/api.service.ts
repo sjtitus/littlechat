@@ -6,8 +6,9 @@ import { catchError} from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { ApiError } from '../models/apierror';
 import { User, GetContactsRequest, GetContactsResponse } from '../models/user';
-import { Conversation, GetConversationsRequest, GetConversationsResponse,
-  GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
+import { Conversation, GetConversationsRequest, GetConversationsResponse } from '../models/conversation';
+import { GetConversationMessagesRequest, GetConversationMessagesResponse } from '../models/conversation';
+import { CreateConversationRequest, CreateConversationResponse } from '../models/conversation';
 import { SignupRequest, SignupResponse, LoginRequest, LoginResponse } from '../models/login';
 import { isDefined } from '@angular/compiler/src/util';
 
@@ -54,6 +55,7 @@ export class ApiService {
   private readonly signupUrl = 'http://localhost:4200/api/signup';
   private readonly contactsUrl = 'http://localhost:4200/api/contacts';
   private readonly conversationsUrl = 'http://localhost:4200/api/conversations';
+  private readonly createConversationUrl = 'http://localhost:4200/api/conversation/create';
   private readonly messagesUrl = 'http://localhost:4200/api/messages';
   private readonly timeout = 20000;
 
@@ -113,7 +115,7 @@ export class ApiService {
 
   // Get user conversations
   async GetConversations(req: GetConversationsRequest) {
-      debug(`ApiService::GetConversations: request for ${req.userId}`);
+      debug(`ApiService::GetConversations: getting conversations for user id=${req.userId}`);
       let resp: GetConversationsResponse = {} as any;
       try {
         const apiResp = await this.http.post<GetConversationsResponse>(this.conversationsUrl, req, { observe: 'response' })
@@ -125,6 +127,30 @@ export class ApiService {
       catch (e) {
         const err = e as ApiError;
         console.error(`ApiService::GetConversations: API error`, err);
+        resp.error = true;
+        resp.apiError = err;
+        resp.errorMessage = err.message;
+      }
+      finally {
+        return resp;
+      }
+  }
+
+  // Create (or Fetch) a conversation 
+  async CreateConversation(req: CreateConversationRequest) {
+      debug(`ApiService::CreateConversation: creating conversation for ${req.userId}`);
+      let resp: CreateConversationResponse = {} as any;
+      try {
+        const apiResp = await this.http.post<CreateConversationResponse>(this.createConversationUrl, req, { observe: 'response' })
+            .timeout(this.timeout)
+            .pipe(catchError(this.HandleError))
+            .toPromise();
+        resp = apiResp.body;
+        debug('ApiService::CreateConversation: response', resp);
+      }
+      catch (e) {
+        const err = e as ApiError;
+        console.error(`ApiService::CreateConversation: API error`, err);
         resp.error = true;
         resp.apiError = err;
         resp.errorMessage = err.message;

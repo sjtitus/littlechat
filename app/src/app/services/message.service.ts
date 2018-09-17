@@ -59,11 +59,12 @@ export class MessageService {
     // websocket service has not yet connected to backend.
     await this.GetConversations();
     await this.GetContacts();
-    this.MapConversationsToContacts();
+    this.AssignConversationsToContacts();
     // Now let's connect websocket service
     this.webSocketService.Connect();
     this.contactsSource$.next(this.contacts);   // publish contacts
   }
+
 
   //___________________________________________________________________________
   // SendMessage
@@ -211,17 +212,17 @@ export class MessageService {
   // Assign conversations to contacts
   // Q: Should this be done on back-end?
   private AssignConversationsToContacts() {
-    debug(`MessageService::MapConversations: mapping conversations to contacts`);
+    debug(`MessageService::AssignConversations: mapping conversations to contacts`);
     // Assign converstations to contacts
     for (const cid in this.conversations) {
       if (this.conversations.hasOwnProperty(cid)) {
           const conv: Conversation = this.conversations[cid];
-           debug(`MessageService::MapConversations: conversation `, conv);
+           debug(`MessageService::AssignConversations: conversation `, conv);
           // person-to-person
           if (conv.audience.length === 1) {
               const chatPartnerId = conv.audience[0];
               if (chatPartnerId in this.contacts && (this.contacts.hasOwnProperty(chatPartnerId))) {
-                  debug(`MessageService::MapConversations: found conversation with ${this.contacts[chatPartnerId].email}`);
+                  debug(`MessageService::AssignMapConversations: found conversation with ${this.contacts[chatPartnerId].email}`);
                   this.contacts[chatPartnerId].conversation = conv;
               }
           }

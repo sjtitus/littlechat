@@ -1,6 +1,6 @@
-export interface  Message {
+export interface Message {
   from: number;
-  to: number;
+  conversation: number;
   content: string;
   timeSent: string;
 }
