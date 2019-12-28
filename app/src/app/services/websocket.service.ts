@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Message, MessageAck } from '../models/message';
+import { User } from '../models/user';
 import { Md5 } from 'ts-md5';
 import { MonitorService } from './monitor.service';
 import * as socketIo from 'socket.io-client';
 import { StatusMonitorStatus } from '../models/statusmonitor';
+import { Conversation } from '../models/conversation';
 
 const SERVER_URL = 'http://localhost:4200';
 
@@ -34,11 +36,14 @@ export class WebSocketService {
 
     // publish/subscribe for incoming messages
     public OnIncomingMessage$: Subject<Message>;
-
+    public OnIncomingContact$: Subject<User>;
+    public OnIncomingConversation$: Subject<Conversation>;
 
 
     constructor(private monitorService: MonitorService) {
       this.OnIncomingMessage$ = new Subject<Message>();
+      this.OnIncomingContact$ = new Subject<User>();
+      this.OnIncomingConversation$ = new Subject<Conversation>();
     }
 
     //_________________________________________________________________________
@@ -51,7 +56,7 @@ export class WebSocketService {
         this._authToken = token;
         this.socket = socketIo(SERVER_URL, {
             path: '/mysock',
-            autoConnect: true,
+            autoConnect: false,
             transportOptions: {
               polling: {
                 extraHeaders: {
@@ -67,7 +72,18 @@ export class WebSocketService {
               debug(`WebSocketService: incoming message:`, msg);
               this.OnIncomingMessage$.next(msg);
             }
-          );
+        );
+        this.socket.on('newcontact',
+            (contact) =>  {
+              debug(`WebSocketService: incoming new contact:`, contact);
+              this.OnIncomingContact$.next(contact);
+            }
+        );
+    }
+
+    public Connect() {
+      debug(`WebSocketService::Connect: connecting to the back end`);
+      this.socket.connect(() => { debug(`WebSocketService::Connect: connection attempt done`); });
     }
 
 
@@ -84,7 +100,7 @@ export class WebSocketService {
     public async SendMessage(message: Message) {
         debug(`WebSocketService::SendMessage: sending message '${message.content}' to user ${message.to}`);
         const msgId = Md5.hashStr(message.timeSent + message.content) as string;
-        return new Promise( (resolve, reject) => {
+        return new Promise<number>( (resolve, reject) => {
           // Socket is disconnected, don't even try to send message
           if (!this.socket.connected) {
             reject(new Error('WebSocketService::SendMessage: send failed: websocket connection is down'));
@@ -109,8 +125,8 @@ export class WebSocketService {
 
     //_________________________________________________________________________
     // SetupMonitoring 
-    // Setup service monitoring: change the websocket service status based
-    // on the state of the connection with the websocket back end. 
+    // Monitoring: set the websocket service status based on connectivity
+    // to back end.
     private SetupMonitoring() {
         this.socket.on('connect', () => this.SetWebSocketStatus('connect', StatusMonitorStatus.Ok));
         this.socket.on('reconnect', () =>  this.SetWebSocketStatus('reconnect', StatusMonitorStatus.Ok));
@@ -127,11 +143,9 @@ export class WebSocketService {
     // Set the monitorservice status of the Websocket service 
     private SetWebSocketStatus(eventName: string, s: StatusMonitorStatus, err?: any) {
       let msg: string;
-      if (err !== undefined) {
-        msg = `Websocket error: ${eventName}: ${err.message} (${err.description})`;
-      } else {
-        msg = `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
-      }
+      msg = (err !== undefined) ?
+        `Websocket error: ${eventName}: ${err.message} (${err.description})` :
+        `Websocket status: ${eventName}: ${StatusMonitorStatus[s]}`;
       debug(`WebSocketService: status change to '${StatusMonitorStatus[s]}': ${msg} (${eventName})`);
       this.monitorService.ChangeStatus('Websocket', s, msg);
     }
@@ -177,6 +191,7 @@ export class WebSocketService {
         resolve(localMsgId);
       }
     }
+
 
     //_________________________________________________________________________
     // FailSend

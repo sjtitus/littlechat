@@ -12,6 +12,19 @@ export interface Conversation {
   messages: Message[] | null;
 }
 
+export interface CreateConversationRequest {
+  userId: number;
+  audience: number[];
+}
+
+export interface CreateConversationResponse {
+  error: boolean;
+  errorMessage: string;
+  apiError: ApiError;
+  isNew: boolean;
+  conversation: Conversation;
+}
+
 export interface GetConversationsRequest {
   userId: number;
   maxAgeInHours: number;

@@ -7,7 +7,9 @@ import { User } from "../../app/src/app/models/user";
 import { Token } from './token';
 import * as db from './db/db';
 import * as mycrypto from './mycrypto';
+import WebSocketServer from './websocketserver';
 
+const webSocketServer = WebSocketServer.GetInstance();
 
 //_____________________________________________________________________________
 // Login
@@ -102,6 +104,12 @@ export async function SignUp(signupRequest:SignupRequest) {
   signupResponse.error = false;
   signupResponse.userId = newUserId;
   signupResponse.token = tok;
+  //______________________________________________
+  // New user creation was successful
+  // broadcast the new contact
+  console.log(`Auth::Signup: broadcasting new contact = ${newuser}`); 
+  webSocketServer.Broadcast('newcontact', newuser);
   return signupResponse;
+
 }
 
