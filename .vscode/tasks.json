@@ -44,7 +44,7 @@
         "label": "Server Debug Code Watch",
         "identifier": "Server Debug Code Watch",
         "type": "typescript",
-        "tsconfig": "backend\\tsconfig.json",
+        "tsconfig": "backend/tsconfig.json",
         "option": "watch",
         "isBackground": true,
         "problemMatcher": [

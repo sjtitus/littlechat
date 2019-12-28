@@ -21,14 +21,14 @@ console.log(`Server: Database Info: host=${pghost}, user=${pguser}, db=${pgdb}`)
 ExpressApp.set('port', port);
 
 ExpressApp.set('view engine', 'html');
-const server = http.createServer(ExpressApp); 
+const server = http.createServer(ExpressApp);
 
 // Create the websocketserver that will use same server/port
 const webSocketServer = new WebSocketServer(server);
 console.log(`Server: Starting WebSocketServer`);
 webSocketServer.Start();
 
-// Start listening for connections 
+// Start listening for connections
 console.log(`Server: server starting on port ${port}`);
 server.listen(port);
 
