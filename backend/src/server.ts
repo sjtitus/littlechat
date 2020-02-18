@@ -8,7 +8,7 @@ const port = 3000;   // port to serve the API
 const pghost = process.env.PGHOST;
 const pguser = process.env.PGUSER;
 const pgdb = process.env.PGDATABASE;
-if (!pghost || !pguser || !pgdb)
+if (!pghost || !pguser ||   !pgdb)
 {
   throw new Error('Server: Database env vars (PGHOST, PGUSER, PGDATABASE) must be defined');
 }
